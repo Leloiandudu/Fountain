@@ -1,0 +1,56 @@
+.WikiButton {
+   font-size: 1em;
+   padding: .5em 1em;
+   text-decoration: none;
+
+   border-radius: 2px;
+   min-width: 4em;
+   vertical-align: middle;
+   text-align: center;
+   font-weight: 700;
+   cursor: pointer;
+   transition: background .1s ease-in-out, color .1s ease-in-out, box-shadow .1s ease-in-out;
+
+   background: white;
+   color: #555;
+   border: 1px solid #ccc;
+
+   text-shadow: 0 1px rgba(0, 0, 0, .1);
+
+   &:focus, &:hover {
+      box-shadow: 0 1px rgba(0, 0, 0, .1), inset 0 -3px rgba(0, 0, 0, .2);
+      outline: 0;
+   }
+
+   &:active {
+      box-shadow: none;
+   }
+
+   &.progressive {
+      background: #347bff;
+      color: #fff;
+      border: 1px solid #347bff;
+
+      &:focus, &:hover {
+         border-bottom-color: #2a62cc;
+      }
+
+      &:active {
+         background: #2a62cc;
+      }
+   }
+
+   &.constructive {
+      background: #00af89;
+      color: #fff;
+      border: 1px solid #00af89;
+
+      &:focus, &:hover {
+         border-bottom-color: #008c6e;
+      }
+
+      &:active {
+         background: #008c6e;
+      }
+   }
+}

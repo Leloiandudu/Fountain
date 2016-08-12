@@ -1,0 +1,55 @@
+.EditathonList {
+   max-width: 800px;
+   margin: 0 auto;
+   display: flex;
+   flex-flow: column;
+
+   .create {
+      margin-bottom: 20px;
+      margin-left: auto;
+   }
+
+   > ul {      
+      > li {
+         display: flex;
+         flex-flow: column;
+         cursor: default;
+
+         padding: 0 .5em;
+         line-height: 2em;
+
+         &:not(:last-child) {
+            border-bottom: solid 1px #ddd;
+         }
+
+         &:hover {
+            background: #f8f8f8;
+         }
+
+         &.past {
+            opacity: 0.5;
+         }
+
+         a {
+            color: inherit;
+
+            &:not(:hover) {
+               text-decoration: none;
+            }
+         }
+
+         .name {
+            flex: 1 auto;
+         }
+
+         .dates, .description {
+            color: #444;
+            font-size: small;
+         }
+
+         .summary {
+            display: flex;
+         }
+      }
+   }
+}

@@ -1,0 +1,18 @@
+﻿@using Newtonsoft.Json;
+@using Newtonsoft.Json.Serialization;
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Fountain</title>
+    <link rel="stylesheet" href="~/Content/app.css" />
+    <script type="text/javascript">
+        window.Global=@Html.Raw(JsonConvert.SerializeObject(Model, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
+    </script>
+</head>
+<body>
+    <div id="body"></div>
+    <script type="text/javascript" src="~/Scripts/app.js"></script>
+</body>
+</html>

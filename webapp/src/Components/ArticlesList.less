@@ -1,0 +1,39 @@
+.ArticlesList {
+   display: flex;
+   flex-flow: column;
+
+   .addArticle {
+      margin: 0 0 2ex auto;
+   }
+
+   > table {
+      font-size: small;
+      border-spacing: 0;
+      width: 100%;
+
+      .article, .user {
+         text-align: left;
+      }
+
+      .dateAdded {
+         text-align: right;
+      }
+
+      th {
+         border-bottom: solid 1px gray;
+         font-weight: 600;
+      }
+
+      td {
+         padding: 1px 3px;
+      }
+
+      tr.spacer {
+         height: 1ex;
+      }
+
+      tr:hover {
+         background: #f8f8f8;
+      }
+   }
+}
