@@ -9,13 +9,17 @@ namespace WikiFountain.Server
     {
         public static void Register(HttpConfiguration config)
         {
-            config.MapHttpAttributeRoutes();
+            config.Routes.MapHttpRoute(
+                name: "editathons",
+                routeTemplate: "api/editathons/{code}",
+                defaults: new { controller = "Editathons", code = RouteParameter.Optional }
+            );
 
-            //config.Routes.MapHttpRoute(
-            //    name: "DefaultApi",
-            //    routeTemplate: "api/{controller}/{id}",
-            //    defaults: new { id = RouteParameter.Optional }
-            //);
+            config.Routes.MapHttpRoute(
+                name: "editathons-addarticle",
+                routeTemplate: "api/editathons/{code}/article",
+                defaults: new { controller = "Editathons", action = "AddArticle" }
+            );
 
             config.Formatters.JsonFormatter.MediaTypeMappings.Add(
                 new RequestHeaderMapping("Accept", "text/html", StringComparison.OrdinalIgnoreCase, true, "application/json"));

@@ -12,13 +12,19 @@ namespace WikiFountain.Server
     {
         public static void BeforeStart()
         {
-            RegisterModule(typeof(DbSessionModule));
+            AppDomain.CurrentDomain.UnhandledException += (s, e) => Log(e.ExceptionObject.ToString());
+            Microsoft.Web.Infrastructure.DynamicModuleHelper.DynamicModuleUtility.RegisterModule(typeof(DbSessionModule));
+        }
+
+        public static void Log(string text)
+        {
+            System.IO.File.AppendAllText(HttpRuntime.AppDomainAppPath + "/log", text + Environment.NewLine);
         }
 
         void Application_Start(object sender, EventArgs e)
         {
             AreaRegistration.RegisterAllAreas();
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+            WebApiConfig.Register(GlobalConfiguration.Configuration);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
             var resolver = new UnityResolver(Bootstrapper.Init());

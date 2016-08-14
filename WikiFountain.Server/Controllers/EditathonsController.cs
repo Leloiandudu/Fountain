@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using System.Web.Http;
 using NHibernate.Linq;
 using WikiFountain.Server.Core;
@@ -7,7 +8,6 @@ using WikiFountain.Server.Models;
 
 namespace WikiFountain.Server.Controllers
 {
-    [RoutePrefix("api/editathons")]
     public class EditathonsController : ApiControllerWithDb
     {
         private readonly Identity _identity;
@@ -17,8 +17,7 @@ namespace WikiFountain.Server.Controllers
             _identity = identity;
         }
 
-        [Route("")]
-        public IHttpActionResult Get()
+        public HttpResponseMessage Get()
         {
             return Ok(Session.Query<Editathon>().OrderByDescending(e => e.Finish).Select(e => new
             {
@@ -30,8 +29,7 @@ namespace WikiFountain.Server.Controllers
             }).ToList());
         }
 
-        [Route("{code}")]
-        public IHttpActionResult Get(string code)
+        public HttpResponseMessage Get(string code)
         {
             var e = Session.Query<Editathon>().Fetch(_ => _.Articles).SingleOrDefault(i => i.Code == code);
             if (e == null)
@@ -53,8 +51,7 @@ namespace WikiFountain.Server.Controllers
         }
 
         [HttpPost]
-        [Route("{code}/article")]
-        public IHttpActionResult AddArticle(string code, [FromBody] ArticlePostData body)
+        public HttpResponseMessage AddArticle(string code, [FromBody] ArticlePostData body)
         {
             var user = _identity.GetUserInfo();
             if (user == null)

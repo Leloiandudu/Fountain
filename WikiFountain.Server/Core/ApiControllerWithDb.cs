@@ -4,7 +4,7 @@ using NHibernate;
 
 namespace WikiFountain.Server.Core
 {
-    public class ApiControllerWithDb : ApiController
+    public class ApiControllerWithDb : ApiControllerBase
     {
         [Dependency]
         protected ISession Session { get; set; }

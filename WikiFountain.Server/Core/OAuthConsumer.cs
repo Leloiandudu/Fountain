@@ -86,11 +86,15 @@ namespace WikiFountain.Server.Core
             req.Version = "1.0";
 
             var args = msg.RequestUri.ParseQueryString();
-            if (msg.Content != null && msg.Content.IsFormData())
+            if (msg.Content != null)
             {
-                var body = new FormDataCollection(msg.Content.ReadAsStringAsync().Result);
-                foreach (var item in body)
-                    args.Add(item.Key, item.Value);
+                var contentType = msg.Content.Headers.ContentType;
+                if (contentType != null && string.Equals("application/x-www-form-urlencoded", contentType.MediaType, StringComparison.OrdinalIgnoreCase))
+                {
+                    var body = new FormDataCollection(msg.Content.ReadAsStringAsync().Result);
+                    foreach (var item in body)
+                        args.Add(item.Key, item.Value);
+                }
             }
 
             msg.Headers.Add(HttpRequestHeader.Authorization.ToString(), req.GetAuthorizationHeader(args).TrimEnd(','));
@@ -108,7 +112,7 @@ namespace WikiFountain.Server.Core
 
         private static Token GetToken(string response)
         {
-            var query = new FormDataCollection(response);
+            var query = new FormDataCollection(response).ReadAsNameValueCollection();
             
             var key = query["oauth_token"];
             var secret = query["oauth_token_secret"];

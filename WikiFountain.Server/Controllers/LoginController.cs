@@ -10,7 +10,7 @@ using WikiFountain.Server.Models;
 namespace WikiFountain.Server.Controllers
 {
     [OutputCacheAttribute(VaryByParam = "*", Duration = 0, NoStore = true)]
-    public class LoginController : Controller
+    public class LoginController : MvcControllerBase
     {
         private readonly OAuthConsumer _oauth;
         private readonly Identity _identity;

@@ -9,7 +9,7 @@ using WikiFountain.Server.Core;
 namespace WikiFountain.Server.Controllers
 {
     [OutputCacheAttribute(VaryByParam = "*", Duration = 0, NoStore = true)]
-    public class HomeController : Controller
+    public class HomeController : MvcControllerBase
     {
         private readonly Identity _identity;
 
