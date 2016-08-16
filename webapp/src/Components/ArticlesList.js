@@ -1,19 +1,41 @@
 import React from 'react';
 import Api from './../Api';
+import url from './../url';
 import Link from './Link';
 import WikiLink from './WikiLink';
 import WikiButton from './WikiButton';
+import ModalDialog from './ModalDialog';
 
 export default React.createClass({
    propTypes: {
       editathon: React.PropTypes.object,
    },
+   getInitialState() {
+      return {
+         needLogin: false,
+      };
+   },
+   onAdd(e) {
+      if (!Global.userName) {
+         this.setState({ needLogin: true });
+         e.preventDefault();
+      }
+   },
    render() {
       return (
          <div className='ArticlesList'>
             <WikiButton type='progressive' className='addArticle'>
-               <Link to={`/editathons/${this.props.code}/add`}>Добавить статью</Link>
+               <Link to={`/editathons/${this.props.code}/add`} onClick={this.onAdd}>Добавить статью</Link>
             </WikiButton>
+            <ModalDialog isOpen={this.state.needLogin} className='needLogin'>
+               <div className='message'>Для продолжения необходимо авторизоваться.</div>
+               <div className='buttons'>
+                  <a href={url(`/login?redirectTo=${window.location.pathname}`)}>
+                     <WikiButton type='progressive'>Войти</WikiButton>
+                  </a>
+                  <WikiButton onClick={() => this.setState({ needLogin: false })}>Отмена</WikiButton>
+               </div>
+            </ModalDialog>
 
             <table>
                <thead>
