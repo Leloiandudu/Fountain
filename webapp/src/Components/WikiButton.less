@@ -17,7 +17,7 @@
 
    text-shadow: 0 1px rgba(0, 0, 0, .1);
 
-   &:focus, &:hover {
+   &:focus:not(:disabled), &:hover:not(:disabled) {
       box-shadow: 0 1px rgba(0, 0, 0, .1), inset 0 -3px rgba(0, 0, 0, .2);
       outline: 0;
    }
@@ -26,9 +26,18 @@
       box-shadow: none;
    }
 
-   &.progressive {
-      background: #347bff;
+   &:disabled {
+      background-color: #ddd;
+      border-color: #ddd;
+      cursor: default;
+   }
+
+   &.progressive, &.constructive {
       color: #fff;
+   }
+
+   &.progressive:not(:disabled) {
+      background: #347bff;
       border: 1px solid #347bff;
 
       &:focus, &:hover {
@@ -40,9 +49,8 @@
       }
    }
 
-   &.constructive {
+   &.constructive:not(:disabled) {
       background: #00af89;
-      color: #fff;
       border: 1px solid #00af89;
 
       &:focus, &:hover {
