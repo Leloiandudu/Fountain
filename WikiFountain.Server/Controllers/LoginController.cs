@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using JWT;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiFountain.Server.Core;
 using WikiFountain.Server.Models;
@@ -63,7 +64,8 @@ namespace WikiFountain.Server.Controllers
                 var result = await response.Content.ReadAsStringAsync();
                 if (result.Contains("\"message\""))
                     throw new AuthExpiredException(JObject.Parse(result).Value<string>("message"));
-                return JsonWebToken.DecodeToObject<UserInfo>(result, _oauth.ConsumerToken.Secret);
+                var str = JsonWebToken.Decode(result, _oauth.ConsumerToken.Secret);
+                return JsonConvert.DeserializeObject<UserInfo>(str, new JsonSerializerSettings { DateFormatString = "yyyyMMddHHmmss", DateTimeZoneHandling = DateTimeZoneHandling.Utc });
             }
         }
 

@@ -24,7 +24,11 @@ namespace WikiFountain.Server.Controllers
             return View(new
             {
                 UrlPrefix = HttpRuntime.AppDomainAppVirtualPath.TrimEnd('/'),
-                UserName = user == null ? null : user.Username,
+                User = user == null ? null : new
+                {
+                    Name = user.Username,
+                    user.Registered,
+                },
             });
         }
     }

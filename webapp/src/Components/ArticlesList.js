@@ -16,7 +16,7 @@ export default React.createClass({
       };
    },
    onAdd(e) {
-      if (!Global.userName) {
+      if (!Global.user) {
          this.setState({ needLogin: true });
          e.preventDefault();
       }

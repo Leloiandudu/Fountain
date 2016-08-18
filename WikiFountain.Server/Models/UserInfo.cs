@@ -1,10 +1,12 @@
-﻿namespace WikiFountain.Server.Models
+﻿using System;
+
+namespace WikiFountain.Server.Models
 {
     public class UserInfo
     {
         public string Username { get; set; }
         public int EditCount { get; set; }
-        public string Registered { get; set; }
+        public DateTime? Registered { get; set; }
         public bool Confirmed_email { get; set; }
         public bool Blocked { get; set; }
         public string[] Groups { get; set; }
