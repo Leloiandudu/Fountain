@@ -33,7 +33,7 @@ export default React.createClass({
          );
 
       return (
-         <div className='EditathonPage'>
+         <div className='EditathonPage mainContentPane'>
             <h1>{this.state.editathon.name}</h1>
             {React.cloneElement(this.props.children, {
                editathon: this.state.editathon,

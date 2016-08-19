@@ -14,7 +14,7 @@ export default React.createClass({
    },
    render() {
       return (
-         <div className='EditathonList'>
+         <div className='EditathonList mainContentPane'>
             <h1>Марафоны</h1>
             {false && <WikiButton type='progressive' className='create'>Создать марафон</WikiButton>}
             <ul>

@@ -4,7 +4,7 @@ import url from '../url';
 
 export default ({children}) => (
    <div className='Header'>
-      <div className='contentPane'>
+      <div className='mainContentPane'>
          <img className='logo' src={url('/Content/logo.png')} />
          {Global.user && <div className='login'>
             <span className='userName'><WikiLink to={`U:${Global.user.name}`} /></span>
