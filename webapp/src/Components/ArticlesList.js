@@ -6,6 +6,7 @@ import Link from './Link';
 import WikiLink from './WikiLink';
 import WikiButton from './WikiButton';
 import ModalDialog from './ModalDialog';
+import Loader from './Loader';
 
 export default React.createClass({
    propTypes: {
@@ -25,7 +26,7 @@ export default React.createClass({
    render() {
       const { editathon } = this.props;
       if (!editathon || !editathon.start || !editathon.finish)
-         return null;
+         return <Loader />;
       
       var now = moment.utc();
       if (now.isBefore(editathon.start, 'day')) {
@@ -67,6 +68,7 @@ export default React.createClass({
                   {editathon.articles && editathon.articles.map(this.renderRow)}
                </tbody>
             </table>
+            {!editathon.articles && <Loader />}
          </div>
       );
    },

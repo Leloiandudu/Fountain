@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-function WikiButton({ type, children, className, submit, ...props }) {
+function WikiButton({ type, children, className, submit, loading, ...props }) {
    let element = <button type={submit ? 'submit' : 'button'} />;
 
    if (React.isValidElement(children)) {
@@ -10,7 +10,8 @@ function WikiButton({ type, children, className, submit, ...props }) {
    }
 
    return React.cloneElement(element, Object.assign({ children }, props, {
-      className: classNames([ 'WikiButton', type, className ]),
+      className: classNames([ 'WikiButton', type, className, loading && 'loading' ]),
+      disabled: loading || props.disabled || false,
    }), children);
 }
 

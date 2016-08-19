@@ -5,6 +5,7 @@ import url from './../url'
 import WikiButton from './WikiButton';
 import WikiLink from './WikiLink';
 import ArticleLookup from './ArticleLookup';
+import Loader from './Loader';
 import MwApi from './../MwApi';
 import { getPlainText } from './../parsing';
 import Api, { UnauthorizedHttpError } from './../Api';
@@ -99,6 +100,7 @@ export default React.createClass({
          updating: false,
          stage: 'pick',
          card: null,
+         adding: false,
       };
    },
    async update() {
@@ -125,10 +127,13 @@ export default React.createClass({
       if (!stats || !stats.title)
          return;
 
+      this.setState({ adding: true });
+
       try {
          await Api.addArticle(this.props.code, stats.title);
          await this.returnToList();
       } catch(e) {
+         this.setState({ adding: false })
          if (e instanceof UnauthorizedHttpError) {
             alert('Вы не авторзиованы.');
          } else {
@@ -161,11 +166,7 @@ export default React.createClass({
          return <div />;
       }
 
-      if (!this.props.editathon) {
-         return <div />;
-      }
-
-      if (moment(Global.user.registered).add(1, 'year').isBefore(this.props.editathon.start, 'day')) {
+      if (false && moment(Global.user.registered).add(1, 'year').isBefore(this.props.editathon.start, 'day')) {
          return (
             <div>
                В этом марафоне могут соревноваться только участники, зарегистрировавшиеся за год до начала марафона и позднее.
@@ -207,7 +208,7 @@ export default React.createClass({
 
       return (
          <div>
-            {this.state.updating ? '' : (<div>
+            {this.state.updating ? <Loader /> : (<div>
                {missing ? 
                <div>
                   {title}
@@ -228,7 +229,7 @@ export default React.createClass({
             </div>).props.children}
             <div id='buttons'>
                <WikiButton onClick={() => this.setState({ stage: 'pick' })}>Назад</WikiButton>
-               <WikiButton disabled={this.state.updating || !ok || addedBy} type='constructive' submit={true} onClick={this.add}>Добавить</WikiButton>
+               <WikiButton loading={this.state.adding} disabled={this.state.updating || !ok || addedBy} type='constructive' submit={true} onClick={this.add}>Добавить</WikiButton>
             </div>
          </div>
       );

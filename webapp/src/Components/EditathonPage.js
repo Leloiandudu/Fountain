@@ -1,5 +1,6 @@
 import React from 'react';
 import Api from './../Api';
+import Loader from './Loader';
 
 export default React.createClass({
    getInitialState() {
@@ -24,9 +25,16 @@ export default React.createClass({
       });
    },
    render() {
+      if (!this.state.editathon)
+         return (
+            <div className='EditathonPage'>
+               <Loader />
+            </div>
+         );
+
       return (
          <div className='EditathonPage'>
-            <h1>{this.state.editathon && this.state.editathon.name}</h1>
+            <h1>{this.state.editathon.name}</h1>
             {React.cloneElement(this.props.children, {
                editathon: this.state.editathon,
                onReloadEditathon: this.reload,
