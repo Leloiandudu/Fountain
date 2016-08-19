@@ -1,4 +1,6 @@
 import 'babel-polyfill';
+import 'whatwg-fetch';
+
 import moment from 'moment';
 import 'moment/locale/ru';
 import React from 'react';
