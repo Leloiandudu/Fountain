@@ -1,11 +1,11 @@
 import React from 'react';
 import classNames from 'classnames';
 
-function withoutNS(href) {
-   return href.replace(/(.*:)?(.*)/, '$2');
+function withoutNS(to) {
+   return to.replace(/(.*:)?(.*)/, '$2');
 }
 
-export default (props) =>
-   <a {...props} className={classNames([ 'WikiLink', props.className ])} href={`https://ru.wikipedia.org/wiki/${props.href}`}>
-      {props.children || withoutNS(props.href)}
+export default ({ to, children, className, red, ...props }) =>
+   <a {...props} className={classNames({ 'WikiLink' : true, [className]: className, red: red })} href={`https://ru.wikipedia.org/wiki/${to}`}>
+      {children || withoutNS(to)}
    </a>;

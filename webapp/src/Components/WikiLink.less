@@ -2,12 +2,16 @@
    text-decoration: none;
    color: #0645ad;
 
-   &:visited {
-      color: #0b0080
+   &.red {
+      color: #ba0000;
    }
 
-   &:active {
-      color: #faa700
+   &:visited:not(.red) {
+      color: #0b0080;
+   }
+
+   &:active:not(.red) {
+      color: #faa700;
    }
    
    &:hover, &:focus {

@@ -1,17 +1,16 @@
 import React from 'react';
 import classNames from 'classnames';
 
-function WikiButton(props) {
-   let element = <button />;
-   let children = props.children;
+function WikiButton({ type, children, className, submit, ...props }) {
+   let element = <button type={submit ? 'submit' : 'button'} />;
 
    if (React.isValidElement(children)) {
       element = children;
       children = element.props.children;
    }
 
-   return React.cloneElement(element, Object.assign({}, props, {
-      className: classNames([ 'WikiButton', props.type, props.className ]),
+   return React.cloneElement(element, Object.assign({ children }, props, {
+      className: classNames([ 'WikiButton', type, className ]),
    }), children);
 }
 
@@ -21,6 +20,7 @@ WikiButton.propTypes = {
       React.PropTypes.element,
    ]),
    type: React.PropTypes.string,
+   submit: React.PropTypes.bool,
 };
 
 export default WikiButton;

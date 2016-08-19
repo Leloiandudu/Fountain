@@ -65,6 +65,9 @@ namespace WikiFountain.Server.Controllers
             if (now < e.Start || now.Date > e.Finish)
                 return Forbidden();
 
+            if (e.Articles.Any(a => a.Name == body.Title))
+                return Forbidden();
+
             e.Articles.Add(new Article
             {
                 Name = body.Title,

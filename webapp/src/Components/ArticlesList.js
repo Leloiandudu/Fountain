@@ -47,7 +47,7 @@ export default React.createClass({
             <ModalDialog isOpen={this.state.needLogin} className='needLogin'>
                <div className='message'>Для продолжения необходимо авторизоваться.</div>
                <div className='buttons'>
-                  <a href={url(`/login?redirectTo=${window.location.pathname}`)}>
+                  <a href={url(`/login?redirectTo=${window.location.pathname}/add`)}>
                      <WikiButton type='progressive'>Войти</WikiButton>
                   </a>
                   <WikiButton onClick={() => this.setState({ needLogin: false })}>Отмена</WikiButton>
@@ -73,8 +73,8 @@ export default React.createClass({
    renderRow(article, index) {
       return (
          <tr key={index}>
-            <td className='article'><WikiLink href={article.name} /></td>
-            <td className='user'><WikiLink href={`UT:${article.user}`} /></td>
+            <td className='article'><WikiLink to={article.name} /></td>
+            <td className='user'><WikiLink to={`UT:${article.user}`} /></td>
             <td className='dateAdded'>{article.dateAdded.format('D MMM HH:mm')}</td>
          </tr>
       );
