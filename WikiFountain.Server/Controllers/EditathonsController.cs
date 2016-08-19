@@ -61,11 +61,15 @@ namespace WikiFountain.Server.Controllers
             if (e == null)
                 return NotFound();
 
+            var now = DateTime.UtcNow;
+            if (now < e.Start || now.Date > e.Finish)
+                return Forbidden();
+
             e.Articles.Add(new Article
             {
                 Name = body.Title,
                 User = user.Username,
-                DateAdded = DateTime.UtcNow,
+                DateAdded = now,
             });
 
             return Ok();

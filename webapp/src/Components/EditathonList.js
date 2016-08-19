@@ -16,7 +16,7 @@ export default React.createClass({
       return (
          <div className='EditathonList'>
             <h1>Марафоны</h1>
-            <WikiButton type='progressive' className='create'>Создать марафон</WikiButton>
+            {false && <WikiButton type='progressive' className='create'>Создать марафон</WikiButton>}
             <ul>
                {this.state.list && this.state.list.map(this.renderItem)}
             </ul>

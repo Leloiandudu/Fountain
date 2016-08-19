@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import Api from './../Api';
 import url from './../url';
 import Link from './Link';
@@ -22,11 +23,27 @@ export default React.createClass({
       }
    },
    render() {
+      const { editathon } = this.props;
+      if (!editathon || !editathon.start || !editathon.finish)
+         return null;
+      
+      var now = moment.utc();
+      if (now.isBefore(editathon.start, 'day')) {
+         return <h2>Марафон ещё не начался</h2>
+      }
+
+      let header;
+      if (now.isAfter(editathon.finish, 'day')) {
+         header = <h2>Марафон завершен</h2>
+      } else {
+         header = <WikiButton type='progressive' className='addArticle'>
+            <Link to={`/editathons/${this.props.code}/add`} onClick={this.onAdd}>Добавить статью</Link>
+         </WikiButton>
+      }
+
       return (
          <div className='ArticlesList'>
-            <WikiButton type='progressive' className='addArticle'>
-               <Link to={`/editathons/${this.props.code}/add`} onClick={this.onAdd}>Добавить статью</Link>
-            </WikiButton>
+            {header}
             <ModalDialog isOpen={this.state.needLogin} className='needLogin'>
                <div className='message'>Для продолжения необходимо авторизоваться.</div>
                <div className='buttons'>
@@ -47,7 +64,7 @@ export default React.createClass({
                </thead>
                <tbody>
                   <tr className='spacer' />
-                  {this.props.editathon && this.props.editathon.articles && this.props.editathon.articles.map(this.renderRow)}
+                  {editathon.articles && editathon.articles.map(this.renderRow)}
                </tbody>
             </table>
          </div>

@@ -25,5 +25,10 @@ namespace WikiFountain.Server.Core
         {
             return Request.CreateResponse(HttpStatusCode.Unauthorized);
         }
+
+        protected HttpResponseMessage Forbidden()
+        {
+            return Request.CreateResponse(HttpStatusCode.Forbidden);
+        }
     }
 }
