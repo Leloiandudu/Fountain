@@ -30,16 +30,19 @@ export default React.createClass({
       
       var now = moment.utc();
       if (now.isBefore(editathon.start, 'day')) {
-         return <h2>Марафон ещё не начался</h2>
+         return <h2>Марафон начнётся {editathon.start.fromNow()}</h2>
       }
 
       let header;
       if (now.isAfter(editathon.finish, 'day')) {
          header = <h2>Марафон завершен</h2>
       } else {
-         header = <WikiButton type='progressive' className='addArticle'>
-            <Link to={`/editathons/${this.props.code}/add`} onClick={this.onAdd}>Добавить статью</Link>
-         </WikiButton>
+         header = <div className='header'>
+            Марафон закончится {editathon.finish.fromNow()}
+            <WikiButton type='progressive' className='addArticle'>
+               <Link to={`/editathons/${this.props.code}/add`} onClick={this.onAdd}>Добавить статью</Link>
+            </WikiButton>
+         </div>
       }
 
       return (
@@ -55,6 +58,9 @@ export default React.createClass({
                </div>
             </ModalDialog>
 
+            <div className='jury'>
+               Жюри: <WikiLink to={'UT:Викиенот'} />, <WikiLink to={'UT:Ле Лой'} />, <WikiLink to={'UT:Люба КБ'} />, <WikiLink to={'UT:НоуФрост'} />, <WikiLink to={'UT:Томасина'} />
+            </div>
             <table>
                <thead>
                   <tr>
@@ -77,7 +83,7 @@ export default React.createClass({
          <tr key={index}>
             <td className='article'><WikiLink to={article.name} /></td>
             <td className='user'><WikiLink to={`UT:${article.user}`} /></td>
-            <td className='dateAdded'>{article.dateAdded.format('D MMM HH:mm')}</td>
+            <td className='dateAdded'>{moment(article.dateAdded).utc().format('D MMM HH:mm')}</td>
          </tr>
       );
    },

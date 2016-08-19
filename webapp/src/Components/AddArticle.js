@@ -166,7 +166,7 @@ export default React.createClass({
          return <div />;
       }
 
-      if (false && moment(Global.user.registered).add(1, 'year').isBefore(this.props.editathon.start, 'day')) {
+      if (moment(Global.user.registered).add(1, 'year').isBefore(this.props.editathon.start)) {
          return (
             <div>
                В этом марафоне могут соревноваться только участники, зарегистрировавшиеся за год до начала марафона и позднее.

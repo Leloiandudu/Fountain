@@ -61,6 +61,9 @@ namespace WikiFountain.Server.Controllers
             if (e == null)
                 return NotFound();
 
+            if (user.Registered == null || user.Registered.Value.AddYears(1) < e.Start)
+                return Forbidden();
+
             var now = DateTime.UtcNow;
             if (now < e.Start || now.Date > e.Finish)
                 return Forbidden();
