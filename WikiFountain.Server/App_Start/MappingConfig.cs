@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json.Linq;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
@@ -44,6 +45,8 @@ namespace WikiFountain.Server
 
             mapper.IsEntity((t, d) => IsEntity(t));
             mapper.IsRootEntity((t, declared) => IsEntity(t) && !IsEntity(t.BaseType));
+            mapper.IsComponent((t, d) => d);
+            mapper.IsBag((mi, d) => d);
 
             mapper.IsPersistentProperty((mi, d) =>
             {
@@ -55,14 +58,28 @@ namespace WikiFountain.Server
 
             mapper.BeforeMapProperty += (model, member, prop) =>
             {
-                if (member.LocalMember.GetPropertyOrFieldType() == typeof(DateTime))
+                var type = member.LocalMember.GetPropertyOrFieldType();
+                if (type == typeof(DateTime))
+                {
                     prop.Type<UtcDateTimeType>();
+                }
+                else if (type == typeof(JObject))
+                {
+                    prop.Type<JObjectType>();
+                    prop.Length(65536); // medium clob
+                }
             };
 
-            mapper.BeforeMapSet += (model, member, prop) =>
+            mapper.BeforeMapSet += (model, member, set) =>
             {
-                prop.Key(k => k.Column(member.GetContainerEntity(model).Name + "Id"));
-                prop.Cascade(Cascade.All);
+                set.Key(k => k.Column(member.GetContainerEntity(model).Name + "Id"));
+                set.Cascade(Cascade.All);
+            };
+
+            mapper.BeforeMapManyToOne += (model, member, mto) =>
+            {
+                mto.Column(member.LocalMember.Name + "Id");
+                mto.Cascade(Cascade.All);
             };
 
             mapper.BeforeMapClass += (model, type, cls) =>

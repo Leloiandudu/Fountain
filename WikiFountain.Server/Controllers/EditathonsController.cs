@@ -31,7 +31,10 @@ namespace WikiFountain.Server.Controllers
 
         public HttpResponseMessage Get(string code)
         {
-            var e = Session.Query<Editathon>().Fetch(_ => _.Articles).SingleOrDefault(i => i.Code == code);
+            var e = Session.Query<Editathon>()
+                .FetchMany(_ => _.Articles).ThenFetch(a => a.Marks)
+                .SingleOrDefault(i => i.Code == code);
+
             if (e == null)
                 return NotFound();
             return Ok(new
@@ -41,7 +44,19 @@ namespace WikiFountain.Server.Controllers
                 e.Description,
                 e.Start,
                 e.Finish,
-                Articles = e.Articles.OrderByDescending(a => a.DateAdded),
+                Articles = e.Articles.OrderByDescending(a => a.DateAdded).Select(a => new 
+                {
+                    a.Id,
+                    a.DateAdded,
+                    a.Name,
+                    a.User,
+                    Marks = a.Marks.Select(m => new
+                    {
+                        m.User,
+                        m.Marks,
+                        m.Comment,
+                    }),
+                }),
             });
         }
 

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using Newtonsoft.Json.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 
@@ -11,7 +9,7 @@ namespace WikiFountain.Server.Models
     public class UserIdentity
     {
         public Guid Id { get; set; }
-        public string UserInfo { get; set; }
+        public JObject UserInfo { get; set; }
         public byte[] Token { get; set; }
     }
 
@@ -20,7 +18,6 @@ namespace WikiFountain.Server.Models
         public UserIdentityMapping()
         {
             Id(_ => _.Id, id => id.Generator(Generators.Assigned));
-            Property(_ => _.UserInfo, p => p.Length(65536));
         }
     }
 }

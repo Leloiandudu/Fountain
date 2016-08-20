@@ -157,6 +157,7 @@
     <Compile Include="Core\ApiControllerWithDb.cs" />
     <Compile Include="Core\AuthExpiredException.cs" />
     <Compile Include="App_Start\Bootstrapper.cs" />
+    <Compile Include="App_Start\JObjectType.cs" />
     <Compile Include="Core\MvcControllerBase.cs" />
     <Compile Include="Core\HttpContextBaseExtensions.cs" />
     <Compile Include="Global.asax.cs">
@@ -166,6 +167,7 @@
     <Compile Include="Models\Article.cs" />
     <Compile Include="Models\Editathon.cs" />
     <Compile Include="Core\OAuthConsumer.cs" />
+    <Compile Include="Models\Mark.cs" />
     <Compile Include="Models\UserIdentity.cs" />
     <Compile Include="Models\UserInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

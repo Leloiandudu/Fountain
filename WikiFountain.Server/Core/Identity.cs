@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
-using System.Web.Configuration;
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NHibernate;
 using NHibernate.Linq;
 using WikiFountain.Server.Models;
@@ -63,7 +60,7 @@ namespace WikiFountain.Server.Core
                     {
                         Id = userId,
                         Token = encryptedToken,
-                        UserInfo = JsonConvert.SerializeObject(userInfo),
+                        UserInfo = JObject.FromObject(userInfo),
                     });
                 }
             }
@@ -119,7 +116,7 @@ namespace WikiFountain.Server.Core
             if (identity == null)
                 return null;
 
-            return JsonConvert.DeserializeObject<UserInfo>(identity.UserInfo);
+            return identity.UserInfo.ToObject<UserInfo>();
         }
 
         public void Clear()
