@@ -63,6 +63,7 @@ async function getArticleInfo(title) {
       action: 'query',
       titles: title,
       prop: 'revisions',
+      redirects: true,
 
       rvprop: 'user|timestamp',
       rvdir: 'newer',
