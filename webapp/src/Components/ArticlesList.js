@@ -25,7 +25,8 @@ export default React.createClass({
    },
    render() {
       const { editathon } = this.props;
-      if (!editathon || !editathon.start || !editathon.finish)
+      console.log(editathon.start);
+      if (!editathon || !editathon.start || !editathon.start.fromNow || !editathon.finish)
          return <Loader />;
       
       var now = moment.utc();
