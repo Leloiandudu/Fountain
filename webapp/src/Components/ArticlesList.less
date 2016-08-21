@@ -12,6 +12,12 @@
 
    .jury {
       margin: 1em 0;
+
+      > span:not(:last-child) {
+         &:after {
+            content: ', ';
+         }
+      }
    }
 
    > table {

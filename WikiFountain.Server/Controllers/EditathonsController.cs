@@ -34,6 +34,7 @@ namespace WikiFountain.Server.Controllers
         {
             var e = Session.Query<Editathon>()
                 .FetchMany(_ => _.Articles).ThenFetch(a => a.Marks)
+                .Fetch(_ => _.Jury)
                 .SingleOrDefault(i => i.Code == code);
 
             if (e == null)
@@ -45,6 +46,7 @@ namespace WikiFountain.Server.Controllers
                 e.Description,
                 e.Start,
                 e.Finish,
+                e.Jury,
                 Articles = e.Articles.OrderByDescending(a => a.DateAdded).Select(a => new 
                 {
                     a.Id,

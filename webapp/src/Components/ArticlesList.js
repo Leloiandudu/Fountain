@@ -60,7 +60,10 @@ export default React.createClass({
             </ModalDialog>
 
             <div className='jury'>
-               Жюри: <WikiLink to={'UT:Викиенот'} />, <WikiLink to={'UT:Ле Лой'} />, <WikiLink to={'UT:Люба КБ'} />, <WikiLink to={'UT:НоуФрост'} />, <WikiLink to={'UT:Томасина'} />
+               Жюри: {editathon.jury.slice().sort().map(j => 
+                  <span>
+                     <WikiLink key={j} to={'UT:' + j} />
+                  </span>)}
             </div>
             <table>
                <thead>
