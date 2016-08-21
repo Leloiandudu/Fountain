@@ -1,11 +1,23 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Controllers;
 
 namespace WikiFountain.Server.Core
 {
     public class ApiControllerBase : ApiController
     {
+        public override Task<HttpResponseMessage> ExecuteAsync(HttpControllerContext controllerContext, System.Threading.CancellationToken cancellationToken)
+        {
+            var task = base.ExecuteAsync(controllerContext, cancellationToken);
+            if (Type.GetType("Mono.Runtime") != null)
+                return Task.FromResult(task.Result);
+            else
+                return task;
+        }
+
         protected HttpResponseMessage Ok()
         {
             return Request.CreateResponse();

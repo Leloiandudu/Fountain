@@ -158,6 +158,7 @@
     <Compile Include="Core\AuthExpiredException.cs" />
     <Compile Include="App_Start\Bootstrapper.cs" />
     <Compile Include="App_Start\JObjectType.cs" />
+    <Compile Include="Core\MediaWiki.cs" />
     <Compile Include="Core\MvcControllerBase.cs" />
     <Compile Include="Core\HttpContextBaseExtensions.cs" />
     <Compile Include="Global.asax.cs">

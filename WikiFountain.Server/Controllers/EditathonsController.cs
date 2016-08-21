@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NHibernate.Linq;
 using WikiFountain.Server.Core;
@@ -66,7 +67,7 @@ namespace WikiFountain.Server.Controllers
         }
 
         [HttpPost]
-        public HttpResponseMessage AddArticle(string code, [FromBody] ArticlePostData body)
+        public async Task<HttpResponseMessage> AddArticle(string code, [FromBody] ArticlePostData body)
         {
             var user = _identity.GetUserInfo();
             if (user == null)
@@ -86,6 +87,17 @@ namespace WikiFountain.Server.Controllers
             if (e.Articles.Any(a => a.Name == body.Title))
                 return Forbidden();
 
+            var wiki = new MediaWiki("https://ru.wikipedia.org/w/api.php", _identity);
+
+            var page = await wiki.GetPage(body.Title);
+            if (page == null)
+                return Forbidden();
+            if (!HasTemplate(page))
+            {
+                page = "{{Марафон юниоров}}\n" + page;
+                await wiki.EditPage(body.Title, page, "Автоматическая простановка шаблона");
+            }
+
             e.Articles.Add(new Article
             {
                 Name = body.Title,
@@ -94,6 +106,11 @@ namespace WikiFountain.Server.Controllers
             });
 
             return Ok();
+        }
+
+        private static bool HasTemplate(string text)
+        {
+            return System.Text.RegularExpressions.Regex.IsMatch(text, @"\{\{(?:[\s_]*[Мм]арафон[ _]+юниоров[\s_]*)[|}\s]");
         }
 
         private static DateTime Utc(int year, int month, int day)
