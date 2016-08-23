@@ -59,6 +59,6 @@ export default React.createClass({
    renderMenu(items, value, style) {
       if (!items.length)
          return <div />
-      return <div className='popup' children={items} style={{ minWidth: style.minWidth }} />;
+      return <div className='popup' children={items} style={{ minWidth: style.minWidth, top: style.top }} />;
    },
 });
