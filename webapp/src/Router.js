@@ -6,6 +6,7 @@ import AddArticle from './Components/AddArticle';
 import ArticlesList from './Components/ArticlesList';
 import EditathonList from './Components/EditathonList';
 import EditathonPage from './Components/EditathonPage';
+import Jury from './Components/Jury/Jury';
 
 export default (
    <Router history={browserHistory}>
@@ -17,6 +18,9 @@ export default (
                <IndexRoute component={ArticlesList} />
                <Route path='add' component={AddArticle} />
             </Route>
+         </Route>
+         <Route path='jury'>
+            <Route path=':id' component={Jury} />
          </Route>
          <Redirect from='editathons' to='editathons/' />
       </Route>

@@ -2,94 +2,12 @@ import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
 import url from './../url'
+import getArticleInfo from './../getArticleInfo';
+import Api, { UnauthorizedHttpError } from './../Api';
 import WikiButton from './WikiButton';
 import WikiLink from './WikiLink';
 import ArticleLookup from './ArticleLookup';
 import Loader from './Loader';
-import MwApi from './../MwApi';
-import { getPlainText } from './../parsing';
-import Api, { UnauthorizedHttpError } from './../Api';
-
-const mwApi = new MwApi('https://ru.wikipedia.org/w/api.php');
-
-async function getArticleInfo(title) {
-   const timeout = 300;
-   const [{
-      query: {
-         normalized,
-         redirects,
-         pages: [{
-            ns,
-            extract,
-            thumbnail,
-            revisions: [{
-               content: html,
-               size: size,
-            }],
-         }],
-      },
-   }, {
-      query: {
-         pages: [{
-            revisions: [{
-               user,
-               timestamp,
-            }],
-         }],
-      },
-   }] = await Promise.all([mwApi.exec({
-      action: 'query',
-      titles: title,
-      prop: 'revisions|extracts|pageimages',
-      redirects: true,
-
-      rvprop: 'content|size',
-      rvparse: true,
-      rvlimit: 1,
-
-      exintro: true, // only content before first section
-      exsentences: 5, // max sentences to return
-      explaintext: true,
-
-      piprop: 'thumbnail',
-      pithumbsize: 300,
-
-      // Cache-Control: s-maxage=timeout
-      maxage: timeout,
-      smaxage: timeout,
-
-      uselang: 'ru',
-   }), mwApi.exec({
-      action: 'query',
-      titles: title,
-      prop: 'revisions',
-      redirects: true,
-
-      rvprop: 'user|timestamp',
-      rvdir: 'newer',
-      rvlimit: 1,
-   })]);
-
-   if (normalized && normalized[0])
-      title = normalized[0].to;
-   if (redirects && redirects[0])
-      title = redirects[0].to;
-
-   return {
-      card: {
-         extract,
-         thumbnail,
-      },
-      stats: {
-         title,
-         chars: getPlainText(html).length,
-         bytes: size,
-         user,
-         timestamp: moment(timestamp),
-         ns,
-      },
-   };
-}
 
 export default React.createClass({
    contextTypes: {
@@ -113,6 +31,7 @@ export default React.createClass({
             title = stats.title;
          }
       } catch(e) {
+         console.log('error retrieving article info', e);
          card = stats = null;
       }
 

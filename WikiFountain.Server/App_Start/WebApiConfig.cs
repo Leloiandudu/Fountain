@@ -21,6 +21,12 @@ namespace WikiFountain.Server
                 defaults: new { controller = "Editathons", action = "AddArticle" }
             );
 
+            config.Routes.MapHttpRoute(
+                name: "editathons-setmark",
+                routeTemplate: "api/editathons/{code}/mark",
+                defaults: new { controller = "Editathons", action = "SetMark" }
+            );
+
             config.Formatters.JsonFormatter.MediaTypeMappings.Add(
                 new RequestHeaderMapping("Accept", "text/html", StringComparison.OrdinalIgnoreCase, true, "application/json"));
 

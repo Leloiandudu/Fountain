@@ -25,8 +25,7 @@ export default React.createClass({
    },
    render() {
       const { editathon } = this.props;
-      console.log(editathon.start);
-      if (!editathon || !editathon.start || !editathon.start.fromNow || !editathon.finish)
+      if (!editathon || !editathon.jury || !editathon.start || !editathon.start.fromNow || !editathon.finish)
          return <Loader />;
       
       var now = moment.utc();
@@ -40,6 +39,9 @@ export default React.createClass({
       } else {
          header = <div className='header'>
             Марафон закончится {editathon.finish.fromNow()}
+            {Global.user && editathon.jury.filter(j => j === Global.user.name)[0] && <WikiButton type='progressive'>
+               <Link to={`/jury/${this.props.code}`}>Оценить статьи</Link>
+            </WikiButton>}
             <WikiButton type='progressive' className='addArticle'>
                <Link to={`/editathons/${this.props.code}/add`} onClick={this.onAdd}>Добавить статью</Link>
             </WikiButton>
@@ -61,8 +63,8 @@ export default React.createClass({
 
             <div className='jury'>
                Жюри: {editathon.jury.slice().sort().map(j => 
-                  <span>
-                     <WikiLink key={j} to={'UT:' + j} />
+                  <span key={j}>
+                     <WikiLink to={'UT:' + j} />
                   </span>)}
             </div>
             <table>

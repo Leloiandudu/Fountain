@@ -63,16 +63,25 @@ function post(url, params) {
    return query('POST', url, params);
 }
 
+const enc = encodeURIComponent;
+
 export default {
    getEditathons() {
       return get('editathons');
    },
    getEditathon(code) {
-      return get(`editathons/${code}`);
+      return get(`editathons/${enc(code)}`);
    },
    addArticle(code, title) {
-      return post(`editathons/${code}/article`, {
-         title
+      return post(`editathons/${enc(code)}/article`, {
+         title,
+      });
+   },
+   setMark(code, { title, marks, comment }) {
+      return post(`editathons/${enc(code)}/mark`, {
+         title,
+         comment: comment || '',
+         marks: JSON.stringify(marks),
       });
    },
 };

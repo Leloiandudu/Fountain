@@ -32,7 +32,7 @@
       cursor: default;
    }
 
-   &.progressive, &.constructive {
+   &.progressive, &.constructive, &.destructive {
       color: #fff;
    }
 
@@ -59,6 +59,19 @@
 
       &:active {
          background: #008c6e;
+      }
+   }
+
+   &.destructive:not(:disabled) {
+      background: #d11d13;
+      border: 1px solid #d11d13;
+
+      &:focus, &:hover {
+         border-bottom-color: #a7170f;
+      }
+
+      &:active {
+         background: #a7170f;
       }
    }
 

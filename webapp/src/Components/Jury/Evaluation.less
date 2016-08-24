@@ -1,0 +1,98 @@
+#evaluation {
+   display: flex;
+
+   #evaluation-y-n, #evaluation-next, #evaluation-pm, #evaluation-marks {
+      margin: 5px 0;
+      padding: 0 10px;
+      display: flex;
+      flex-flow: row;
+      flex: auto;
+   }
+
+   #evaluation-y-n {
+      max-width: 300px;
+   }
+
+   #evaluation-marks {
+      max-width: 300px;
+   }
+
+   #evaluation-pm {
+      max-width: 140px;
+
+      .WikiLink {
+         .Jury.button();
+         margin: 5px;
+         padding: 0 6px;
+         text-align: center;
+         color: black;
+         line-height: 25px;
+
+         &:hover, &:focus {
+            text-decoration: none;
+         }
+      }
+   }
+
+    #evaluation-next {
+      max-width: 200px;
+    }
+
+   #evaluation-buttons {
+   }
+
+   > * + * {
+      border-left: solid 1px #E68184;
+   }
+
+   #evaluation-buttons {
+      border: none;
+   }
+
+   .button {
+      margin: 5px;
+   }
+
+   #evaluation-buttons .button {
+      margin: 10px;
+      padding: 10px 30px;
+   }
+   
+   .button:hover {
+      border-color: #00CCFF;
+   }
+   
+   .button::-moz-focus-inner {
+      border: none;
+   }
+   
+   #evaluation-next .button {
+      font-size: 20px;
+   }
+
+   input[type=checkbox], input[type=radio] {
+      display: none;
+   }
+}
+
+#comment-dialog-buttons, 
+#pm-dialog-buttons {
+   display: flex;
+   margin: -5px;
+}
+
+.comment-dialog textarea,
+.pm-dialog textarea {
+   resize: none;
+   width: 50em;
+   height: 6em;
+   font-size: 15px;
+   border: none;
+}
+
+#comment-dialog-buttons .button,
+#pm-dialog-buttons .button {
+   flex: 1;
+   padding: 5px 20px;
+   margin: 5px;
+}

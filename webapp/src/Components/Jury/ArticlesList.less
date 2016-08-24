@@ -1,0 +1,48 @@
+#articles-list {
+   font-size: small;
+   overflow-y: auto;
+
+   ul {
+      padding: 5px 5px;
+      margin: 0;
+   }
+   
+   li {
+      white-space: nowrap;
+      list-style: none;
+      color: black;
+      display: flex;
+      line-height: 1.25em;
+      border: solid 1px #fff;
+   }
+   
+   li span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      flex: 1;
+   }
+   
+   li::before {
+      content: "";
+      margin-right: 0.5ex;
+      display: inline-block;
+      width: 0.5em;
+   }
+   
+   .nice::before {
+      background-color: #0CF;
+   }
+   
+   .nasty::before {
+      background-color: #CD040A;
+   }
+        
+   li.selected span {
+      background-color: #F6DED4;
+   }
+   
+   li.invalid {
+      border: solid 1px #CD040A;
+   }
+}

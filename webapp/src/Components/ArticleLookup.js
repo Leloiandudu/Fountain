@@ -1,10 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 import Autocomplete from 'react-autocomplete';
-import MwApi from './../MwApi';
+import { mwApi } from './../MwApi';
 import throttle from './../throttle';
-
-const mwApi = new MwApi('https://ru.wikipedia.org/w/api.php');
 
 export default React.createClass({
    getInitialState() {

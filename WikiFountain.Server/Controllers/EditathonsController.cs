@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json.Linq;
 using NHibernate.Linq;
 using WikiFountain.Server.Core;
 using WikiFountain.Server.Models;
@@ -47,7 +48,7 @@ namespace WikiFountain.Server.Controllers
                 e.Start,
                 e.Finish,
                 e.Jury,
-                Articles = e.Articles.OrderByDescending(a => a.DateAdded).Select(a => new 
+                Articles = e.Articles.OrderByDescending(a => a.DateAdded).Select(a => new
                 {
                     a.Id,
                     a.DateAdded,
@@ -115,9 +116,51 @@ namespace WikiFountain.Server.Controllers
             return System.Text.RegularExpressions.Regex.IsMatch(text, @"\{\{(?:[\s_]*[Мм]арафон[ _]+юниоров[\s_]*)[|}\s]");
         }
 
-        private static DateTime Utc(int year, int month, int day)
+        public class MarkPostData
         {
-            return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
+            public string Title { get; set; }
+            public string Marks { get; set; }
+            public string Comment { get; set; }
+        }
+
+        [HttpPost]
+        public HttpResponseMessage SetMark(string code, [FromBody] MarkPostData body)
+        {
+            var user = _identity.GetUserInfo();
+            if (user == null)
+                return Unauthorized();
+
+            var e = Session.Query<Editathon>()
+                .FetchMany(_ => _.Articles).ThenFetch(a => a.Marks)
+                .Fetch(_ => _.Jury)
+                .SingleOrDefault(i => i.Code == code);
+
+            if (e == null)
+                return NotFound();
+
+            if (!e.Jury.Contains(user.Username))
+                return Forbidden();
+
+            var article = e.Articles.SingleOrDefault(a => a.Name == body.Title);
+            if (article == null)
+                return NotFound();
+
+            var mark = article.Marks.SingleOrDefault(m => m.User == user.Username);
+
+            if (mark == null)
+            {
+                mark = new Mark
+                {
+                    Article = article,
+                    User = user.Username,
+                };
+                article.Marks.Add(mark);
+            }
+
+            mark.Marks = JObject.Parse(body.Marks);
+            mark.Comment = body.Comment;
+
+            return Ok();
         }
     }
 }

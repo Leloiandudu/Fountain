@@ -1,0 +1,42 @@
+#warnings {
+   font-size: small;
+   
+   display: flex;
+   flex-flow: column nowrap;
+
+   > span {
+      margin: 1px 5px 1px;
+      line-height: 1.25em;
+      display: block;
+      position: relative;
+      padding-left: .75em;
+      overflow-x: hidden;
+
+      &:first-child {
+         margin-top: 5px;
+      }
+
+      &:last-child {
+         margin-bottom: 5px;
+      }
+
+      &::before {
+         content: '';
+         display: inline-block;
+         width: .5em;
+         background-color: #0CF;
+         position: absolute;
+         top: 0;
+         bottom: 0;
+         left: 0;
+      }
+      
+      &.nasty::before {
+         background-color: #CD040A;
+      }
+
+      .WikiLink {
+         white-space: nowrap;
+      }
+   }
+}

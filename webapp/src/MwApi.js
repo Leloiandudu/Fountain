@@ -45,3 +45,5 @@ export default function MwApi(url) {
       return response.parse.text;
    }
 }
+
+export const mwApi = new MwApi('https://ru.wikipedia.org/w/api.php');
