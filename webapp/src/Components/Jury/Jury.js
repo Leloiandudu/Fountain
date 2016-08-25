@@ -1,5 +1,6 @@
 import React from 'react';
 import cloneDeep from 'clone-deep';
+import sortBy from './../../sortBy';
 import url from './../../url';
 import Api from './../../Api';
 import getArticleInfo from './../../getArticleInfo';
@@ -43,6 +44,8 @@ export default React.createClass({
          });
          return;
       }
+
+      editathon.articles.sort(sortBy('dateAdded'));
 
       let article = editathon.articles[0];
       this.setState({

@@ -1,15 +1,23 @@
 import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
-import sortBy from 'sort-by';
 import stable from 'stable';
+import sortBy from './../sortBy';
 import Api from './../Api';
 import url from './../url';
+import { getMark, Marks, calcMark } from './../jury';
 import Link from './Link';
 import WikiLink from './WikiLink';
 import WikiButton from './WikiButton';
 import ModalDialog from './ModalDialog';
 import Loader from './Loader';
+
+function getTotalMark(jury, marks) {
+   const m = jury.map(j => getMark(marks, j)).filter(m => m).map(m => calcMark(m.marks).sum);
+   if (m.length == 0)
+      return null;
+   return m.reduce((a, b) => a + b, 0) / m.length;
+}
 
 export default React.createClass({
    propTypes: {
@@ -21,17 +29,18 @@ export default React.createClass({
          sortBy: 'dateAdded',
          sortAsc: false,
          articles: [],
+         jury: [],
       };
    },
    componentWillMount() {
-      const { editathon } = this.props;
-      if (editathon && editathon.articles) {
-         this.setState({ articles: editathon.articles });
-      }
+      this.componentWillReceiveProps(this.props);
    },
    componentWillReceiveProps(props) {
       if (props.editathon && props.editathon.articles) {
-         this.setState({ articles: this.sort(props.editathon.articles, this.state.sortBy, this.state.sortAsc) });
+         this.setState({ 
+            articles: this.sort(props.editathon.articles, this.state.sortBy, this.state.sortAsc),
+            jury: props.editathon.jury.slice().sort(),
+         });
       }
    },
    onAdd(e) {
@@ -65,6 +74,8 @@ export default React.createClass({
          </div>
       }
 
+      const { jury } = this.state;
+
       return (
          <div className='ArticlesList'>
             {header}
@@ -79,8 +90,9 @@ export default React.createClass({
             </ModalDialog>
 
             <div className='jury'>
-               Жюри: {editathon.jury.slice().sort().map(j => 
+               Жюри: {jury.map(j => 
                   <span key={j}>
+                     <span className='colorKey' />
                      <WikiLink to={'UT:' + j} />
                   </span>)}
             </div>
@@ -90,15 +102,20 @@ export default React.createClass({
                      <th className='left'>{this.renderSorter('name', 'Статья')}</th>
                      <th className='left'>{this.renderSorter('user', 'Участник')}</th>
                      <th className='right'>{this.renderSorter('dateAdded', 'Добавлено')}</th>
+                     {jury.map(j => <th className='mark center' key={j}><span className='colorKey' /></th>)}
+                     <th className='mark center'>{this.renderSorter(this.getTotalMark, 'Σ')}</th>
                   </tr>
                </thead>
                <tbody>
                   <tr className='spacer' />
-                  {this.state.articles.map(this.renderRow)}
+                  {this.state.articles.map((a, i) => this.renderRow(jury, a, i))}
                </tbody>
             </table>
          </div>
       );
+   },
+   getTotalMark(article) {
+      return getTotalMark(this.state.jury, article.marks);
    },
    sortBy(sortBy) {
       const sortAsc = sortBy === this.state.sortBy ? !this.state.sortAsc : true;
@@ -113,20 +130,12 @@ export default React.createClass({
          return articles;
       }
 
+      let sort = sortBy(by);
       if (!asc) {
-         by = '-' + by;
+         sort = sort.desc;
       }
 
-      return stable(articles, sortBy(by));
-   },
-   renderRow(article, index) {
-      return (
-         <tr key={index}>
-            <td className='left'><WikiLink to={article.name} /></td>
-            <td className='left'><WikiLink to={`UT:${article.user}`} /></td>
-            <td className='right'>{moment(article.dateAdded).utc().format('D MMM HH:mm')}</td>
-         </tr>
-      );
+      return stable(articles, sort);
    },
    renderSorter(by, title) {
       const { sortBy, sortAsc } = this.state;
@@ -136,5 +145,40 @@ export default React.createClass({
          asc: sortBy === by && sortAsc,
          desc: sortBy === by && !sortAsc,
       })} onClick={() => this.sortBy(by)}>{title}</button>
+   },
+   renderRow(jury, article, index) {
+      const total = this.getTotalMark(article);
+      return (
+         <tr key={index}>
+            <td className='left'><WikiLink to={article.name} /></td>
+            <td className='left'><WikiLink to={`UT:${article.user}`} /></td>
+            <td className='right'>{moment(article.dateAdded).utc().format('D MMM HH:mm')}</td>
+            {jury.map(j => <td key={j} className='center'>{this.renderMark(article.marks, j)}</td>)}
+            <td className='mark'>{total !== null && total.toFixed(2)}</td>
+         </tr>
+      );
+   },
+   renderMark(marks, jury) {
+      const mark = getMark(marks, jury);
+      if (!mark) {
+         return null;
+      }
+      
+      const { sum, parts } = calcMark(mark.marks);
+
+      const details = [];
+      let i = 0;
+      for (var p in parts) {
+         const v = parts[p];
+         details.push(<dt>{v && (v > 0 ? '+' : '−') || ''}{Math.abs(v)}</dt>);
+         details.push(<dd>{p}</dd>);
+      }
+
+      return <button className='mark'>
+         <span>{sum}</span>
+         <dl className='details'>
+            {details}
+         </dl>
+      </button>;      
    },
 });

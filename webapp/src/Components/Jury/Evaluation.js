@@ -1,37 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
+import { Marks } from '../../jury';
 import Header from './Header';
 import ModalDialog from '../ModalDialog';
 import WikiLink from '../WikiLink';
-
-const Marks = {
-   sources: {
-      title: 'АИ',
-      description: 'самостоятельная работа по авторитетным источникам (при условии проставления сносок и качественного оформления ссылок на источники)',
-      value: 1,
-   },
-   formatting: {
-      title: 'оформ.',
-      description: 'сложное оформление (балл не присваивается в случае представления на конкурс однотипных, «шаблонных» статей — начиная с третьей статьи)',
-      value: 1,
-   },
-   size: {
-      title: 'большая',
-      description: 'большой объём связного текста',
-      value: 1,
-   },
-   plusOne: {
-      title: '+',
-      description: 'отличное впечатление от статьи в целом, новаторство в оформлении, присвоение статуса добротной',
-      value: 1,
-   },
-   minusOne: {
-      title: '−',
-      description: 'существенное количество стилистических, орфографических ошибок, плохого перевода и других недостатков, требующих значительной доработки или переработки',
-      value: -1,
-   },
-};
 
 export default React.createClass({
    getInitialState() {
