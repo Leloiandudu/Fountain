@@ -1,5 +1,8 @@
 import React from 'react';
+import classNames from 'classnames';
 import moment from 'moment';
+import sortBy from 'sort-by';
+import stable from 'stable';
 import Api from './../Api';
 import url from './../url';
 import Link from './Link';
@@ -15,7 +18,21 @@ export default React.createClass({
    getInitialState() {
       return {
          needLogin: false,
+         sortBy: 'dateAdded',
+         sortAsc: false,
+         articles: [],
       };
+   },
+   componentWillMount() {
+      const { editathon } = this.props;
+      if (editathon && editathon.articles) {
+         this.setState({ articles: editathon.articles });
+      }
+   },
+   componentWillReceiveProps(props) {
+      if (props.editathon && props.editathon.articles) {
+         this.setState({ articles: this.sort(props.editathon.articles, this.state.sortBy, this.state.sortAsc) });
+      }
    },
    onAdd(e) {
       if (!Global.user) {
@@ -70,27 +87,54 @@ export default React.createClass({
             <table>
                <thead>
                   <tr>
-                     <th className='article'>Статья</th>
-                     <th className='user'>Участник</th>
-                     <th className='dateAdded'>Дата добавления</th>
+                     <th className='left'>{this.renderSorter('name', 'Статья')}</th>
+                     <th className='left'>{this.renderSorter('user', 'Участник')}</th>
+                     <th className='right'>{this.renderSorter('dateAdded', 'Добавлено')}</th>
                   </tr>
                </thead>
                <tbody>
                   <tr className='spacer' />
-                  {editathon.articles && editathon.articles.map(this.renderRow)}
+                  {this.state.articles.map(this.renderRow)}
                </tbody>
             </table>
-            {!editathon.articles && <Loader />}
          </div>
       );
+   },
+   sortBy(sortBy) {
+      const sortAsc = sortBy === this.state.sortBy ? !this.state.sortAsc : true;
+      this.setState({
+         sortBy,
+         sortAsc,
+         articles: this.sort(this.state.articles, sortBy, sortAsc),
+      })
+   },
+   sort(articles, by, asc) {
+      if (by === null) {
+         return articles;
+      }
+
+      if (!asc) {
+         by = '-' + by;
+      }
+
+      return stable(articles, sortBy(by));
    },
    renderRow(article, index) {
       return (
          <tr key={index}>
-            <td className='article'><WikiLink to={article.name} /></td>
-            <td className='user'><WikiLink to={`UT:${article.user}`} /></td>
-            <td className='dateAdded'>{moment(article.dateAdded).utc().format('D MMM HH:mm')}</td>
+            <td className='left'><WikiLink to={article.name} /></td>
+            <td className='left'><WikiLink to={`UT:${article.user}`} /></td>
+            <td className='right'>{moment(article.dateAdded).utc().format('D MMM HH:mm')}</td>
          </tr>
       );
+   },
+   renderSorter(by, title) {
+      const { sortBy, sortAsc } = this.state;
+
+      return <button className={classNames({ 
+         sorter: true, 
+         asc: sortBy === by && sortAsc,
+         desc: sortBy === by && !sortAsc,
+      })} onClick={() => this.sortBy(by)}>{title}</button>
    },
 });

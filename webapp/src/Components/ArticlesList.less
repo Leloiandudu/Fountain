@@ -30,17 +30,64 @@
       border-spacing: 0;
       width: 100%;
 
-      .article, .user {
+      .left {
          text-align: left;
       }
 
-      .dateAdded {
+      .right {
          text-align: right;
       }
 
       th {
          border-bottom: solid 1px gray;
          font-weight: 600;
+
+         @sorter-width: 9px;
+
+         .sorter {
+            cursor: pointer;
+            background: none;
+            border: none;
+            
+            text-align: inherit;
+            font-family: inherit;
+            font-size: inherit;
+
+            padding: 0 @sorter-width 0 0;
+            margin: 0;
+            font-weight: inherit;
+            position: relative;
+
+            .pseudo() {
+               display: block;
+               position: absolute;
+               top: .3em;
+               bottom: 0;
+               right: 0;
+               color: #888;
+               font-size: x-small;
+            }
+
+            &.asc::after {
+               .pseudo();
+               content: '▲';
+            }
+
+            &.desc::after {
+               .pseudo();
+               content: '▼';
+            }
+         }
+
+         &.right .sorter {
+            padding-left: @sorter-width;
+            padding-right: 0;
+
+            &::after {
+               right: auto;
+               margin-left: -@sorter-width;
+            }
+         }
       }
 
       td {
