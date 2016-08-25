@@ -95,11 +95,28 @@ namespace WikiFountain.Server.Controllers
             var page = await wiki.GetPage(body.Title);
             if (page == null)
                 return Forbidden();
-            if (!HasTemplate(page))
+
+            var template = new Template
             {
-                page = "{{Марафон юниоров}}\n" + page;
-                await wiki.EditPage(body.Title, page, "Автоматическая простановка шаблона");
+                Name = "Марафон юниоров",
+                Args =
+                { 
+                    new Template.Argument { Value = user.Username },
+                    new Template.Argument { Name = "статус", Value = "Готово" },
+                }
+            } + "\n";
+
+            var templateIndex = FindTemplatePos(page);
+            if (templateIndex == null)
+            {
+                page = page.Insert(0, template);
             }
+            else
+            {
+                var existingTemplate = Template.ParseAt(page, templateIndex.Value);
+                page = page.Remove(templateIndex.Value, existingTemplate.ToString().Length).Insert(templateIndex.Value, template);
+            }
+            await wiki.EditPage(body.Title, page, "Автоматическая простановка шаблона");
 
             e.Articles.Add(new Article
             {
@@ -111,9 +128,12 @@ namespace WikiFountain.Server.Controllers
             return Ok();
         }
 
-        private static bool HasTemplate(string text)
+        private static int? FindTemplatePos(string text)
         {
-            return System.Text.RegularExpressions.Regex.IsMatch(text, @"\{\{(?:[\s_]*[Мм]арафон[ _]+юниоров[\s_]*)[|}\s]");
+            var match = System.Text.RegularExpressions.Regex.Match(text, @"\{\{(?:[\s_]*[Мм]арафон[ _]+юниоров[\s_]*)[|}\s]");
+            if (!match.Success)
+                return null;
+            return match.Index;
         }
 
         public class MarkPostData

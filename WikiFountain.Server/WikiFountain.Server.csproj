@@ -161,6 +161,7 @@
     <Compile Include="Core\MediaWiki.cs" />
     <Compile Include="Core\MvcControllerBase.cs" />
     <Compile Include="Core\HttpContextBaseExtensions.cs" />
+    <Compile Include="Core\Template.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
