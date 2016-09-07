@@ -63,12 +63,13 @@ export default React.createClass({
       if (now.isAfter(editathon.finish, 'day')) {
          header = <h2>Марафон завершен</h2>
       } else {
+         const isJury = Global.user && editathon.jury.filter(j => j === Global.user.name)[0];
          header = <div className='header'>
             Марафон закончится {editathon.finish.fromNow()}
-            {Global.user && editathon.jury.filter(j => j === Global.user.name)[0] && <WikiButton type='progressive'>
+            {isJury && <WikiButton type='progressive'>
                <Link to={`/jury/${this.props.code}`}>Оценить статьи</Link>
             </WikiButton>}
-            <WikiButton type='progressive' className='addArticle'>
+            <WikiButton type={isJury ? '' : 'progressive'} className='addArticle'>
                <Link to={`/editathons/${this.props.code}/add`} onClick={this.onAdd}>Добавить статью</Link>
             </WikiButton>
          </div>
