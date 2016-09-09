@@ -19,6 +19,37 @@ function getTotalMark(jury, marks) {
    return m.reduce((a, b) => a + b, 0) / m.length;
 }
 
+function sort(items, by, asc) {
+   if (by === null) {
+      return items;
+   }
+
+   let sort = sortBy(by);
+   if (!asc) {
+      sort = sort.desc;
+   }
+
+   return stable(items, sort);
+}
+
+function formatMark(mark) {
+   return mark === null ? '' : mark.toFixed(2);
+}
+
+function groupBy(items, fnKey, fnValue = x => x) {
+   const groups = new Map();
+   for (const item of items) {
+      const key = fnKey(item);
+      let group = groups.get(key);
+      if (group === undefined) {
+         group = [];
+         groups.set(key, group);
+      }
+      group.push(fnValue(item));
+   }
+   return groups;
+}
+
 export default React.createClass({
    propTypes: {
       editathon: React.PropTypes.object,
@@ -26,20 +57,18 @@ export default React.createClass({
    getInitialState() {
       return {
          needLogin: false,
-         sortBy: 'dateAdded',
+         sortBy: 'total',
          sortAsc: false,
-         articles: [],
-         jury: [],
+         data: [],
       };
    },
    componentWillMount() {
       this.componentWillReceiveProps(this.props);
    },
-   componentWillReceiveProps(props) {
-      if (props.editathon && props.editathon.articles) {
+   componentWillReceiveProps({ editathon }) {
+      if (editathon && editathon.articles && editathon.jury) {
          this.setState({ 
-            articles: this.sort(props.editathon.articles, this.state.sortBy, this.state.sortAsc),
-            jury: props.editathon.jury.slice().sort(),
+            data: sort(this.getData(editathon.articles, editathon.jury), this.state.sortBy, this.state.sortAsc),
          });
       }
    },
@@ -48,6 +77,20 @@ export default React.createClass({
          this.setState({ needLogin: true });
          e.preventDefault();
       }
+   },
+   getData(articles, jury) {
+      const getTotal = (articles) => {
+         const marks = articles.map(article => getTotalMark(jury, article.marks)).filter(x => x !== null);
+         if (!marks.length) return null;
+         return marks.reduce((s, m) => s + m, 0);
+      }
+
+      return [...groupBy(articles, a => a.user)].map(([k, v]) => ({
+         name: k,
+         articles: v,
+         total: getTotal(v),
+         count: v.length,
+      }));
    },
    render() {
       const { editathon } = this.props;
@@ -75,7 +118,7 @@ export default React.createClass({
          </div>
       }
 
-      const { jury } = this.state;
+      const { data } = this.state;
 
       return (
          <div className='ArticlesList'>
@@ -91,7 +134,7 @@ export default React.createClass({
             </ModalDialog>
 
             <div className='jury'>
-               Жюри: {jury.map(j => 
+               Жюри: {editathon.jury.slice().sort().map(j => 
                   <span key={j}>
                      <span className='colorKey' />
                      <WikiLink to={'UT:' + j} />
@@ -100,43 +143,63 @@ export default React.createClass({
             <table>
                <thead>
                   <tr>
-                     <th className='left'>{this.renderSorter('name', 'Статья')}</th>
-                     <th className='left'>{this.renderSorter('user', 'Участник')}</th>
-                     <th className='right'>{this.renderSorter('dateAdded', 'Добавлено')}</th>
-                     {jury.map(j => <th className='mark center' key={j}><span className='colorKey' /></th>)}
-                     <th className='mark center'>{this.renderSorter(this.getTotalMark, 'Σ')}</th>
+                     <th className='expander'></th>
+                     <th className='user'>{this.renderSorter('name', 'Участник')}</th>
+                     <th className='count'>{this.renderSorter('count', 'Статей')}</th>
+                     <th className='total'>{this.renderSorter('total', 'Баллов')}</th>
                   </tr>
                </thead>
                <tbody>
                   <tr className='spacer' />
-                  {this.state.articles.map((a, i) => this.renderRow(jury, a, i))}
                </tbody>
+               {data.map(user => 
+                  <ExpandableRow key={user.name} user={user}>
+                     {this.renderArticles(editathon.jury, user)}
+                  </ExpandableRow>
+               )}
             </table>
          </div>
       );
    },
-   getTotalMark(article) {
-      return getTotalMark(this.state.jury, article.marks);
+   renderArticles(jury, user) {
+      return (
+         <table className='articles'>
+            <thead>
+               <tr>
+                  <th className='article'>Статья</th>
+                  <th className='dateAdded'>Добавлено</th>
+                  <th className='mark'>Баллов</th>
+               </tr>
+            </thead>
+            <tbody>
+               {user.articles.slice().sort(sortBy('dateAdded').desc).map(a => [
+                  <tr className='summary'>
+                     <td className='article'><WikiLink to={a.name} /></td>
+                     <td className='dateAdded'>{moment(a.dateAdded).utc().format('D MMM HH:mm')}</td>
+                     <td className='mark'>{formatMark(getTotalMark(jury, a.marks))}</td>
+                  </tr>,
+                  <tr className='details'>
+                     <td colSpan={3}>
+                        <ul>
+                           {jury
+                              .map(jury => getMark(a.marks, jury))
+                              .filter(x => x)
+                              .map(this.renderMark)}
+                        </ul>
+                     </td>
+                  </tr>
+               ])}
+            </tbody>
+         </table>
+      );
    },
    sortBy(sortBy) {
       const sortAsc = sortBy === this.state.sortBy ? !this.state.sortAsc : true;
       this.setState({
          sortBy,
          sortAsc,
-         articles: this.sort(this.state.articles, sortBy, sortAsc),
+         data: sort(this.state.data, sortBy, sortAsc),
       })
-   },
-   sort(articles, by, asc) {
-      if (by === null) {
-         return articles;
-      }
-
-      let sort = sortBy(by);
-      if (!asc) {
-         sort = sort.desc;
-      }
-
-      return stable(articles, sort);
    },
    renderSorter(by, title) {
       const { sortBy, sortAsc } = this.state;
@@ -147,24 +210,7 @@ export default React.createClass({
          desc: sortBy === by && !sortAsc,
       })} onClick={() => this.sortBy(by)}>{title}</button>
    },
-   renderRow(jury, article, index) {
-      const total = this.getTotalMark(article);
-      return (
-         <tr key={index}>
-            <td className='left'><WikiLink to={article.name} /></td>
-            <td className='left'><WikiLink to={`UT:${article.user}`} /></td>
-            <td className='right'>{moment(article.dateAdded).utc().format('D MMM HH:mm')}</td>
-            {jury.map(j => <td key={j} className='center'>{this.renderMark(article.marks, j)}</td>)}
-            <td className='mark'>{total !== null && total.toFixed(2)}</td>
-         </tr>
-      );
-   },
-   renderMark(marks, jury) {
-      const mark = getMark(marks, jury);
-      if (!mark) {
-         return null;
-      }
-      
+   renderMark(mark, index) {
       const { sum, parts } = calcMark(mark.marks);
 
       const details = [];
@@ -175,11 +221,51 @@ export default React.createClass({
          details.push(<dd>{p}</dd>);
       }
 
-      return <button className='mark'>
-         <span>{sum}</span>
-         <dl className='details'>
-            {details}
-         </dl>
-      </button>;      
+      return (
+         <li className='mark' key={index}>
+            <span className='jury'>{mark.user}</span>{': '}<span className='sum'>{sum}</span>
+            <dl className='details'>
+               {details}
+            </dl>
+            {mark.comment && <div className='comment'>
+               {mark.comment}
+            </div>}
+         </li>
+      );
+   },
+});
+
+const ExpandableRow = React.createClass({
+   getInitialState() {
+      return {
+         expanded: false,
+      };
+   },
+   componentWillMount() {
+      this.setState({ expanded: Global.user && Global.user.name === this.props.user.name });
+   },
+   expand() {
+      this.setState({ expanded: !this.state.expanded });
+   },
+   render() {
+      const { user } = this.props;
+      const { expanded } = this.state;
+      return (
+         <tbody>
+            <tr onClick={this.expand}>
+               <td className={classNames({ expander: true, expanded })}>
+                  <button onClick={this.expand} />
+               </td>
+               <td className='user'><WikiLink to={`UT:${user.name}`} /></td>
+               <td className='count'>{user.count}</td>
+               <td className='total'>{formatMark(user.total)}</td>
+            </tr>
+            {expanded && <tr className='expanded'>
+               <td colSpan={4}>
+                  {this.props.children}
+               </td>
+            </tr>}
+         </tbody>
+      );
    },
 });
