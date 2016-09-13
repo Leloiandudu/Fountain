@@ -92,37 +92,44 @@ export default React.createClass({
          count: v.length,
       }));
    },
-   render() {
-      const { editathon } = this.props;
-      if (!editathon || !editathon.jury || !editathon.start || !editathon.start.fromNow || !editathon.finish)
-         return <Loader />;
-      
+   renderHeader(editathon) {
       var now = moment.utc();
       if (now.isBefore(editathon.start, 'day')) {
-         return <h2>Марафон начнётся {editathon.start.fromNow()}</h2>
+         return <div className='header'>
+            Марафон начнётся {editathon.start.fromNow()}
+         </div>
       }
 
-      let header;
+      const isJury = Global.user && editathon.jury.filter(j => j === Global.user.name)[0];
+      let juryButton = isJury && <WikiButton type='progressive'>
+         <Link to={`/jury/${this.props.code}`}>Оценить статьи</Link>
+      </WikiButton>;
+
       if (now.isAfter(editathon.finish, 'day')) {
-         header = <h2>Марафон завершен</h2>
+         return <div className='header'>
+            Марафон завершён
+            {juryButton}
+         </div>;
       } else {
-         const isJury = Global.user && editathon.jury.filter(j => j === Global.user.name)[0];
-         header = <div className='header'>
+         return <div className='header'>
             Марафон закончится {editathon.finish.fromNow()}
-            {isJury && <WikiButton type='progressive'>
-               <Link to={`/jury/${this.props.code}`}>Оценить статьи</Link>
-            </WikiButton>}
+            {juryButton}
             <WikiButton type={isJury ? '' : 'progressive'} className='addArticle'>
                <Link to={`/editathons/${this.props.code}/add`} onClick={this.onAdd}>Добавить статью</Link>
             </WikiButton>
          </div>
       }
-
+   },
+   render() {
+      const { editathon } = this.props;
+      if (!editathon || !editathon.jury || !editathon.start || !editathon.start.fromNow || !editathon.finish)
+         return <Loader />;
+      
       const { data } = this.state;
 
       return (
          <div className='ArticlesList'>
-            {header}
+            {this.renderHeader(editathon)}
             <ModalDialog isOpen={this.state.needLogin} className='needLogin'>
                <div className='message'>Для продолжения необходимо авторизоваться.</div>
                <div className='buttons'>
