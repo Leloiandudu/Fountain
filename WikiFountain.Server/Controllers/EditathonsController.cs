@@ -123,27 +123,8 @@ namespace WikiFountain.Server.Controllers
                 }
             }
 
-            var template = new Template
-            {
-                Name = "Марафон юниоров",
-                Args =
-                { 
-                    new Template.Argument { Value = user.Username },
-                    new Template.Argument { Name = "статус", Value = "Готово" },
-                }
-            } + "\n";
-
-            var templateIndex = FindTemplatePos(page);
-            if (templateIndex == null)
-            {
-                page = page.Insert(0, template);
-            }
-            else
-            {
-                var existingTemplate = Template.ParseAt(page, templateIndex.Value);
-                page = page.Remove(templateIndex.Value, existingTemplate.ToString().Length).Insert(templateIndex.Value, template);
-            }
-            await wiki.EditPage(body.Title, page, "Автоматическая простановка шаблона");
+            if (e.Template != null)
+                await UpdateTemplate(wiki, user, body.Title, page, e.Template);
 
             e.Articles.Add(new Article
             {
@@ -155,12 +136,45 @@ namespace WikiFountain.Server.Controllers
             return Ok();
         }
 
-        private static int? FindTemplatePos(string text)
+        private static async Task UpdateTemplate(MediaWiki wiki, UserInfo user, string title, string page, JObject settings)
         {
-            var match = System.Text.RegularExpressions.Regex.Match(text, @"\{\{(?:[\s_]*[Мм]арафон[ _]+юниоров[\s_]*)[|}\s]");
-            if (!match.Success)
-                return null;
-            return match.Index;
+            var template = new Template { Name = settings.Value<string>("name") };
+
+            var args = settings.Value<JArray>("args");
+            foreach (var arg in args.Values<JObject>())
+            {
+                foreach (var prop in arg.Properties())
+                {
+                    prop.Value = prop.Value.Value<string>().Replace("%user.name%", user.Username);
+                }
+                template.Args.Add(arg.ToObject<Template.Argument>());
+            }
+
+            var templateString = template + "\n";
+
+            if (settings.Value<bool>("talkPage"))
+            {
+                title = "Talk:" + title;
+                page = await wiki.GetPage(title) ?? "";
+            }
+
+            var existing = ParserUtils.FindTemplates(page, template.Name);
+            if (existing.Count == 0)
+            {
+                page = page.Insert(0, templateString);
+            }
+            else
+            {
+                var regions = existing.Values.OrderByDescending(r => r.Offset).ToArray();
+                foreach (var r in regions)
+                {
+                    var region = ParserUtils.ExpandToWholeLine(page, r);
+                    page = page.Remove(region.Offset, region.Length);
+                }
+                page = page.Insert(regions.Last().Offset, templateString);
+            }
+
+            await wiki.EditPage(title, page, "Автоматическая простановка шаблона");
         }
 
         public class MarkPostData

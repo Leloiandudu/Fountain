@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using NHibernate.Mapping.ByCode.Conformist;
 
 namespace WikiFountain.Server.Models
@@ -24,6 +25,7 @@ namespace WikiFountain.Server.Models
         public ISet<Article> Articles { get; set; }
         public ISet<string> Jury { get; set; }
         public ISet<Rule> Rules { get; set; }
+        public JObject Template { get; set; }
     }
 
     public class EditathonMapping : ClassMapping<Editathon>
