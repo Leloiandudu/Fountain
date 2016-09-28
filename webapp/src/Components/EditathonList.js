@@ -30,7 +30,7 @@ export default React.createClass({
       const url = '/editathons/' + encodeURIComponent(item.code);
 
       return (
-         <li key={item.id} className={classNames({ past: isPast })}
+         <li key={item.code} className={classNames({ past: isPast })}
              title={isCurrent ? '' : item.description}>
             <div className='summary'>
                <span className='name'>

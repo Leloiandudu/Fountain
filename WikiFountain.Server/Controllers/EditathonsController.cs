@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using NHibernate.Linq;
 using WikiFountain.Server.Core;
 using WikiFountain.Server.Models;
+using WikiFountain.Server.Models.Rules;
 
 namespace WikiFountain.Server.Controllers
 {
@@ -36,6 +37,7 @@ namespace WikiFountain.Server.Controllers
             var e = Session.Query<Editathon>()
                 .FetchMany(_ => _.Articles).ThenFetch(a => a.Marks)
                 .Fetch(_ => _.Jury)
+                .Fetch(_ => _.Rules)
                 .SingleOrDefault(i => i.Code == code);
 
             if (e == null)
@@ -48,6 +50,12 @@ namespace WikiFountain.Server.Controllers
                 e.Start,
                 e.Finish,
                 e.Jury,
+                Rules = e.Rules.Select(r => new
+                {
+                    r.Type,
+                    r.Severity,
+                    r.Params,
+                }),
                 Articles = e.Articles.OrderByDescending(a => a.DateAdded).Select(a => new
                 {
                     a.Id,
@@ -76,12 +84,13 @@ namespace WikiFountain.Server.Controllers
             if (user == null)
                 return Unauthorized();
 
-            var e = Session.Query<Editathon>().SingleOrDefault(i => i.Code == code);
+            var e = Session.Query<Editathon>()
+                .Fetch(_ => _.Rules)
+                .Fetch(_ => _.Articles)
+                .SingleOrDefault(i => i.Code == code);
+
             if (e == null)
                 return NotFound();
-
-            if (user.Registered == null || user.Registered.Value.AddYears(1) < e.Start)
-                return Forbidden();
 
             var now = DateTime.UtcNow;
             if (now < e.Start || now.Date > e.Finish)
@@ -95,6 +104,24 @@ namespace WikiFountain.Server.Controllers
             var page = await wiki.GetPage(body.Title);
             if (page == null)
                 return Forbidden();
+
+            var rules = e.Rules
+                .Where(r => r.Severity == RuleSeverity.Requirement)
+                .Select(r => r.Get())
+                .ToArray();
+
+            if (rules.Any())
+            {
+                var loader = new ArticleDataLoader(rules.SelectMany(r => r.GetReqs()));
+                var data = await loader.LoadAsync(wiki, body.Title);
+
+                var ctx = new RuleContext { User = user };
+                foreach (var rule in rules)
+                {
+                    if (!rule.Check(data, ctx))
+                        return Forbidden();
+                }
+            }
 
             var template = new Template
             {

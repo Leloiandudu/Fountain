@@ -38,12 +38,13 @@ namespace WikiFountain.Server
 
         public object DeepCopy(object value)
         {
+            if (value == null) return null;
             return Parse(ToString(value));
         }
 
         public object Replace(object original, object target, object owner)
         {
-            return Parse(Disassemble(target));
+            return DeepCopy(target);
         }
 
         public object Assemble(object cached, object owner)

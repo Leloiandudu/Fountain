@@ -11,6 +11,7 @@ namespace WikiFountain.Server.Models
         {
             Articles = new HashSet<Article>();
             Jury = new HashSet<string>();
+            Rules = new HashSet<Rule>();
         }
 
         public long Id { get; set; }
@@ -22,6 +23,7 @@ namespace WikiFountain.Server.Models
 
         public ISet<Article> Articles { get; set; }
         public ISet<string> Jury { get; set; }
+        public ISet<Rule> Rules { get; set; }
     }
 
     public class EditathonMapping : ClassMapping<Editathon>

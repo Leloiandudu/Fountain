@@ -2,12 +2,24 @@ import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
 import url from './../url'
-import getArticleInfo from './../getArticleInfo';
+import readRules, { getRulesReqs, RuleSeverity } from './../rules';
+import getArticleData from './../getArticleData';
 import Api, { UnauthorizedHttpError } from './../Api';
 import WikiButton from './WikiButton';
 import WikiLink from './WikiLink';
 import ArticleLookup from './ArticleLookup';
 import Loader from './Loader';
+
+const RuleMessages = {
+   submitterRegistered: (rule, ok) => !ok && `В этом марафоне могут соревноваться только участники, зарегистрировавшиеся не ранее ${moment(rule.params.after).format('L')}.`,
+   namespace: (rule, ok) => `${ ok ? 'Находится' : 'Не находится'} в основном пространстве статей`,
+   submitterIsCreator: (rule, ok, stats) => [ 'Автор статьи: ', <WikiLink key='link' to={`U:${stats.creator}`} /> ],
+   articleCreated: (rule, ok, stats) => 'Статья создана ' + moment(stats.created).format('L LT'),
+   articleSize: (rule, ok, stats) => [
+      rule.params.bytes && `${(stats.bytes / 1024).toFixed()} Кб`, 
+      rule.params.chars && `${stats.chars} символов`,
+   ].filter(x => x).join(', '),
+};
 
 export default React.createClass({
    contextTypes: {
@@ -23,22 +35,23 @@ export default React.createClass({
       };
    },
    async update() {
-      let { card, stats, title } = this.state;
+      let { title, stats } = this.state;
 
       try {
          if (!stats || title !== stats.title) {
-            ({ card, stats } = await getArticleInfo(title));
-            title = stats.title;
+            const what = getRulesReqs(this.getRules());
+            stats = await getArticleData(title, [ 'title', 'card', ...what ]);
+            if (stats)
+               title = stats.title;
          }
       } catch(e) {
          console.log('error retrieving article info', e);
-         card = stats = null;
+         stats = null;
       }
 
       this.setState({
          updating: false,
          title,
-         card,
          stats,
       });
    },
@@ -67,6 +80,9 @@ export default React.createClass({
       });
       this.props.onReloadEditathon && await this.props.onReloadEditathon();
    },
+   getRules() {
+      return readRules(this.props.editathon.rules, [ RuleSeverity.requirement, RuleSeverity.warning ]);
+   },
    render() {
       return (
          <form className='AddArticle' onSubmit={e => e.preventDefault()}>
@@ -86,10 +102,20 @@ export default React.createClass({
          return <div />;
       }
 
-      if (!Global.user.registered || moment(Global.user.registered).add(1, 'year').isBefore(this.props.editathon.start)) {
+      const errors = [];
+      const ctx = {
+         user: Global.user,
+      };
+      for (const rule of this.getRules().filter(rule => rule.userOnly && rule.severity == RuleSeverity.requirement)) {
+         if (!rule.check(null, ctx)) {
+            errors.push(rule);
+         }
+      }
+
+      if (errors.length) {
          return (
             <div>
-               В этом марафоне могут соревноваться только участники, зарегистрировавшиеся за год до начала марафона и позднее.
+               {errors.map(error => <div>{RuleMessages[error.type](error, false)}</div>)}
                <div id='buttons'>
                   <WikiButton onClick={this.returnToList}>Назад</WikiButton>
                </div>
@@ -117,14 +143,27 @@ export default React.createClass({
    renderApproveStage() {
       const stats = this.state.stats;
       const missing = !stats;
-      const mainNs = stats && stats.ns === 0;
-      const ok = !missing && mainNs;
 
       const title = <h2>
          <WikiLink to={stats && stats.title || this.state.title} red={missing} />
       </h2>;
 
-      const addedBy = stats && this.props.editathon.articles.filter(a => a.name === stats.title)[0]
+      const addedBy = stats && this.props.editathon.articles.filter(a => a.name === stats.title)[0];
+
+      const rules = [];
+      let ok = !missing;
+      if (!this.state.updating && stats) {
+         const ctx = {
+            user: Global.user,
+         };
+         for (const rule of this.getRules().filter(rule => !rule.userOnly)) {
+            const result = rule.check(stats, ctx);
+            rules.push([rule, result]);
+            if (rule.severity == RuleSeverity.requirement) {
+               ok = ok && result;
+            }
+         }
+      }
 
       return (
          <div>
@@ -138,11 +177,13 @@ export default React.createClass({
                <div className='info'>
                   <div className='stats'>
                      {title}
-                     {this.renderStat(`${ mainNs ? 'Находится' : 'Не находится'} в остновном пространстве статей`, mainNs, true)}
-                     {this.renderStat([ 'Автор статьи: ', <WikiLink key='link' to={`U:${stats.user}`} /> ], stats.user === Global.user.name)}
-                     {this.renderStat('Статья создана ' + stats.timestamp.format('L LT'), stats.timestamp.isAfter(this.props.editathon.start))}
-                     {this.renderStat(`${(stats.bytes / 1024).toFixed()} Кб, ${stats.chars} символов`, stats.bytes >= 3 * 1024 || stats.chars >= 1000)}
-                     {addedBy && this.renderStat(`${addedBy.user === Global.user.name ? 'Вы уже добавили' : 'Другой участник уже добавил' } эту статью в марафон`, false, true)}
+                     {addedBy && this.renderStat('addedBy', `${addedBy.user === Global.user.name ? 'Вы уже добавили' : 'Другой участник уже добавил' } эту статью в марафон`, false, true)}
+                     {rules.map(([ rule, result ]) => this.renderStat(
+                        rule.type, 
+                        RuleMessages[rule.type](rule, result, stats), 
+                        result, 
+                        rule.severity === RuleSeverity.requirement)
+                     )}
                   </div>
                   {this.renderCard()}
                </div>}
@@ -154,20 +195,20 @@ export default React.createClass({
          </div>
       );
    },
-   renderStat(name, isOk, isCritical = false) {
-      return <div className={classNames({ stat: true, error: !isOk && isCritical, warning: !isOk && !isCritical })}>{name}</div>
+   renderStat(key, name, isOk, isCritical) {
+      return <div key={key} className={classNames({ stat: true, error: !isOk && isCritical, warning: !isOk && !isCritical })}>{name}</div>
    },
    renderCard() {
-      const card = this.state.card;
-      if (!card)
+      if (!this.state.stats)
          return null;
+      const { extract, thumbnail } = this.state.stats.card;
       return (
          <div className='card'>
             <div className='content'>
                <div className='thumbnail'>
-                  {card.thumbnail && <img src={card.thumbnail.source} />}
+                  {thumbnail && <img src={thumbnail.source} />}
                </div>
-               <div className='extract'>{card.extract}</div>
+               <div className='extract'>{extract}</div>
             </div>
          </div>
       );

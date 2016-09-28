@@ -51,6 +51,11 @@ export default React.createClass({
             <Loader />
          </span>;
 
+      if (info === false)
+         return <span className='block content'>
+            Статья не найдена
+         </span>;
+
       if (info && info.error)
          return <span className='block content'>
             Ошибка загрузки: <pre>{JSON.stringify(info.error, null, 4)}</pre>

@@ -3,7 +3,8 @@ import cloneDeep from 'clone-deep';
 import sortBy from './../../sortBy';
 import url from './../../url';
 import Api from './../../Api';
-import getArticleInfo from './../../getArticleInfo';
+import readRules, { getRulesReqs, RuleSeverity } from './../../rules';
+import getArticleData from './../../getArticleData';
 import { getMark } from './../../jury';
 import Loader from './../Loader';
 import ModalDialog from '../ModalDialog';
@@ -80,7 +81,11 @@ export default React.createClass({
       if (!article.info) {
          let info;
          try {
-            article.info = info = await getArticleInfo(title, false);
+            const what = getRulesReqs(this.getRules());
+            info = await getArticleData(title, [ ...what, 'html' ]);
+            if (info === null)
+               info = false;
+            article.info = info;
          } catch (e) {
             info = { error: e };
          }
@@ -88,6 +93,10 @@ export default React.createClass({
             this.setState({ info });
          }
       }
+   },
+
+   getRules() {
+      return readRules(this.state.editathon.rules, [ RuleSeverity.warning, RuleSeverity.info ]);
    },
 
    onChanged() {
@@ -163,7 +172,7 @@ export default React.createClass({
          <div className='Jury'>
             <div id='sidebar'>
                <ArticlesList articles={editathon.articles} selected={this.state.selected} onArticleSelected={this.selectArticle} />
-               <Warnings editathon={editathon} info={info} article={article} />
+               <Warnings info={info} rules={this.getRules()} article={article} />
             </div>
             <div id='main-content'>
                <Preview title={this.state.selected} info={info} />

@@ -1,10 +1,11 @@
 function eraseTags(tag, tags) {
    if (!tag.childNodes.length)
-      return tag.textContent;
+      return tag.textContent.trim();
 
    return [...tag.childNodes]
       .filter(tag => tags.indexOf(tag.nodeName.toLowerCase()) === -1)
       .map(tag => eraseTags(tag, tags).trim())
+      .filter(tag => tag)
       .join(" ");
 };
 

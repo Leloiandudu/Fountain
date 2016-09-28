@@ -73,7 +73,7 @@ namespace WikiFountain.Server.Core
                 throw new MediaWikiException(code);
         }
 
-        private async Task<JObject> Exec(JObject args)
+        public async Task<JObject> Exec(JObject args)
         {
             var data = new JObject
             {
