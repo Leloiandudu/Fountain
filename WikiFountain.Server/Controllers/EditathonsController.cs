@@ -124,7 +124,7 @@ namespace WikiFountain.Server.Controllers
             }
 
             if (e.Template != null)
-                await UpdateTemplate(wiki, user, body.Title, page, e.Template);
+                await UpdateTemplate(wiki, user, body.Title, page, (JObject)e.Template.DeepClone());
 
             e.Articles.Add(new Article
             {
