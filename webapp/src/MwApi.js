@@ -1,5 +1,4 @@
 import pkg from './../package.json';
-import URLSearchParams from 'url-search-params';
 
 export default function MwApi(url) {
    async function exec(params) {

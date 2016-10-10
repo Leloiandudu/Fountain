@@ -1,4 +1,5 @@
 import 'babel-polyfill';
+import './URLSearchParams';
 import 'whatwg-fetch';
 
 import moment from 'moment';
