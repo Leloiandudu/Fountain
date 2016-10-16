@@ -26,6 +26,7 @@ namespace WikiFountain.Server.Models
         public ISet<string> Jury { get; set; }
         public ISet<Rule> Rules { get; set; }
         public JObject Template { get; set; }
+        public JObject Marks { get; set; }
     }
 
     public class EditathonMapping : ClassMapping<Editathon>

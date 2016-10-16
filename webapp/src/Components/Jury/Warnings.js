@@ -7,27 +7,24 @@ import classNames from 'classnames';
 
 const RuleMessages = {
    submitterIsCreator: (rule, ok, stats, ctx) => [ 
-      <span key='author' >
-         Автор статьи:&nbsp;
-         <WikiLink to={`U:${stats.creator}`} />
-      </span>,
-      <span key='submitter'>
-         , Сабмиттер:&nbsp;
-         <WikiLink to={`U:${ctx.user.name}`} />
-      </span>,
+      'Автор',
+      <WikiLink to={`UT:${stats.creator}`} />,
    ],
-   articleCreated: (rule, ok, stats) => 'Статья создана ' + moment(stats.created).format('L LT'),
-   articleSize: (rule, ok, stats) => `${(stats.bytes / 1024).toFixed()} Кб, ${stats.chars} символов`,
+   articleCreated: (rule, ok, stats) => [
+      'Cоздана',
+      moment(stats.created).format('L LT'),
+   ],
+   articleSize: (rule, ok, stats) => [
+      `${(stats.bytes / 1024).toFixed()} Кб`,
+      `${stats.chars} символов`,
+   ],
 };
 
 export default React.createClass({
    render() {
       return (
-         <div className="panel">
-            <Header title="Warnings" />
-            <div id="warnings" className="block">
-               {this.renderWarnings()}
-            </div>
+         <div className='Warnings'>
+            {this.renderWarnings()}
          </div>
       )
    },
@@ -37,8 +34,13 @@ export default React.createClass({
          return <Loader />;
       }
 
+      const author = this.renderStat('_author', [ 
+         'Добавил',
+         <WikiLink key='a' to={'UT:' + article.user} className='value nowrap' target='_blank' />,
+      ], true);
+
       if (!info || info.error) {
-         return null;
+         return author;
       }
 
       const ctx = {
@@ -48,16 +50,16 @@ export default React.createClass({
       };
 
       return (<div>
+         {author}
          {rules.map(rule => {
             const result = rule.check(info, ctx);
-            return this.renderStat(RuleMessages[rule.type](rule, result, info, ctx), result);
+            return this.renderStat(rule.type, RuleMessages[rule.type](rule, result, info, ctx), result);
          })}
       </div>).props.children;
    },
-   renderStat(title, isOk) {
-      return <span className={classNames({
-         nasty: !isOk,
-      })}>{title}</span>
+   renderStat(key, rows, isOk) {
+      return <div key={key} className={classNames({ item: true, nasty: !isOk })}>
+         {rows.map((row, i) => <div className='row' key={i}>{row}</div>)}
+      </div>
    },
 });
-

@@ -1,99 +1,106 @@
-#evaluation {
+.Evaluation {
    display: flex;
+   flex-flow: row wrap;
+   border-top: solid 1px #ddd;
+   background: #f5f5f5;
+   align-items: center;
+   .space-items(.2em);
 
-   #evaluation-y-n, #evaluation-next, #evaluation-pm, #evaluation-marks {
-      margin: 5px 0;
-      padding: 0 10px;
+   @button-radius: 2px;
+
+   .button() {
+      background: white;
+      padding: .1em .4em;
+      min-width: 2em;
+      border: solid 1px #bbb;
+      border-radius: @button-radius;
+      text-align: center;
+
+      &:hover, &:focus {
+         box-shadow: 0 1px rgba(0, 0, 0, .1), 
+              inset 0 -2px rgba(0, 0, 0, .2);
+      }
+
+      &.selected {
+         border-color: #347bff;
+         background-color: #347bff;
+         color: white;
+      }
+   }
+
+   .marks {
       display: flex;
-      flex-flow: row;
-      flex: auto;
-   }
+      flex-flow: row wrap;
+      margin-right: 0;
 
-   #evaluation-y-n {
-      max-width: 300px;
-   }
+      ul, li {
+         display: flex;
+         flex-flow: row wrap;
+         align-items: center;
+      }
 
-   #evaluation-marks {
-      max-width: 300px;
-   }
+      .check {
+         .button();
+         margin: .2em;
+      }
 
-   #evaluation-pm {
-      max-width: 140px;
+      .radio {
+         display: flex;
+         flex-flow: row wrap;
+         align-items: center;
 
-      .WikiLink {
-         .Jury.button();
-         margin: 5px;
-         padding: 0 6px;
-         text-align: center;
-         color: black;
-         line-height: 25px;
+         .title, .buttons {
+            margin: .2em;
+         }
 
-         &:hover, &:focus {
-            text-decoration: none;
+         .buttons {
+            display: inline-block;
+
+            button {
+               .button();
+               border-radius: 0;
+               margin-right: -1px;
+
+               &:first-child {
+                  border-top-left-radius: @button-radius;
+                  border-bottom-left-radius: @button-radius;
+               }
+
+               &:last-child {
+                  border-top-right-radius: @button-radius;
+                  border-bottom-right-radius: @button-radius;
+               }
+            }
          }
       }
    }
 
-    #evaluation-next {
-      max-width: 200px;
-    }
-
-   #evaluation-buttons {
+   .comment-button {
+      .button();
    }
 
-   > * + * {
-      border-left: solid 1px #E68184;
+   .controls {
+      display: flex;
+      align-items: center;
+      margin: 0 0 0 auto;
+      * > {
+         margin: .2em;
+      }
+
+      .total {
+         font-weight: 600;
+      }
    }
 
-   #evaluation-buttons {
-      border: none;
-   }
+   .comment-dialog {
+      width: 30%;
 
-   .button {
-      margin: 5px;
-      text-align: center;
+      textarea {
+         resize: vertical;
+         width: 100%;
+         height: 6em;
+         font-size: 15px;
+         margin-bottom: 1em;
+      }
    }
-
-   #evaluation-buttons .button {
-      margin: 10px;
-      padding: 10px 30px;
-   }
-   
-   .button:hover {
-      border-color: #00CCFF;
-   }
-   
-   .button::-moz-focus-inner {
-      border: none;
-   }
-   
-   #evaluation-next .button {
-      font-size: 20px;
-   }
-
-   input[type=checkbox], input[type=radio] {
-      display: none;
-   }
-}
-
-#comment-dialog-buttons, 
-#pm-dialog-buttons {
-   display: flex;
-   margin: -5px;
-}
-
-.comment-dialog textarea,
-.pm-dialog textarea {
-   resize: none;
-   width: 50em;
-   height: 6em;
-   font-size: 15px;
-   border: none;
-}
-
-#comment-dialog-buttons .button,
-#pm-dialog-buttons .button {
-   flex: 1;
-   padding: 5px 20px;
-   margin: 5px;
 }

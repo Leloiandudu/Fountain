@@ -5,15 +5,15 @@ import stable from 'stable';
 import sortBy from './../sortBy';
 import Api from './../Api';
 import url from './../url';
-import { getMark, Marks, calcMark } from './../jury';
+import { findMarkOf, calcMark } from './../jury';
 import Link from './Link';
 import WikiLink from './WikiLink';
 import WikiButton from './WikiButton';
 import ModalDialog from './ModalDialog';
 import Loader from './Loader';
 
-function getTotalMark(jury, marks) {
-   const m = jury.map(j => getMark(marks, j)).filter(m => m).map(m => calcMark(m.marks).sum);
+function getTotalMark(jury, marks, marksConfig) {
+   const m = jury.map(j => findMarkOf(marks, j)).filter(m => m).map(m => calcMark(m.marks, marksConfig).sum);
    if (m.length == 0)
       return null;
    return m.reduce((a, b) => a + b, 0) / m.length;
@@ -68,7 +68,7 @@ export default React.createClass({
    componentWillReceiveProps({ editathon }) {
       if (editathon && editathon.articles && editathon.jury) {
          this.setState({ 
-            data: sort(this.getData(editathon.articles, editathon.jury), this.state.sortBy, this.state.sortAsc),
+            data: sort(this.getData(editathon.articles, editathon), this.state.sortBy, this.state.sortAsc),
          });
       }
    },
@@ -78,9 +78,9 @@ export default React.createClass({
          e.preventDefault();
       }
    },
-   getData(articles, jury) {
+   getData(articles, { jury, marks: marksConfig }) {
       const getTotal = (articles) => {
-         const marks = articles.map(article => getTotalMark(jury, article.marks)).filter(x => x !== null);
+         const marks = articles.map(article => getTotalMark(jury, article.marks, marksConfig)).filter(x => x !== null);
          if (!marks.length) return null;
          return marks.reduce((s, m) => s + m, 0);
       }
@@ -161,14 +161,14 @@ export default React.createClass({
                </tbody>
                {data.map(user => 
                   <ExpandableRow key={user.name} user={user}>
-                     {this.renderArticles(editathon.jury, user)}
+                     {this.renderArticles(editathon, user)}
                   </ExpandableRow>
                )}
             </table>
          </div>
       );
    },
-   renderArticles(jury, user) {
+   renderArticles({ jury, marks: marksConfig }, user) {
       return (
          <table className='articles'>
             <thead>
@@ -183,15 +183,15 @@ export default React.createClass({
                   <tr className='summary'>
                      <td className='article'><WikiLink to={a.name} /></td>
                      <td className='dateAdded'>{moment(a.dateAdded).utc().format('D MMM HH:mm')}</td>
-                     <td className='mark'>{formatMark(getTotalMark(jury, a.marks))}</td>
+                     <td className='mark'>{formatMark(getTotalMark(jury, a.marks, marksConfig))}</td>
                   </tr>,
                   <tr className='details'>
                      <td colSpan={3}>
                         <ul>
                            {jury
-                              .map(jury => getMark(a.marks, jury))
+                              .map(jury => findMarkOf(a.marks, jury))
                               .filter(x => x)
-                              .map(this.renderMark)}
+                              .map((m, i) => this.renderMark(m, i, marksConfig))}
                         </ul>
                      </td>
                   </tr>
@@ -217,14 +217,14 @@ export default React.createClass({
          desc: sortBy === by && !sortAsc,
       })} onClick={() => this.sortBy(by)}>{title}</button>
    },
-   renderMark(mark, index) {
-      const { sum, parts } = calcMark(mark.marks);
+   renderMark(mark, index, marksConfig) {
+      const { sum, parts } = calcMark(mark.marks, marksConfig);
 
       const details = [];
       let i = 0;
       for (var p in parts) {
          const v = parts[p];
-         details.push(<dt>{v && (v > 0 ? '+' : '−') || ''}{Math.abs(v)}</dt>);
+         details.push(<dt>{v && (v > 0 ? '+' : '−') + Math.abs(v) + ' ' || ''}</dt>);
          details.push(<dd>{p}</dd>);
       }
 

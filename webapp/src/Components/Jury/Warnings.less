@@ -1,42 +1,33 @@
-#warnings {
-   font-size: small;
-   
+.Warnings {
+   flex: 1 auto;
    display: flex;
-   flex-flow: column nowrap;
+   font-size: .8em;
+   justify-content: flex-end;
 
-   > span {
-      margin: 1px 5px 1px;
-      line-height: 1.25em;
-      display: block;
-      position: relative;
-      padding-left: .75em;
-      overflow-x: hidden;
+   .Loader {
+      min-height: auto;
+      flex: 1 auto;
+   }
 
-      &:first-child {
-         margin-top: 5px;
-      }
+   .item {
+      display: flex;
+      flex-flow: column nowrap;
+      padding: 0 0.4em;
 
-      &:last-child {
-         margin-bottom: 5px;
-      }
+      overflow: hidden;
 
-      &::before {
-         content: '';
-         display: inline-block;
-         width: .5em;
-         background-color: #0CF;
-         position: absolute;
-         top: 0;
-         bottom: 0;
-         left: 0;
-      }
-      
-      &.nasty::before {
-         background-color: #CD040A;
-      }
-
-      .WikiLink {
+      .row, .row * {
          white-space: nowrap;
+         text-overflow: ellipsis;
+         overflow: hidden;
+      }
+
+      &:not(:last-child) {
+         border-right: solid 1px #ccc;
+      }
+
+      &.nasty {
+         background-color: #fdd;
       }
    }
 }

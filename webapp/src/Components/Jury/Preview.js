@@ -38,8 +38,7 @@ export default React.createClass({
    },
    render() {
       return (
-         <div className='Preview content-panel'>
-            <Header title={<WikiLink target='_blank' to={this.props.title} />} />
+         <div className='Preview'>
             {this.renderContent()}
          </div>
       )
@@ -47,20 +46,20 @@ export default React.createClass({
    renderContent() {
       const { info } = this.props;
       if (info === undefined)
-         return <span className='block content'>
+         return <div key='loader' className='content'>
             <Loader />
-         </span>;
+         </div>;
 
       if (info === false)
-         return <span className='block content'>
+         return <div key='not-found' className='content not-found'>
             Статья не найдена
-         </span>;
+         </div>;
 
       if (info && info.error)
-         return <span className='block content'>
+         return <div key='error' className='content'>
             Ошибка загрузки: <pre>{JSON.stringify(info.error, null, 4)}</pre>
-         </span>;
+         </div>;
 
-      return <div ref='iframe' className='block content' />
+      return <div key='iframe' ref='iframe' className='content' />
    },
 });

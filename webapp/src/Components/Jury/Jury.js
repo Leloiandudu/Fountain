@@ -5,14 +5,16 @@ import url from './../../url';
 import Api from './../../Api';
 import readRules, { getRulesReqs, RuleSeverity } from './../../rules';
 import getArticleData from './../../getArticleData';
-import { getMark } from './../../jury';
+import { findMarkOf } from './../../jury';
 import Loader from './../Loader';
 import ModalDialog from '../ModalDialog';
 import WikiButton from '../WikiButton';
 import ArticlesList from './articlesList';
-import Warnings from './warnings';
-import Preview from './preview';
-import Evaluation from './evaluation';
+import Header from './Header';
+import Warnings from './Warnings';
+import Preview from './Preview';
+import Expander from './Expander';
+import Evaluation from './Evaluation';
 
 export default React.createClass({
    contextTypes: {
@@ -22,7 +24,8 @@ export default React.createClass({
       return {
          editathon: null,
          changed: false,
-         unsavedWarning: false,
+         unsavedWarning: null,
+         menuOpen: false,
       }
    },
 
@@ -32,17 +35,13 @@ export default React.createClass({
 
    async componentWillMount() {
       if (!this.getCode() || !Global.user) {
-         this.context.router.replace({
-            pathname: url(`/`),
-         });
+         this.close();
          return;
       }
 
       const editathon = await Api.getEditathon(this.getCode());
       if (!editathon.jury.filter(j => j === Global.user.name)[0]) {
-         this.context.router.replace({
-            pathname: url(`/`),
-         });
+         this.close()
          return;
       }
 
@@ -55,7 +54,7 @@ export default React.createClass({
          info: article ? undefined : false,
       });
       if (article) {
-         if (getMark(article.marks)) {
+         if (findMarkOf(article.marks)) {
             article = this.getNextArticle(article) || article;
          }
          this.selectArticle(article.name);
@@ -72,12 +71,14 @@ export default React.createClass({
 
    async selectArticle(title) {
       if (this.state.changed) {
-         this.setState({ unsavedWarning: title });
-         return;
+         if (!await this.unsavedWarning()) {
+            return;
+         }
       }
 
       const article = this.getArticle(title);
-      this.setState({ selected: title, info: article.info });
+      this.setState({ selected: title, info: article.info, menuOpen: false, changed: false });
+
       if (!article.info) {
          let info;
          try {
@@ -103,15 +104,19 @@ export default React.createClass({
       this.setState({ changed: true });
    },
 
-   onDiscard() {
-      const title = this.state.unsavedWarning;
-      this.state.changed = false;
-      this.setState({ unsavedWarning: false, changed: false });
-      this.selectArticle(title);
+   unsavedWarning() {
+      return new Promise((resolve) => {
+         this.setState({ 
+            unsavedWarning: (result) => {
+               this.setState({ unsavedWarning: null });
+               resolve(result);
+            }
+         });
+      });
    },
 
    setMark(article, mark) {
-      let m = getMark(article.marks);
+      let m = findMarkOf(article.marks);
       if (!m) {
          m = { user: Global.user.name };
          article.marks.push(m);
@@ -134,7 +139,7 @@ export default React.createClass({
          index = (index + 1) % articles.length;
          if (index === curentIndex)
             break;
-         if (!getMark(articles[index].marks)) {
+         if (!findMarkOf(articles[index].marks)) {
             return articles[index];
          }
       }
@@ -147,7 +152,6 @@ export default React.createClass({
       this.setState({
          editathon: this.state.editathon,
          changed: false,
-         unsavedWarning: false
       });
 
       try {
@@ -162,6 +166,22 @@ export default React.createClass({
       }
    },
 
+   toggleMenu() {
+      this.setState({ menuOpen: !this.state.menuOpen });
+   },
+
+   async tryClose() {
+      if (this.state.changed && !(await this.unsavedWarning()))
+         return;
+      this.close();
+   },
+
+   close() {
+      this.context.router.replace({
+         pathname: url(`/editathons/${this.getCode() || ''}`),
+      });
+   },
+
    render() {
       const { editathon, info } = this.state;
       if (!editathon)
@@ -170,20 +190,21 @@ export default React.createClass({
 
       return (
          <div className='Jury'>
-            <div id='sidebar'>
-               <ArticlesList articles={editathon.articles} selected={this.state.selected} onArticleSelected={this.selectArticle} />
+            <Header title={this.state.selected} menuOpen={this.state.menuOpen} toggleMenu={this.toggleMenu} onClose={this.tryClose}>
                <Warnings info={info} rules={this.getRules()} article={article} />
-            </div>
-            <div id='main-content'>
+            </Header>
+            <main>
+               <Expander expanded={this.state.menuOpen}>
+                  <ArticlesList articles={editathon.articles} selected={this.state.selected} onArticleSelected={this.selectArticle} />
+               </Expander>
                <Preview title={this.state.selected} info={info} />
-               <Evaluation onNext={this.moveNext} onSaveMarks={this.onSaveMark} article={article} mark={getMark(article.marks)} onChanged={this.onChanged} />
-            </div>
-
+               <Evaluation onNext={this.moveNext} onSaveMarks={this.onSaveMark} article={article} marks={editathon.marks} mark={findMarkOf(article.marks)} onChanged={this.onChanged} />
+            </main>
             <ModalDialog isOpen={this.state.unsavedWarning} className='unsavedWarning'>
                <div className='message'>Ваши изменения не будут сохранены.</div>
                <div className='buttons'>
-                  <WikiButton type='destructive' onClick={this.onDiscard}>Продолжить</WikiButton>
-                  <WikiButton onClick={() => this.setState({ unsavedWarning: false })}>Отмена</WikiButton>
+                  <WikiButton type='destructive' onClick={() => this.state.unsavedWarning(true)}>Продолжить</WikiButton>
+                  <WikiButton onClick={() => this.state.unsavedWarning(false)}>Отмена</WikiButton>
                </div>
             </ModalDialog>
          </div>

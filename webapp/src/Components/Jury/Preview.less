@@ -1,7 +1,22 @@
 .Preview {
-   .header {
-      font-family: inherit;
-      text-transform: none;
-      line-height: 1.15;
+   display: flex;
+
+   .content {
+      flex: 1 auto;
+      display: flex;
+
+      &.not-found {
+         padding: 0 .4em;
+      }
+
+      .Loader {
+         flex: 1 auto;
+      }
+
+      iframe {
+         flex: 1 auto;
+         height: 100%;
+         border: none;
+      }
    }
 }

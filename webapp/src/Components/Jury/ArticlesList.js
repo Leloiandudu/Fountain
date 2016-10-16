@@ -1,31 +1,26 @@
 import React from 'react';
 import classNames from 'classnames';
 import Header from './Header';
-import { getMark } from './../../jury';
-
-function isGoodMark(marks) {
-   const mark = getMark(marks);
-   return mark && mark.marks.isGood;
-}
+import { findMarkOf } from './../../jury';
 
 export default React.createClass({
+   onItemClick(e, article) {
+      e.preventDefault();
+      this.props.onArticleSelected(article.name);
+   },
    render() {
       return (
-         <div className='content-panel'>
-            <Header title='Articles'>
-               {this.props.children}
-            </Header>
-            <div id='articles-list' className='block content'>
-               <ul>
-                  {this.props.articles.map(article => <li className={classNames({
-                     nice: article.marks && isGoodMark(article.marks) === true,
-                     nasty: article.marks && isGoodMark(article.marks) === false,
-                     selected: article.name === this.props.selected,
-                     invalid: article.stats && this.props.validators.map(v => v.validate(article.stats)).some(x => !x.valid),
-                  })} onClick={() => this.props.onArticleSelected(article.name)} key={article.name}><span title={article.name}>{article.name}</span></li>)}
-               </ul>
-            </div>
-         </div>
+         <ul className='ArticlesList'>
+            {this.props.articles.map(article => <li className={classNames({
+               selected: article.name === this.props.selected,
+               hasMark: findMarkOf(article.marks) !== undefined,
+               invalid: article.stats && this.props.validators.map(v => v.validate(article.stats)).some(x => !x.valid),
+            })} key={article.name}>
+               <a href='#' title={article.name} onClick={e => this.onItemClick(e, article)}>
+                  {article.name}
+               </a>
+            </li>)}
+         </ul>
       )
    },
 });

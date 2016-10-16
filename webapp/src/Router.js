@@ -10,6 +10,9 @@ import Jury from './Components/Jury/Jury';
 
 export default (
    <Router history={browserHistory}>
+      <Route path={url('/jury')}>
+         <Route path=':id' component={Jury} />
+      </Route>
       <Route path={url('/')} component={App}>
          <IndexRedirect to='editathons/' />
          <Route path='editathons/'>
@@ -18,9 +21,6 @@ export default (
                <IndexRoute component={ArticlesList} />
                <Route path='add' component={AddArticle} />
             </Route>
-         </Route>
-         <Route path='jury'>
-            <Route path=':id' component={Jury} />
          </Route>
          <Redirect from='editathons' to='editathons/' />
       </Route>

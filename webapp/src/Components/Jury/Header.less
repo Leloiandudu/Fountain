@@ -1,16 +1,42 @@
-.header {
-   padding: 5px;
-   background-color: #ffdddd;
-   font-size: 16px;
-   font-family: "Moire", sans-serif;
-   text-transform: uppercase;
-   border: 2px solid #CD040A;
+.Header {
+   height: auto;
 
-   span {
-      vertical-align: middle;
+   display: flex;
+   flex-flow: row nowrap;
+   .space-items(.2em);
+
+   .menu-button {
+      flex-shrink: 0;
+      width: 2.25em;
+      background: url('arrow-right-big.png') no-repeat center 70%;
+      opacity: .9;
+      cursor: pointer;
+      transition: transform .2s ease-out;
+
+      &.open {
+         transform: rotate(90deg);
+      }
    }
 
-   > .button {
-      float: right;
+   .close-button {
+      flex-shrink: 0;
+      width: 2.25em;
+      background: url('cross.png') no-repeat center;
+      opacity: .9;
+      cursor: pointer;
+   }
+
+   .title {
+      font-size: 1.5em;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      color: inherit;
+   }
+
+   .children {
+      display: flex;
+      margin-left: auto;
+      flex: 1 auto;
    }
 }
