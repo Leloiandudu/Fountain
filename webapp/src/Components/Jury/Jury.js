@@ -3,6 +3,7 @@ import cloneDeep from 'clone-deep';
 import sortBy from './../../sortBy';
 import url from './../../url';
 import Api from './../../Api';
+import { mwApi } from './../../MwApi';
 import readRules, { getRulesReqs, RuleSeverity } from './../../rules';
 import getArticleData from './../../getArticleData';
 import { findMarkOf } from './../../jury';
@@ -80,12 +81,17 @@ export default React.createClass({
       this.setState({ selected: title, info: article.info, menuOpen: false, changed: false });
 
       if (!article.info) {
-         let info;
+         let info, userGender;
          try {
             const what = getRulesReqs(this.getRules());
-            info = await getArticleData(title, [ ...what, 'html' ]);
+            [ info, userGender ] = await Promise.all([
+               getArticleData(title, [ ...what, 'html' ]),
+               mwApi.getUserGender(article.user)
+            ]);
             if (info === null)
                info = false;
+            else
+               info.userGender = userGender;
             article.info = info;
          } catch (e) {
             info = { error: e };

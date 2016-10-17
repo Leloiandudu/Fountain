@@ -35,7 +35,7 @@ export default React.createClass({
       }
 
       const author = this.renderStat('_author', [ 
-         'Добавил',
+         info.userGender == 'female' ? 'Добавила' : 'Добавил',
          <WikiLink key='a' to={'UT:' + article.user} className='value nowrap' target='_blank' />,
       ], true);
 

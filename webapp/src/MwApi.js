@@ -36,12 +36,29 @@ export default function MwApi(url) {
 
    this.getPageHtml = async function getPageHtml(title) {
       const response = await exec({
-         action: "parse",
+         action: 'parse',
          page: title,
-         prop: "text",
+         prop: 'text',
       });
 
       return response.parse.text;
+   }
+
+   this.getUserGender = async function getUserGender(name) {
+       const {
+         query: {
+            users: [{
+               gender = 'unknown'
+            }]
+         }
+      } = await exec({
+         action: 'query',
+         list: 'users',
+         ususers: name,
+         usprop: 'gender',
+      });
+
+      return gender;
    }
 }
 
