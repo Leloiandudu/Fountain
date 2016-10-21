@@ -2,6 +2,6 @@ packages/
 bin/
 obj/
 token
-WikiFountain.Server/Scripts/app.js
+WikiFountain.Server/Scripts/app.js*
 WikiFountain.Server/Content/app.css
 WikiFountain.Server/connectionStrings.config

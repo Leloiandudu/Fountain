@@ -13,6 +13,8 @@ var rename = require('gulp-rename');
 var watch = require('gulp-watch');
 var less = require('gulp-less');
 var minifyCSS = require('gulp-minify-css');
+var sourcemaps = require('gulp-sourcemaps');
+var exorcist = require('exorcist');
 
 var envify = require('envify');
 var gulpif = require('gulp-if');
@@ -36,6 +38,7 @@ function createBrowserify() {
       entries: paths.src,
       ignoreWatch: ['**/node_modules/**'],
       poll: true,
+      debug: !argv.release,
    }, watchify.args)).transform('envify', {
       global: true,
       _: 'purge',
@@ -52,6 +55,7 @@ function runBrowserify(b) {
    return b
       .bundle()
       .on('error', notify.onError())
+      .pipe(gulpif(!argv.release, exorcist(paths.dst + paths.dstName + '.map')))
       .pipe(source(paths.dstName))
       .pipe(buffer())
       .pipe(gulpif(argv.release, uglify()))
@@ -61,10 +65,12 @@ function runBrowserify(b) {
 
 function runLess() {
    return gulp.src(lessPaths.src)
+      .pipe(gulpif(!argv.release, sourcemaps.init()))
       .pipe(less())
       .on('error', notify.onError())
       .pipe(gulpif(argv.release, minifyCSS()))
       .pipe(rename(lessPaths.dstName))
+      .pipe(gulpif(!argv.release, sourcemaps.write()))
       .pipe(gulp.dest(lessPaths.dst));
 };
 
