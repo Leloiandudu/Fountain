@@ -1,4 +1,3 @@
-import moment from 'moment';
 import { mwApi } from './MwApi';
 import { getPlainText } from './parsing';
 

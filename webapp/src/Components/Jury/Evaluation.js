@@ -5,9 +5,10 @@ import Header from './Header';
 import ModalDialog from '../ModalDialog';
 import WikiLink from '../WikiLink';
 import WikiButton from '../WikiButton';
+import { withTranslation } from '../../translate';
 import { calcMark, getActiveMarks } from '../../jury';
 
-export default React.createClass({
+const Evaluation = React.createClass({
    getInitialState() {
       return { 
          marks: {},
@@ -121,7 +122,7 @@ export default React.createClass({
    render() {
       if (!this.props.article)
          return null;
-      const { marks } = this.props;
+      const { marks, translation: { tr } } = this.props;
       return (
          <div className='Evaluation'>
             <div className='marks'>
@@ -130,15 +131,15 @@ export default React.createClass({
             <button onClick={this.openComment} className={classNames({
                'comment-button': true,
                selected: this.state.comment,
-            })} title={this.state.comment}>комментарий</button>
+            })} title={this.state.comment}>{tr('comment')}</button>
             <div className='controls'>
                <div className='total'>
-                  Сумма: {this.getTotal()}
+                  {tr('total', this.getTotal())}
                </div>
                <WikiButton disabled={!this.canSave()} type='constructive' onClick={this.onSave}>
-                  Сохранить
+                  {tr('save')}
                </WikiButton>
-               <WikiButton onClick={this.props.onNext}>Пропустить</WikiButton>
+               <WikiButton onClick={this.props.onNext}>{tr('skip')}</WikiButton>
             </div>
             <ModalDialog isOpen={this.state.isCommentOpen} tryClose={() => this.setState({ isCommentOpen: false })} className='comment-dialog'>
                <textarea autoFocus={true} ref='commentTextarea' value={this.state.editingComment} onChange={event => this.setState({ editingComment: event.target.value })} />
@@ -151,3 +152,5 @@ export default React.createClass({
       )
    }
 })
+
+export default withTranslation(Evaluation, 'Jury.Evaluation');

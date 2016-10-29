@@ -6,6 +6,7 @@ import sortBy from './../sortBy';
 import Api from './../Api';
 import url from './../url';
 import { findMarkOf, calcMark } from './../jury';
+import { withTranslation } from './../translate';
 import Link from './Link';
 import WikiLink from './WikiLink';
 import WikiButton from './WikiButton';
@@ -50,7 +51,7 @@ function groupBy(items, fnKey, fnValue = x => x) {
    return groups;
 }
 
-export default React.createClass({
+const ArticlesList = React.createClass({
    propTypes: {
       editathon: React.PropTypes.object,
    },
@@ -92,30 +93,33 @@ export default React.createClass({
          count: v.length,
       }));
    },
+   tr(...args) {
+      return this.props.translation.tr(...args);
+   },
    renderHeader(editathon) {
       var now = moment.utc();
       if (now.isBefore(editathon.start, 'day')) {
          return <div className='header'>
-            Марафон начнётся {editathon.start.fromNow()}
+            {this.tr('editathonWillStartIn', editathon.start)}
          </div>
       }
 
       const isJury = Global.user && editathon.jury.filter(j => j === Global.user.name)[0];
       let juryButton = isJury && <WikiButton type='progressive'>
-         <Link to={`/jury/${this.props.code}`}>Оценить статьи</Link>
+         <Link to={`/jury/${this.props.code}`}>{this.tr('juryTool')}</Link>
       </WikiButton>;
 
       if (now.isAfter(editathon.finish, 'day')) {
          return <div className='header'>
-            Марафон завершён
+            {this.tr('editathonIsOver')}
             {juryButton}
          </div>;
       } else {
          return <div className='header'>
-            Марафон закончится {editathon.finish.fromNow()}
+            {this.tr('editathonWillEndIn', editathon.finish)}
             {juryButton}
             <WikiButton type={isJury ? '' : 'progressive'} className='addArticle'>
-               <Link to={`/editathons/${this.props.code}/add`} onClick={this.onAdd}>Добавить статью</Link>
+               <Link to={`/editathons/${this.props.code}/add`} onClick={this.onAdd}>{this.tr('addArticle')}</Link>
             </WikiButton>
          </div>
       }
@@ -131,19 +135,18 @@ export default React.createClass({
          <div className='ArticlesList'>
             {this.renderHeader(editathon)}
             <ModalDialog isOpen={this.state.needLogin} className='needLogin'>
-               <div className='message'>Для продолжения необходимо авторизоваться.</div>
+               <div className='message'>{this.props.translation.translate('SignInWarning.title')}</div>
                <div className='buttons'>
                   <a href={url(`/login?redirectTo=${window.location.pathname}/add`)}>
-                     <WikiButton type='progressive'>Войти</WikiButton>
+                     <WikiButton type='progressive'>{this.props.translation.translate('SignInWarning.ok')}</WikiButton>
                   </a>
-                  <WikiButton onClick={() => this.setState({ needLogin: false })}>Отмена</WikiButton>
+                  <WikiButton onClick={() => this.setState({ needLogin: false })}>{this.props.translation.translate('SignInWarning.cancel')}</WikiButton>
                </div>
             </ModalDialog>
 
             <div className='jury'>
-               Жюри: {editathon.jury.slice().sort().map(j => 
+               {this.tr('jury') + ' '}{editathon.jury.slice().sort().map(j => 
                   <span key={j}>
-                     <span className='colorKey' />
                      <WikiLink to={'UT:' + j} />
                   </span>)}
             </div>
@@ -151,9 +154,9 @@ export default React.createClass({
                <thead>
                   <tr>
                      <th className='expander'></th>
-                     <th className='user'>{this.renderSorter('name', 'Участник')}</th>
-                     <th className='count'>{this.renderSorter('count', 'Статей')}</th>
-                     <th className='total'>{this.renderSorter('total', 'Баллов')}</th>
+                     <th className='user'>{this.renderSorter('name', this.tr('user'))}</th>
+                     <th className='count'>{this.renderSorter('count', this.tr('acticlesCount'))}</th>
+                     <th className='total'>{this.renderSorter('total', this.tr('totalScore'))}</th>
                   </tr>
                </thead>
                <tbody>
@@ -173,16 +176,16 @@ export default React.createClass({
          <table className='articles'>
             <thead>
                <tr>
-                  <th className='article'>Статья</th>
-                  <th className='dateAdded'>Добавлено</th>
-                  <th className='mark'>Баллов</th>
+                  <th className='article'>{this.tr('acticle')}</th>
+                  <th className='dateAdded'>{this.tr('addedOn')}</th>
+                  <th className='mark'>{this.tr('score')}</th>
                </tr>
             </thead>
             <tbody>
                {user.articles.slice().sort(sortBy('dateAdded').desc).map(a => [
                   <tr className='summary'>
                      <td className='article'><WikiLink to={a.name} /></td>
-                     <td className='dateAdded'>{moment(a.dateAdded).utc().format('D MMM HH:mm')}</td>
+                     <td className='dateAdded'>{this.tr('dateAdded', moment(a.dateAdded).utc())}</td>
                      <td className='mark'>{formatMark(getTotalMark(jury, a.marks, marksConfig))}</td>
                   </tr>,
                   <tr className='details'>
@@ -276,3 +279,5 @@ const ExpandableRow = React.createClass({
       );
    },
 });
+
+export default withTranslation(ArticlesList, 'ArticlesList');

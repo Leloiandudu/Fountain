@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Header from './Header';
+import { withTranslation } from '../../translate';
 import Loader from '../Loader';
 import WikiLink from '../WikiLink';
 
-export default React.createClass({
+const Preview = React.createClass({
    shouldComponentUpdate({ title, info }) {
       return title !== this.props.title || info !== this.props.info;
    },
@@ -44,7 +45,7 @@ export default React.createClass({
       )
    },
    renderContent() {
-      const { info } = this.props;
+      const { info, translation: { tr } } = this.props;
       if (info === undefined)
          return <div key='loader' className='content'>
             <Loader />
@@ -52,14 +53,17 @@ export default React.createClass({
 
       if (info === false)
          return <div key='not-found' className='content not-found'>
-            Статья не найдена
+            {tr('notFound')}
          </div>;
 
       if (info && info.error)
          return <div key='error' className='content'>
-            Ошибка загрузки: <pre>{JSON.stringify(info.error, null, 4)}</pre>
+            {tr('networkError') + ' '}
+            <pre>{JSON.stringify(info.error, null, 4)}</pre>
          </div>;
 
       return <div key='iframe' ref='iframe' className='content' />
    },
 });
+
+export default withTranslation(Preview, 'Jury.Preview');

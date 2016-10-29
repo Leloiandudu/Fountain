@@ -3,10 +3,10 @@ import './URLSearchParams';
 import 'whatwg-fetch';
 
 import moment from 'moment';
-import 'moment/locale/ru';
 import React from 'react';
 import { render } from 'react-dom';
 import Router from './Router'
+import { TranslationContext } from './translate'
 
 moment.updateLocale('ru', {
     monthsShort : [
@@ -15,4 +15,8 @@ moment.updateLocale('ru', {
     ]
 });
 
-render(Router, document.getElementById('body'));
+render(
+   <TranslationContext defaultLang='ru'>
+      {Router}
+   </TranslationContext>,
+   document.getElementById('body'));

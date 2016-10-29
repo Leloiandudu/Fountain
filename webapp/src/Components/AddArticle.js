@@ -1,27 +1,27 @@
 import React from 'react';
 import classNames from 'classnames';
-import moment from 'moment';
 import url from './../url'
 import readRules, { getRulesReqs, RuleSeverity } from './../rules';
 import getArticleData from './../getArticleData';
 import Api, { UnauthorizedHttpError } from './../Api';
+import { withTranslation } from './../translate';
 import WikiButton from './WikiButton';
 import WikiLink from './WikiLink';
 import ArticleLookup from './ArticleLookup';
 import Loader from './Loader';
 
 const RuleMessages = {
-   submitterRegistered: (rule, ok) => !ok && `В этом марафоне могут соревноваться только участники, зарегистрировавшиеся не ранее ${moment(rule.params.after).format('L')}.`,
-   namespace: (rule, ok) => `${ ok ? 'Находится' : 'Не находится'} в основном пространстве статей`,
-   submitterIsCreator: (rule, ok, stats) => [ 'Автор статьи: ', <WikiLink key='link' to={`U:${stats.creator}`} /> ],
-   articleCreated: (rule, ok, stats) => 'Статья создана ' + moment(stats.created).format('L LT'),
-   articleSize: (rule, ok, stats) => [
-      rule.params.bytes && `${(stats.bytes / 1024).toFixed()} Кб`, 
-      rule.params.chars && `${stats.chars} символов`,
-   ].filter(x => x).join(', '),
+   submitterRegistered: (tr, rule, ok) => !ok && tr('submitterRegistered', rule.params.after),
+   namespace: (tr, rule, ok) => tr('namespace', ok),
+   submitterIsCreator: (tr, rule, ok, stats) => [ tr('author'), <WikiLink key='link' to={`U:${stats.creator}`} /> ],
+   articleCreated: (tr, rule, ok, stats) => tr('articleCreated', stats.created),
+   articleSize: (tr, rule, ok, stats) => [
+      rule.params.bytes && tr('kbytes', stats.bytes / 1024), 
+      rule.params.chars && tr('chars', stats.chars),
+   ].filter(x => x).join(tr.translate('delimiter')),
 };
 
-export default React.createClass({
+const AddArticle = React.createClass({
    contextTypes: {
       router: React.PropTypes.object.isRequired
    },
@@ -68,9 +68,9 @@ export default React.createClass({
       } catch(e) {
          this.setState({ adding: false })
          if (e instanceof UnauthorizedHttpError) {
-            alert('Вы не авторзиованы.');
+            alert(this.tr('unauthorized'));
          } else {
-            alert('Произошла сетевая ошибка, попробуйте снова:\n' + e.message);
+            alert(this.tr('networkError', e.message));
          }
       }
    },
@@ -96,7 +96,17 @@ export default React.createClass({
          approve: this.renderApproveStage,
       }[this.state.stage]().props.children;
    },
+   tr(...args) {
+      return this.props.translation.tr(...args)
+   },
+   ruleTr() {
+      const tr = (key, ...args) => this.props.translation.tr('Warnings.' + key, ...args);
+      tr.translate = this.props.translation.translate;
+      return tr;
+   },
    renderPickStage() {
+      const { translation: { tr } } = this.props;
+
       if (!Global.user) {
          this.returnToList();
          return <div />;
@@ -112,12 +122,13 @@ export default React.createClass({
          }
       }
 
+
       if (errors.length) {
          return (
             <div>
-               {errors.map(error => <div>{RuleMessages[error.type](error, false)}</div>)}
+               {errors.map(error => <div>{RuleMessages[error.type](this.ruleTr(), error, false)}</div>)}
                <div id='buttons'>
-                  <WikiButton onClick={this.returnToList}>Назад</WikiButton>
+                  <WikiButton onClick={this.returnToList}>{this.tr('back')}</WikiButton>
                </div>
             </div>
          );
@@ -125,17 +136,17 @@ export default React.createClass({
 
       return (
          <div>
-            <label htmlFor='title'>Название статьи:</label>
+            <label htmlFor='title'>{this.tr('articleTitle')}</label>
             <ArticleLookup
                inputProps={{ id: 'title' }}
                value={this.state.title}
                onChange={title => this.setState({ title })} />
             <div id='buttons'>
-               <WikiButton onClick={this.returnToList}>Отмена</WikiButton>
+               <WikiButton onClick={this.returnToList}>{this.tr('cancel')}</WikiButton>
                <WikiButton disabled={!this.state.title.trim()} type='progressive' submit={true} onClick={() => {
                   this.setState({ stage: 'approve', updating: true });
                   this.update();
-               }}>Далее</WikiButton>
+               }}>{this.tr('next')}</WikiButton>
             </div>
          </div>
       );
@@ -171,16 +182,16 @@ export default React.createClass({
                {missing ? 
                <div>
                   {title}
-                  <div>Статья не найдена</div>
+                  <div>{this.tr('notFound')}</div>
                </div> 
                :
                <div className='info'>
                   <div className='stats'>
                      {title}
-                     {addedBy && this.renderStat('addedBy', `${addedBy.user === Global.user.name ? 'Вы уже добавили' : 'Другой участник уже добавил' } эту статью в марафон`, false, true)}
+                     {addedBy && this.renderStat('addedBy', addedBy.user === Global.user.name ? this.tr('youAlreadyAdded') : this.tr('someoneAlreadyAdded'), false, true)}
                      {rules.map(([ rule, result ]) => this.renderStat(
                         rule.type, 
-                        RuleMessages[rule.type](rule, result, stats), 
+                        RuleMessages[rule.type](this.ruleTr(), rule, result, stats), 
                         result, 
                         rule.severity === RuleSeverity.requirement)
                      )}
@@ -189,8 +200,8 @@ export default React.createClass({
                </div>}
             </div>).props.children}
             <div id='buttons'>
-               <WikiButton onClick={() => this.setState({ stage: 'pick' })}>Назад</WikiButton>
-               <WikiButton loading={this.state.adding} disabled={this.state.updating || !ok || addedBy} type='constructive' submit={true} onClick={this.add}>Добавить</WikiButton>
+               <WikiButton onClick={() => this.setState({ stage: 'pick' })}>{this.tr('back')}</WikiButton>
+               <WikiButton loading={this.state.adding} disabled={this.state.updating || !ok || addedBy} type='constructive' submit={true} onClick={this.add}>{this.tr('add')}</WikiButton>
             </div>
          </div>
       );
@@ -214,3 +225,5 @@ export default React.createClass({
       );
    },
 });
+
+export default withTranslation(AddArticle, 'AddArticle');

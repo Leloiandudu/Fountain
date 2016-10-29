@@ -6,6 +6,7 @@ import Api from './../../Api';
 import { mwApi } from './../../MwApi';
 import readRules, { getRulesReqs, RuleSeverity } from './../../rules';
 import getArticleData from './../../getArticleData';
+import { withTranslation } from './../../translate';
 import { findMarkOf } from './../../jury';
 import Loader from './../Loader';
 import ModalDialog from '../ModalDialog';
@@ -17,7 +18,7 @@ import Preview from './Preview';
 import Expander from './Expander';
 import Evaluation from './Evaluation';
 
-export default React.createClass({
+const Jury = React.createClass({
    contextTypes: {
       router: React.PropTypes.object.isRequired
    },
@@ -189,7 +190,8 @@ export default React.createClass({
    },
 
    render() {
-      const { editathon, info } = this.state;
+      const { translation: { translate } } = this.props;
+      const { editathon, info  } = this.state;
       if (!editathon)
          return <Loader />;
       const article = this.getSelectedArticle();
@@ -207,13 +209,15 @@ export default React.createClass({
                <Evaluation onNext={this.moveNext} onSaveMarks={this.onSaveMark} article={article} marks={editathon.marks} mark={findMarkOf(article.marks)} onChanged={this.onChanged} />
             </main>
             <ModalDialog isOpen={this.state.unsavedWarning} className='unsavedWarning'>
-               <div className='message'>Ваши изменения не будут сохранены.</div>
+               <div className='message'>{translate('UnsavedWarning.message')}</div>
                <div className='buttons'>
-                  <WikiButton type='destructive' onClick={() => this.state.unsavedWarning(true)}>Продолжить</WikiButton>
-                  <WikiButton onClick={() => this.state.unsavedWarning(false)}>Отмена</WikiButton>
+                  <WikiButton type='destructive' onClick={() => this.state.unsavedWarning(true)}>{translate('UnsavedWarning.ok')}</WikiButton>
+                  <WikiButton onClick={() => this.state.unsavedWarning(false)}>{translate('UnsavedWarning.cancel')}</WikiButton>
                </div>
             </ModalDialog>
          </div>
       )
    },
 });
+
+export default withTranslation(Jury, 'Jury');

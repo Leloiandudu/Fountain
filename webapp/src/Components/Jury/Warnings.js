@@ -1,26 +1,26 @@
 import React from 'react';
-import moment from 'moment';
 import Loader from './../Loader';
 import WikiLink from './../WikiLink';
+import { withTranslation } from '../../translate';
 import Header from './Header';
 import classNames from 'classnames';
 
 const RuleMessages = {
-   submitterIsCreator: (rule, ok, stats, ctx) => [ 
-      'Автор',
+   submitterIsCreator: (rule, ok, stats, ctx, tr) => [ 
+      tr('author'),
       <WikiLink to={`UT:${stats.creator}`} />,
    ],
-   articleCreated: (rule, ok, stats) => [
-      'Cоздана',
-      moment(stats.created).format('L LT'),
+   articleCreated: (rule, ok, stats, ctx, tr) => [
+      tr('createdOn'),
+      tr('createdDate', stats.created),
    ],
-   articleSize: (rule, ok, stats) => [
-      `${(stats.bytes / 1024).toFixed()} Кб`,
-      `${stats.chars} символов`,
+   articleSize: (rule, ok, stats, ctx, tr) => [
+      tr('kbytes', stats.bytes / 1024),
+      tr('chars', stats.chars),
    ],
 };
 
-export default React.createClass({
+const Warnings = React.createClass({
    render() {
       return (
          <div className='Warnings'>
@@ -29,13 +29,13 @@ export default React.createClass({
       )
    },
    renderWarnings() {
-      const { article, rules, info } = this.props;
+      const { article, rules, info, translation: { tr } } = this.props;
       if (!article || !rules || info === undefined) {
          return <Loader />;
       }
 
       const author = this.renderStat('_author', [ 
-         info.userGender == 'female' ? 'Добавила' : 'Добавил',
+         tr('submittedBy', info.userGender),
          <WikiLink key='a' to={'UT:' + article.user} className='value nowrap' target='_blank' />,
       ], true);
 
@@ -53,7 +53,7 @@ export default React.createClass({
          {author}
          {rules.map(rule => {
             const result = rule.check(info, ctx);
-            return this.renderStat(rule.type, RuleMessages[rule.type](rule, result, info, ctx), result);
+            return this.renderStat(rule.type, RuleMessages[rule.type](rule, result, info, ctx, tr), result);
          })}
       </div>).props.children;
    },
@@ -63,3 +63,5 @@ export default React.createClass({
       </div>
    },
 });
+
+export default withTranslation(Warnings, 'Jury.Warnings');

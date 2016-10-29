@@ -4,19 +4,22 @@ import moment from 'moment';
 import Api from './../Api';
 import WikiButton from './WikiButton';
 import Link from './Link';
+import { withTranslation } from '../translate';
 
-export default React.createClass({
+const EditathonList = React.createClass({
    getInitialState() {
       return {};
    },
    async componentWillMount() {
       this.setState({ list: await Api.getEditathons() });
    },
+   translate(...args) {
+      return this.props.translation.translate(...args);
+   },
    render() {
       return (
          <div className='EditathonList mainContentPane'>
-            <h1>Марафоны</h1>
-            {false && <WikiButton type='progressive' className='create'>Создать марафон</WikiButton>}
+            <h1>{this.translate('EditathonList.title')}</h1>
             <ul>
                {this.state.list && this.state.list.map(this.renderItem)}
             </ul>
@@ -24,7 +27,7 @@ export default React.createClass({
       );
    },
    renderItem(item) {
-      const today = moment();
+      const today = moment().utc();
       const isPast = item.finish.isBefore(today);
       const isCurrent = item.start.isBefore(today) && item.finish.isAfter(today);
       const url = '/editathons/' + encodeURIComponent(item.code);
@@ -56,8 +59,10 @@ export default React.createClass({
          startFormat = format;
 
       if (!startFormat)
-         return finish.format(format);
+         return this.translate('formatDate', finish, format);
 
-      return `${start.format(startFormat)} — ${finish.format(format)}`;
+      return `${this.translate('formatDate', start, startFormat)} — ${this.translate('formatDate', finish, format)}`;
    },
 });
+
+export default withTranslation(EditathonList);
