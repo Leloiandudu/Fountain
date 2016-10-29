@@ -31,6 +31,7 @@
     "babel-polyfill": "^6.13.0",
     "classnames": "^2.2.3",
     "clone-deep": "^0.2.4",
+    "dom-scroll-into-view": "^1.2.0",
     "moment": "^2.13.0",
     "range": "0.0.3",
     "react": "^15.1.0",

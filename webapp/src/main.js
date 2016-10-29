@@ -15,8 +15,18 @@ moment.updateLocale('ru', {
     ]
 });
 
+let lang = localStorage.getItem('fountainLang');
+if (!lang) {
+   lang = navigator.language || navigator.userLanguage;
+   if (lang) {
+      const index = lang.indexOf('-');
+      if (index !== -1)
+         lang = lang.substr(0, index);
+   }
+}
+
 render(
-   <TranslationContext defaultLang='ru'>
+   <TranslationContext defaultLang={lang || 'en'} onSetLang={x => localStorage.setItem('fountainLang', x)}>
       {Router}
    </TranslationContext>,
    document.getElementById('body'));

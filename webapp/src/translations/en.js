@@ -4,6 +4,7 @@ const formatNumber = numberFormatter(',', '.');
 const { formatDateIn, formatDate } = dateFormatter('en');
 
 export default {
+   _name: 'English',
    formatNumber,
    formatDate,
    formatDateIn,

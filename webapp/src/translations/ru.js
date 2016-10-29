@@ -5,6 +5,7 @@ const formatNumber = numberFormatter('\u00a0', ',');
 const { formatDateIn, formatDate } = dateFormatter('ru');
 
 export default {
+   _name: 'русский',
    formatNumber,
    formatDate,
    formatDateIn,

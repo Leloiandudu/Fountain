@@ -1,0 +1,44 @@
+.LangSwitcher {
+   position: relative;
+
+   > button {
+      width: 16px;
+      height: 16px;
+      background-image: url('lang.png');
+      cursor: pointer;
+      vertical-align: middle;
+   }
+
+   .popup {
+      position: absolute;
+      z-index: 999;
+
+      background-color: white;
+      display: flex;
+      flex-flow: column;
+
+      .list {
+         display: flex;
+         flex-flow: column;
+         max-height: 10em;
+         overflow-y: auto;
+         border: solid 1px #ccc;
+         border-top: none;
+
+         a {
+            cursor: pointer;
+            padding: 0.01em 0.25em;
+            white-space: nowrap;
+
+            &.current {
+               font-weight: bold;
+            }
+
+            &.highlighted {
+               background-color: #4c59a6;
+               color: #fff;
+            }
+         }
+      }
+   }
+}

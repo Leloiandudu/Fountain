@@ -106,6 +106,7 @@ export class TranslationContext extends React.Component {
    static get propTypes() { 
       return {
          defaultLang: React.PropTypes.string.isRequired,
+         onSetLang: React.PropTypes.function,
       }
    }
 
@@ -122,11 +123,14 @@ export class TranslationContext extends React.Component {
          'TranslationContext': {
             curLang,
             translate: translator(Langs[curLang]),
+            translateFrom: (lang, ...args) => translator(Langs[lang])(...args),
             setLang: lang => {
                if (!(lang in Langs)) {
                   throw new Error('Unknown language ' + lang);
                }
                this.setState({ curLang: lang });
+               if (this.props.onSetLang)
+                  this.props.onSetLang(lang);
             },
             allLangs() {
                return Object.keys(Langs);
