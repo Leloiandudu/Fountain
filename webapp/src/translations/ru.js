@@ -16,6 +16,12 @@ export default {
       signOut: 'Выйти',
    },
 
+   Footer: {
+      'preLink': 'В случае проблем с инструментом обратитесь к ',
+      'link': 'Ле Лою',
+      'postLink': '',
+   },
+
    EditathonList: {
       title: 'Марафоны',
    },
@@ -43,7 +49,7 @@ export default {
          author: 'Автор статьи:',
          articleCreated: date => `Статья создана ${formatDate(date, 'L LT')}`,
          chars: n => `${formatNumber(n)} ${plural(n, 'символ', 'символа', 'символов')}`,
-         kbytes: n => `${formatNumber(n)} Кб`,
+         bytes: n => `${formatNumber(n)} байт`,
       },
 
       unauthorized: 'Вы не авторзиованы.',
@@ -73,7 +79,7 @@ export default {
    Jury: {
       Warnings: {
          chars: n => `${formatNumber(n)} ${plural(n, 'символ', 'символа', 'символов')}`,
-         kbytes: n => `${formatNumber(n)} Кб`,
+         bytes: n => `${formatNumber(n)} байт`,
          author: 'Автор',
          createdOn: 'Создана',
          createdDate: date => formatDate(date, 'L LT'),

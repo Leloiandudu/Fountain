@@ -15,7 +15,7 @@ const RuleMessages = {
       tr('createdDate', stats.created),
    ],
    articleSize: (rule, ok, stats, ctx, tr) => [
-      tr('kbytes', stats.bytes / 1024),
+      tr('bytes', stats.bytes),
       tr('chars', stats.chars),
    ],
 };

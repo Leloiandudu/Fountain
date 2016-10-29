@@ -16,7 +16,7 @@ const RuleMessages = {
    submitterIsCreator: (tr, rule, ok, stats) => [ tr('author'), <WikiLink key='link' to={`U:${stats.creator}`} /> ],
    articleCreated: (tr, rule, ok, stats) => tr('articleCreated', stats.created),
    articleSize: (tr, rule, ok, stats) => [
-      rule.params.bytes && tr('kbytes', stats.bytes / 1024), 
+      rule.params.bytes && tr('bytes', stats.bytes), 
       rule.params.chars && tr('chars', stats.chars),
    ].filter(x => x).join(tr.translate('delimiter')),
 };

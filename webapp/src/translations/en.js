@@ -15,6 +15,12 @@ export default {
       signOut: 'Log out',
    },
 
+   Footer: {
+      'preLink': 'Please contact ',
+      'link': 'Le Loy',
+      'postLink': ' if you have problems with this tool',
+   },
+
    EditathonList: {
       title: 'Editations',
    },
@@ -42,7 +48,7 @@ export default {
          author: 'Created by:',
          articleCreated: date => `The article was created at ${formatDate(date, 'L LT')}`,
          chars: n => `${formatNumber(n)} ${plural(n, 'symbol', 'symbols')}`,
-         kbytes: n => `${formatNumber(n)} KB`,
+         bytes: n => `${formatNumber(n)} bytes`,
       },
 
       unauthorized: 'You\'re not authorised',
@@ -65,14 +71,14 @@ export default {
 
    UnsavedWarning: {
       message: 'Your changes will be discarded.',
-      ok: 'OK',
+      ok: 'Discard',
       cancel: 'Cancel',
    },
 
    Jury: {
       Warnings: {
          chars: n => `${formatNumber(n)} ${plural(n, 'symbol', 'symbols')}`,
-         kbytes: n => `${formatNumber(n)} KB`,
+         bytes: n => `${formatNumber(n)} bytes`,
          author: 'Created by',
          createdOn: 'Created on',
          createdDate: date => formatDate(date, 'L LT'),
