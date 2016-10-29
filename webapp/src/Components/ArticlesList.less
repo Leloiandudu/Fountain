@@ -48,8 +48,9 @@
          text-align: right;
       }
 
-      .article, .user {
-         width: 100%;
+      td:not(.article):not(.user),
+      th:not(.article):not(.user) {
+         width: 1px;
       }
 
       .dateAdded {
@@ -58,10 +59,6 @@
 
       th, td {
          min-width: 1.2em;
-
-         &.user {
-            width: 100%;
-         }
       }
 
       th {
