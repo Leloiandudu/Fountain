@@ -3,7 +3,7 @@ import cloneDeep from 'clone-deep';
 import sortBy from './../../sortBy';
 import url from './../../url';
 import Api from './../../Api';
-import { mwApi } from './../../MwApi';
+import { getMwApi } from './../../MwApi';
 import readRules, { getRulesReqs, RuleSeverity } from './../../rules';
 import getArticleData from './../../getArticleData';
 import { withTranslation } from './../../translate';
@@ -85,8 +85,9 @@ const Jury = React.createClass({
          let info, userGender;
          try {
             const what = getRulesReqs(this.getRules());
+            const mwApi = getMwApi(this.state.editathon.wiki);
             [ info, userGender ] = await Promise.all([
-               getArticleData(title, [ ...what, 'html' ]),
+               getArticleData(mwApi, title, [ ...what, 'html' ]),
                mwApi.getUserGender(article.user)
             ]);
             if (info === null)
@@ -198,14 +199,14 @@ const Jury = React.createClass({
 
       return (
          <div className='Jury'>
-            <Header title={this.state.selected} menuOpen={this.state.menuOpen} toggleMenu={this.toggleMenu} onClose={this.tryClose}>
-               <Warnings info={info} rules={this.getRules()} article={article} />
+            <Header title={this.state.selected} wiki={editathon.wiki} menuOpen={this.state.menuOpen} toggleMenu={this.toggleMenu} onClose={this.tryClose}>
+               <Warnings info={info} rules={this.getRules()} article={article} wiki={editathon.wiki} />
             </Header>
             <main>
                <Expander expanded={this.state.menuOpen}>
                   <ArticlesList articles={editathon.articles} selected={this.state.selected} onArticleSelected={this.selectArticle} />
                </Expander>
-               <Preview title={this.state.selected} info={info} />
+               <Preview title={this.state.selected} wiki={editathon.wiki} info={info} />
                <Evaluation onNext={this.moveNext} onSaveMarks={this.onSaveMark} article={article} marks={editathon.marks} mark={findMarkOf(article.marks)} onChanged={this.onChanged} />
             </main>
             <ModalDialog isOpen={this.state.unsavedWarning} className='unsavedWarning'>

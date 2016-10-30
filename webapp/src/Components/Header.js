@@ -11,7 +11,7 @@ const Header = ({ children, translation: { tr } }) => (
          <Link to='/'><img className='logo' src={url('/Content/logo.png')} /></Link>
          <LangSwitcher />
          {Global.user && <div className='login'>
-            <span className='userName'><WikiLink to={`U:${Global.user.name}`} /></span>
+            <span className='userName'><WikiLink to={`User:${Global.user.name}`} /></span>
             <a className='action' href={url(`/logout?redirectTo=${window.location.pathname}`)}>{tr('signOut')}</a>
          </div> || <div className='login'>
             <a className='action' href={url(`/login?redirectTo=${window.location.pathname}`)}>{tr('signIn')}</a>

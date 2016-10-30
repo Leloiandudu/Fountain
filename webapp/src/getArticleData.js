@@ -1,4 +1,3 @@
-import { mwApi } from './MwApi';
 import { getPlainText, getWordCount } from './parsing';
 
 class Request {
@@ -165,8 +164,6 @@ const Types = {
 
          piprop: 'thumbnail',
          pithumbsize: 300,
-
-         // uselang: 'ru',
       }, ({
          query: {
             pages: [{
@@ -214,7 +211,7 @@ const Types = {
 };
 
 // what: title, ns, html, chars, bytes, creator, created, card
-export default async function getArticleData(title, what) {
+export default async function getArticleData(mwApi, title, what) {
    const req = new Request();
    const result = {};
 

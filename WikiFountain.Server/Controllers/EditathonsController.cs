@@ -29,6 +29,7 @@ namespace WikiFountain.Server.Controllers
                 e.Description,
                 e.Start,
                 e.Finish,
+                e.Wiki,
             }).ToList());
         }
 
@@ -49,6 +50,7 @@ namespace WikiFountain.Server.Controllers
                 e.Description,
                 e.Start,
                 e.Finish,
+                e.Wiki,
                 e.Jury,
                 e.Marks,
                 Rules = e.Rules.Select(r => new
@@ -100,7 +102,7 @@ namespace WikiFountain.Server.Controllers
             if (e.Articles.Any(a => a.Name == body.Title))
                 return Forbidden();
 
-            var wiki = new MediaWiki("https://ru.wikipedia.org/w/api.php", _identity);
+            var wiki = new MediaWiki("https://" + e.Wiki +  ".wikipedia.org/w/api.php", _identity);
 
             var page = await wiki.GetPage(body.Title);
             if (page == null)
@@ -175,7 +177,7 @@ namespace WikiFountain.Server.Controllers
                 page = page.Insert(regions.Last().Offset, templateString);
             }
 
-            await wiki.EditPage(title, page, "Автоматическая простановка шаблона");
+            await wiki.EditPage(title, page, "Automatically adding template");
         }
 
         public class MarkPostData

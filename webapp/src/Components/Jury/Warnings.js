@@ -6,9 +6,9 @@ import Header from './Header';
 import classNames from 'classnames';
 
 const RuleMessages = {
-   submitterIsCreator: (rule, ok, stats, ctx, tr) => [ 
+   submitterIsCreator: (rule, ok, stats, ctx, tr, wiki) => [ 
       tr('author'),
-      <WikiLink to={`UT:${stats.creator}`} />,
+      <WikiLink to={`User_talk:${stats.creator}`} wiki={wiki} />,
    ],
    articleCreated: (rule, ok, stats, ctx, tr) => [
       tr('createdOn'),
@@ -30,14 +30,14 @@ const Warnings = React.createClass({
       )
    },
    renderWarnings() {
-      const { article, rules, info, translation: { tr } } = this.props;
+      const { article, rules, info, translation: { tr }, wiki } = this.props;
       if (!article || !rules || info === undefined) {
          return <Loader />;
       }
 
       const author = this.renderStat('_author', [ 
          tr('submittedBy', info.userGender),
-         <WikiLink key='a' to={'UT:' + article.user} className='value nowrap' target='_blank' />,
+         <WikiLink key='a' to={'User_talk:' + article.user} wiki={wiki} className='value nowrap' target='_blank' />,
       ], true);
 
       if (!info || info.error) {
@@ -54,7 +54,7 @@ const Warnings = React.createClass({
          {author}
          {rules.map(rule => {
             const result = rule.check(info, ctx);
-            return this.renderStat(rule.type, RuleMessages[rule.type](rule, result, info, ctx, tr), result);
+            return this.renderStat(rule.type, RuleMessages[rule.type](rule, result, info, ctx, tr, wiki), result);
          })}
       </div>).props.children;
    },

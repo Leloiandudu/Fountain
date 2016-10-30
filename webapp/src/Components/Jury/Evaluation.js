@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import Header from './Header';
 import ModalDialog from '../ModalDialog';
-import WikiLink from '../WikiLink';
 import WikiButton from '../WikiButton';
 import { withTranslation } from '../../translate';
 import { calcMark, getActiveMarks } from '../../jury';

@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import Autocomplete from 'react-autocomplete';
-import { mwApi } from './../MwApi';
+import { getMwApi } from './../MwApi';
 import throttle from './../throttle';
 
 export default React.createClass({
@@ -26,7 +26,7 @@ export default React.createClass({
       this.callLookup && this.callLookup.cancel();
    },
    lookup(value) {
-      return value && mwApi.lookup(value) || [];
+      return value && getMwApi(this.props.wiki).lookup(value) || [];
    },
    async onChange(value) {
       const { onChange } = this.props;

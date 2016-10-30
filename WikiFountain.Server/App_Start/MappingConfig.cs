@@ -28,8 +28,8 @@ namespace WikiFountain.Server
 
             nhConf.AddMapping(ImplicitMapping());
 
-            //new SchemaExport(nhConf).Execute(Log, true, false);
-            //new SchemaUpdate(nhConf).Execute(Log, true);
+            //new SchemaExport(nhConf).Execute(Log, false, false);
+            //new SchemaUpdate(nhConf).Execute(Log, false);
 
             return nhConf.BuildSessionFactory();
         }

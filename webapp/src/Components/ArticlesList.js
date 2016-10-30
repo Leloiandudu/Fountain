@@ -149,7 +149,7 @@ const ArticlesList = React.createClass({
             <div className='jury'>
                {this.tr('jury') + ' '}{editathon.jury.slice().sort().map(j => 
                   <span key={j}>
-                     <WikiLink to={'UT:' + j} />
+                     <WikiLink to={'User_talk:' + j} wiki={editathon.wiki} />
                   </span>)}
             </div>
             <table>
@@ -165,7 +165,7 @@ const ArticlesList = React.createClass({
                   <tr className='spacer' />
                </tbody>
                {data.map(user => 
-                  <ExpandableRow key={user.name} user={user} formatMark={this.formatMark} formatNumber={this.formatNumber}>
+                  <ExpandableRow key={user.name} user={user} wiki={editathon.wiki} formatMark={this.formatMark} formatNumber={this.formatNumber}>
                      {this.renderArticles(editathon, user)}
                   </ExpandableRow>
                )}
@@ -173,7 +173,7 @@ const ArticlesList = React.createClass({
          </div>
       );
    },
-   renderArticles({ jury, marks: marksConfig }, user) {
+   renderArticles({ wiki, jury, marks: marksConfig }, user) {
       return (
          <table className='articles'>
             <thead>
@@ -186,7 +186,7 @@ const ArticlesList = React.createClass({
             <tbody>
                {user.articles.slice().sort(sortBy('dateAdded').desc).map(a => [
                   <tr className='summary'>
-                     <td className='article'><WikiLink to={a.name} /></td>
+                     <td className='article'><WikiLink to={a.name} wiki={wiki} /></td>
                      <td className='dateAdded'>{this.tr('dateAdded', moment(a.dateAdded).utc())}</td>
                      <td className='mark'>{this.formatMark(getTotalMark(jury, a.marks, marksConfig))}</td>
                   </tr>,
@@ -260,7 +260,7 @@ const ExpandableRow = React.createClass({
       this.setState({ expanded: !this.state.expanded });
    },
    render() {
-      const { user } = this.props;
+      const { user, wiki, formatNumber, formatMark, children } = this.props;
       const { expanded } = this.state;
       return (
          <tbody>
@@ -268,13 +268,13 @@ const ExpandableRow = React.createClass({
                <td className={classNames({ expander: true, expanded })}>
                   <button onClick={this.expand} />
                </td>
-               <td className='user'><WikiLink to={`UT:${user.name}`} /></td>
-               <td className='count'>{this.props.formatNumber(user.count)}</td>
-               <td className='total'>{this.props.formatMark(user.total)}</td>
+               <td className='user'><WikiLink to={`User_talk:${user.name}`} wiki={wiki} /></td>
+               <td className='count'>{formatNumber(user.count)}</td>
+               <td className='total'>{formatMark(user.total)}</td>
             </tr>
             {expanded && <tr className='expanded'>
                <td colSpan={4}>
-                  {this.props.children}
+                  {children}
                </td>
             </tr>}
          </tbody>

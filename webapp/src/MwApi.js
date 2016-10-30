@@ -1,5 +1,11 @@
 import pkg from './../package.json';
 
+export function getWikiHost(wiki) {
+   return {
+      'meta': 'meta.wikimedia.org',
+   }[wiki] || (wiki + '.wikipedia.org');
+}
+
 export default function MwApi(url) {
    async function exec(params) {
       params = Object.assign({}, {
@@ -62,4 +68,6 @@ export default function MwApi(url) {
    }
 }
 
-export const mwApi = new MwApi('https://ru.wikipedia.org/w/api.php');
+export function getMwApi(wiki) {
+   return new MwApi(`https://${getWikiHost(wiki)}/w/api.php`)
+}

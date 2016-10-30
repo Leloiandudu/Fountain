@@ -4,6 +4,7 @@ import url from './../url'
 import readRules, { getRulesReqs, RuleSeverity } from './../rules';
 import getArticleData from './../getArticleData';
 import Api, { UnauthorizedHttpError } from './../Api';
+import { getMwApi } from './../MwApi';
 import { withTranslation } from './../translate';
 import WikiButton from './WikiButton';
 import WikiLink from './WikiLink';
@@ -13,7 +14,7 @@ import Loader from './Loader';
 const RuleMessages = {
    submitterRegistered: (tr, rule, ok) => !ok && tr('submitterRegistered', rule.params.after),
    namespace: (tr, rule, ok) => tr('namespace', ok),
-   submitterIsCreator: (tr, rule, ok, stats) => [ tr('author'), <WikiLink key='link' to={`U:${stats.creator}`} /> ],
+   submitterIsCreator: (tr, rule, ok, stats, wiki) => [ tr('author'), <WikiLink key='link' to={`User:${stats.creator}`} wiki={wiki} /> ],
    articleCreated: (tr, rule, ok, stats) => tr('articleCreated', stats.created),
    articleSize: (tr, rule, ok, stats) => [
       rule.params.bytes && tr('bytes', stats.bytes), 
@@ -41,7 +42,8 @@ const AddArticle = React.createClass({
       try {
          if (!stats || title !== stats.title) {
             const what = getRulesReqs(this.getRules());
-            stats = await getArticleData(title, [ 'title', 'card', ...what ]);
+            const mwApi = getMwApi(this.props.editathon.wiki);
+            stats = await getArticleData(mwApi, title, [ 'title', 'card', ...what ]);
             if (stats)
                title = stats.title;
          }
@@ -106,7 +108,7 @@ const AddArticle = React.createClass({
       return tr;
    },
    renderPickStage() {
-      const { translation: { tr } } = this.props;
+      const { translation: { tr }, editathon: { wiki } } = this.props;
 
       if (!Global.user) {
          this.returnToList();
@@ -127,7 +129,7 @@ const AddArticle = React.createClass({
       if (errors.length) {
          return (
             <div>
-               {errors.map(error => <div>{RuleMessages[error.type](this.ruleTr(), error, false)}</div>)}
+               {errors.map(error => <div>{RuleMessages[error.type](this.ruleTr(), error, false, null, wiki)}</div>)}
                <div id='buttons'>
                   <WikiButton onClick={this.returnToList}>{this.tr('back')}</WikiButton>
                </div>
@@ -139,6 +141,7 @@ const AddArticle = React.createClass({
          <div>
             <label htmlFor='title'>{this.tr('articleTitle')}</label>
             <ArticleLookup
+               wiki={wiki}
                inputProps={{ id: 'title' }}
                value={this.state.title}
                onChange={title => this.setState({ title })} />
@@ -153,14 +156,15 @@ const AddArticle = React.createClass({
       );
    },
    renderApproveStage() {
+      const { editathon } = this.props;
       const stats = this.state.stats;
       const missing = !stats;
 
       const title = <h2>
-         <WikiLink to={stats && stats.title || this.state.title} red={missing} />
+         <WikiLink to={stats && stats.title || this.state.title} wiki={editathon.wiki} red={missing} />
       </h2>;
 
-      const addedBy = stats && this.props.editathon.articles.filter(a => a.name === stats.title)[0];
+      const addedBy = stats && editathon.articles.filter(a => a.name === stats.title)[0];
 
       const rules = [];
       let ok = !missing;
@@ -192,7 +196,7 @@ const AddArticle = React.createClass({
                      {addedBy && this.renderStat('addedBy', addedBy.user === Global.user.name ? this.tr('youAlreadyAdded') : this.tr('someoneAlreadyAdded'), false, true)}
                      {rules.map(([ rule, result ]) => this.renderStat(
                         rule.type, 
-                        RuleMessages[rule.type](this.ruleTr(), rule, result, stats), 
+                        RuleMessages[rule.type](this.ruleTr(), rule, result, stats, editathon.wiki), 
                         result, 
                         rule.severity === RuleSeverity.requirement)
                      )}
