@@ -46,6 +46,9 @@ const EditathonList = React.createClass({
       );
    },
    renderDates({ start, finish }) {
+      start = moment(start).utc();
+      finish = moment(finish).utc();
+      
       let format = 'MMM';
       let startFormat = format;
 

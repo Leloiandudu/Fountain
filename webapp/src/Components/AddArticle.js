@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import moment from 'moment';
 import url from './../url'
 import readRules, { getRulesReqs, RuleSeverity } from './../rules';
 import getArticleData from './../getArticleData';
@@ -15,7 +16,7 @@ const RuleMessages = {
    submitterRegistered: (tr, rule, ok) => !ok && tr('submitterRegistered', rule.params.after),
    namespace: (tr, rule, ok) => tr('namespace', ok),
    submitterIsCreator: (tr, rule, ok, stats, wiki) => [ tr('author'), <WikiLink key='link' to={`User:${stats.creator}`} wiki={wiki} /> ],
-   articleCreated: (tr, rule, ok, stats) => tr('articleCreated', stats.created),
+   articleCreated: (tr, rule, ok, stats) => tr('articleCreated', moment(stats.created).utc()),
    articleSize: (tr, rule, ok, stats) => [
       rule.params.bytes && tr('bytes', stats.bytes), 
       rule.params.chars && tr('chars', stats.chars),
