@@ -33,10 +33,6 @@ function sort(items, by, asc) {
    return stable(items, sort);
 }
 
-function formatMark(mark) {
-   return mark === null ? '' : mark.toFixed(2);
-}
-
 function groupBy(items, fnKey, fnValue = x => x) {
    const groups = new Map();
    for (const item of items) {
@@ -95,6 +91,12 @@ const ArticlesList = React.createClass({
    },
    tr(...args) {
       return this.props.translation.tr(...args);
+   },
+   formatNumber(...args) {
+      return this.props.translation.translate('formatNumber', ...args);
+   },
+   formatMark(mark) {
+      return mark === null ? '' : this.formatNumber(mark, { places: 2 });
    },
    renderHeader(editathon) {
       var now = moment.utc();
@@ -163,7 +165,7 @@ const ArticlesList = React.createClass({
                   <tr className='spacer' />
                </tbody>
                {data.map(user => 
-                  <ExpandableRow key={user.name} user={user}>
+                  <ExpandableRow key={user.name} user={user} formatMark={this.formatMark} formatNumber={this.formatNumber}>
                      {this.renderArticles(editathon, user)}
                   </ExpandableRow>
                )}
@@ -186,7 +188,7 @@ const ArticlesList = React.createClass({
                   <tr className='summary'>
                      <td className='article'><WikiLink to={a.name} /></td>
                      <td className='dateAdded'>{this.tr('dateAdded', moment(a.dateAdded).utc())}</td>
-                     <td className='mark'>{formatMark(getTotalMark(jury, a.marks, marksConfig))}</td>
+                     <td className='mark'>{this.formatMark(getTotalMark(jury, a.marks, marksConfig))}</td>
                   </tr>,
                   <tr className='details'>
                      <td colSpan={3}>
@@ -233,7 +235,7 @@ const ArticlesList = React.createClass({
 
       return (
          <li className='mark' key={index}>
-            <span className='jury'>{mark.user}</span>{': '}<span className='sum'>{sum}</span>
+            <span className='jury'>{mark.user}</span>{': '}<span className='sum'>{this.formatNumber(sum, 2)}</span>
             <dl className='details'>
                {details}
             </dl>
@@ -267,8 +269,8 @@ const ExpandableRow = React.createClass({
                   <button onClick={this.expand} />
                </td>
                <td className='user'><WikiLink to={`UT:${user.name}`} /></td>
-               <td className='count'>{user.count}</td>
-               <td className='total'>{formatMark(user.total)}</td>
+               <td className='count'>{this.props.formatNumber(user.count)}</td>
+               <td className='total'>{this.props.formatMark(user.total)}</td>
             </tr>
             {expanded && <tr className='expanded'>
                <td colSpan={4}>

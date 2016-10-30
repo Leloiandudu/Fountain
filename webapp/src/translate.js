@@ -40,7 +40,7 @@ export function numberFormatter(group, decimal) {
       const parts = [ ];
       while (n > 0) {
          parts.unshift((n % 1000).toFixed());
-         n = Math.floor(n / 1000);
+         n = Math.trunc(n / 1000);
       }
 
       return parts.map((p, i) => i === 0 ? p : p.padStart(3, '0')).join(group);
@@ -48,7 +48,7 @@ export function numberFormatter(group, decimal) {
 
    return function formatNumber(n, { places = 0, forcePlus = false } = {}) {
       const p = Math.abs(n) + 5 * Math.pow(10, -places - 1);
-      const i = Math.floor(p);
+      const i = Math.trunc(p);
 
       const sign = Math.sign(n) === -1 ? 
          '\u2212' : 
@@ -59,7 +59,7 @@ export function numberFormatter(group, decimal) {
          return start;
 
       const f = p - i;
-      return start + decimal + f.toFixed(places).substr(2);
+      return start + decimal + f.toString().slice(2, places + 2);
    }
 }
 
@@ -106,7 +106,7 @@ export class TranslationContext extends React.Component {
    static get propTypes() { 
       return {
          defaultLang: React.PropTypes.string.isRequired,
-         onSetLang: React.PropTypes.function,
+         onSetLang: React.PropTypes.func,
       }
    }
 
