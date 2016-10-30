@@ -1,5 +1,13 @@
+import moment from 'moment';
 import 'moment/locale/ru';
 import { plural, numberFormatter, dateFormatter, gender } from '../translate';
+
+moment.updateLocale('ru', {
+    monthsShort : [
+        'янв', 'фев', 'мар', 'апр', 'май', 'июн', 
+        'июл', 'авг', 'сен', 'окт', 'ноя', 'дек',
+    ]
+});
 
 const formatNumber = numberFormatter('\u00a0', ',');
 const { formatDateIn, formatDate } = dateFormatter('ru');
@@ -39,17 +47,18 @@ export default {
       acticle: 'Статья',
       addedOn: 'Добавлено',
       score: 'Баллов',
-      dateAdded: date => formatDate(date, 'D MMM LT')
+      dateAdded: date => formatDate(date, 'D MMM LT'),
    },
 
    AddArticle: {
       Warnings: {
          submitterRegistered: date => `В этом марафоне могут соревноваться только участники, зарегистрировавшиеся не ранее ${formatDate(date, 'L')}`,
          namespace: isIn => `${isIn ? 'Находится' : 'Не находится'} в основном пространстве статей`,
-         author: 'Автор статьи:',
+         author: 'Автор статьи: ',
          articleCreated: date => `Статья создана ${formatDate(date, 'L LT')}`,
          chars: n => `${formatNumber(n)} ${plural(n, 'символ', 'символа', 'символов')}`,
          bytes: n => `${formatNumber(n)} байт`,
+         words: n => `${formatNumber(n)} ${plural(n, 'слово', 'слова', 'слов')}`,
       },
 
       unauthorized: 'Вы не авторзиованы.',
@@ -80,6 +89,7 @@ export default {
       Warnings: {
          chars: n => `${formatNumber(n)} ${plural(n, 'символ', 'символа', 'символов')}`,
          bytes: n => `${formatNumber(n)} байт`,
+         words: n => `${formatNumber(n)} ${plural(n, 'слово', 'слова', 'слов')}`,
          author: 'Автор',
          createdOn: 'Создана',
          createdDate: date => formatDate(date, 'L LT'),
@@ -96,6 +106,11 @@ export default {
          total: n => `Сумма: ${n}`,
          save: 'Сохранить',
          skip: 'Пропустить',
+
+         Comment: {
+            save: 'Сохранить',
+            cancel: 'Отмена',
+         },
       },
-   }
+   },
 };

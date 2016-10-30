@@ -38,17 +38,18 @@ export default {
       acticle: 'Article',
       addedOn: 'Added on',
       score: 'Points',
-      dateAdded: date => formatDate(date, 'D MMM LT')
+      dateAdded: date => formatDate(date, 'D MMM LT'),
    },
 
    AddArticle: {
       Warnings: {
          submitterRegistered: date => `Only users who registered before ${formatDate(date, 'L')} can participate in this editathon`,
          namespace: isIn => `${isIn ? 'Is in' : 'Is not in'} the main namespace`,
-         author: 'Created by:',
+         author: 'Created by: ',
          articleCreated: date => `The article was created at ${formatDate(date, 'L LT')}`,
          chars: n => `${formatNumber(n)} ${plural(n, 'symbol', 'symbols')}`,
          bytes: n => `${formatNumber(n)} bytes`,
+         words: n => `${formatNumber(n)} words`,
       },
 
       unauthorized: 'You\'re not authorised',
@@ -79,6 +80,7 @@ export default {
       Warnings: {
          chars: n => `${formatNumber(n)} ${plural(n, 'symbol', 'symbols')}`,
          bytes: n => `${formatNumber(n)} bytes`,
+         words: n => `${formatNumber(n)} words`,
          author: 'Created by',
          createdOn: 'Created on',
          createdDate: date => formatDate(date, 'L LT'),
@@ -95,6 +97,11 @@ export default {
          total: n => `Total: ${n}`,
          save: 'Save',
          skip: 'Skip',
+
+         Comment: {
+            save: 'Save',
+            cancel: 'Cancel',
+         },
       },
-   }
+   },
 };

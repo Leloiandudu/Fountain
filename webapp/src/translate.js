@@ -94,6 +94,8 @@ export function translator(dict) {
 const Langs = {
    ru: require('./translations/ru').default,
    en: require('./translations/en').default,
+   de: require('./translations/de').default,
+   zh: require('./translations/zh').default,
 };
 
 export class TranslationContext extends React.Component {
@@ -133,7 +135,7 @@ export class TranslationContext extends React.Component {
                   this.props.onSetLang(lang);
             },
             allLangs() {
-               return Object.keys(Langs);
+               return Object.keys(Langs).sort();
             },
          }
       };

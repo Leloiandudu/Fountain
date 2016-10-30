@@ -143,8 +143,8 @@ const Evaluation = React.createClass({
             <ModalDialog isOpen={this.state.isCommentOpen} tryClose={() => this.setState({ isCommentOpen: false })} className='comment-dialog'>
                <textarea autoFocus={true} ref='commentTextarea' value={this.state.editingComment} onChange={event => this.setState({ editingComment: event.target.value })} />
                <div className='buttons'>
-                  <WikiButton type='progressive' onClick={this.saveComment}>Save</WikiButton>
-                  <WikiButton onClick={() => this.setState({ isCommentOpen: false })}>Cancel</WikiButton>
+                  <WikiButton type='progressive' onClick={this.saveComment}>{tr('Comment.save')}</WikiButton>
+                  <WikiButton onClick={() => this.setState({ isCommentOpen: false })}>{tr('Comment.cancel')}</WikiButton>
                </div>
             </ModalDialog>
          </div>
