@@ -15,9 +15,10 @@ const RuleMessages = {
       tr('createdDate', stats.created),
    ],
    articleSize: (rule, ok, stats, ctx, tr) => [
-      tr('bytes', stats.bytes),
-      tr('chars', stats.chars),
-   ],
+      rule.params.bytes && tr('bytes', stats.bytes),
+      rule.params.chars && tr('chars', stats.chars),
+      rule.params.words && tr('words', stats.words),
+   ].filter(x => x),
 };
 
 const Warnings = React.createClass({

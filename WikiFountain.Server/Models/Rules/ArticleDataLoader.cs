@@ -59,7 +59,7 @@ namespace WikiFountain.Server.Models.Rules
 
                 var key = req.ToString();
                 key = char.ToLower(key[0]) + key.Substring(1);
-                _callbacks.Add((results, result) => result[key] =JToken.FromObject(loader.Callback(results[loader.Type])));
+                _callbacks.Add((results, result) => result[key] = JToken.FromObject(loader.Callback(results[loader.Type])));
             }
 
             foreach (var request in _requests.Values)
@@ -144,7 +144,22 @@ namespace WikiFountain.Server.Models.Rules
                         rvparse = true,
                         rvlimit = 1,
                     },
-                    Callback = data => ParserUtils.GetPlainText(data["query"]["pages"][0]["revisions"][0].Value<string>("content")).Length,
+                    Callback = data => ParserUtils.GetPlainText(GetContent(data)).Length,
+                }
+            },
+            {
+                RuleReq.Words, 
+                new Loader
+                {
+                    Type = LoaderType.LastRev,
+                    Params = new
+                    {
+                        prop = new[] { "revisions" },
+                        rvprop = new[] { "content" },
+                        rvparse = true,
+                        rvlimit = 1,
+                    },
+                    Callback = data => ParserUtils.GetWordCount(GetContent(data)),
                 }
             },
             {
@@ -162,6 +177,11 @@ namespace WikiFountain.Server.Models.Rules
                 }
             },
         };
+
+        private static string GetContent(JObject queryResult)
+        {
+            return queryResult["query"]["pages"][0]["revisions"][0].Value<string>("content");
+        }
 
         class Loader
         {

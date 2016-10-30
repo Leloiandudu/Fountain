@@ -16,6 +16,6 @@ export function getPlainText(text) {
    return eraseTags(html.body, tags);
 }
 
-export function getWordCount(html) {
-   return (getPlainText(text).match(/[^\s]*[^\s.,;:()\-—\[\]'"«»„“$%*°]+[^\s]*(\s|$)+/g) || []).length;
+export function getWordCount(text) {
+   return (getPlainText(text).match(/[^\s]*[^\s\u2000-\u206f!"$%'()*,\-.:;?\\\[\]|~¡«°·»¿՚՛՜՝՞՟։־׀׆׳״،؟।၊။♪⟨⟩、。《》「」『』【】〜〽・﬩️﹁﹂！（），：？［］｛｝]+[^\s]*(\s|$)+/g) || []).length;
 }

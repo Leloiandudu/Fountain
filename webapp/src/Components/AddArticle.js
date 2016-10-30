@@ -18,6 +18,7 @@ const RuleMessages = {
    articleSize: (tr, rule, ok, stats) => [
       rule.params.bytes && tr('bytes', stats.bytes), 
       rule.params.chars && tr('chars', stats.chars),
+      rule.params.words && tr('words', stats.words),
    ].filter(x => x).join(tr.translate('delimiter')),
 };
 

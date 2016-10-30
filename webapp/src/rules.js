@@ -10,13 +10,15 @@ function withReqs(fn, reqs) {
    return fn;
 }
 
-function articleSize({ chars, bytes }) {
+function articleSize({ chars, bytes, words }) {
    return withReqs(function articleSize(data) {
       return chars && data.chars >= chars.atLeast
-          || bytes && data.bytes >= bytes.atLeast;
+          || bytes && data.bytes >= bytes.atLeast
+          || words && data.words >= words.atLeast;
    }, {
       chars: !!chars,
       bytes: !!bytes,
+      words: !!words,
    });
 }
 

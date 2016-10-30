@@ -1,5 +1,5 @@
 import { mwApi } from './MwApi';
-import { getPlainText } from './parsing';
+import { getPlainText, getWordCount } from './parsing';
 
 class Request {
    constructor() {
@@ -127,6 +127,20 @@ const Types = {
             }]
          }
       }) => getPlainText(content).length,
+   ],
+   words: [
+      'lastRev', {
+         prop: [ 'revisions' ],
+         rvprop: [ 'content' ],
+         rvparse: true,
+         rvlimit: 1,
+      }, ({
+         query: {
+            pages: [{
+               revisions: [{ content }]
+            }]
+         }
+      }) => getWordCount(content),
    ],
    bytes: [
       'lastRev', {

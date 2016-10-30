@@ -9,6 +9,7 @@ namespace WikiFountain.Server.Core
     static class ParserUtils
     {
         private static readonly string[] BlacklistedTags = { "sup", "sub", "table", "div", "ul", "ol", "li", "dl", "dd", "dt", "#comment", "h1", "h2", "h3", "h4", "h5", "h6" };
+        private static readonly Regex WordsRegex = new Regex(@"[^\s]*[^\s\u2000-\u206f!""$%'()*,\-.:;?\\\[\]|~¡«°·»¿՚՛՜՝՞՟։־׀׆׳״،؟।၊။♪⟨⟩、。《》「」『』【】〜〽・﬩️﹁﹂！（），：？［］｛｝]+[^\s]*(\s|$)+");
 
         public static string GetPlainText(string html)
         {
@@ -31,6 +32,11 @@ namespace WikiFountain.Server.Core
         private static bool Filter(HtmlNode tag)
         {
             return !BlacklistedTags.Contains(tag.Name.ToLower());
+        }
+
+        public static int GetWordCount(string html)
+        {
+            return WordsRegex.Matches(GetPlainText(html)).Count;
         }
 
         public static Regex GetArticleTitleRegex(string title)

@@ -20,6 +20,7 @@ namespace WikiFountain.Server.Models.Rules
         Ns,
         Bytes,
         Chars,
+        Words,
         Created,
     }
 }
