@@ -5,7 +5,7 @@ import stable from 'stable';
 import sortBy from './../sortBy';
 import Api from './../Api';
 import url from './../url';
-import { findMarkOf, calcMark } from './../jury';
+import { findMarkOf, calcMark, isSameMark } from './../jury';
 import { withTranslation } from './../translate';
 import Link from './Link';
 import WikiLink from './WikiLink';
@@ -13,11 +13,21 @@ import WikiButton from './WikiButton';
 import ModalDialog from './ModalDialog';
 import Loader from './Loader';
 
-function getTotalMark(jury, marks, marksConfig) {
-   const m = jury.map(j => findMarkOf(marks, j)).filter(m => m).map(m => calcMark(m.marks, marksConfig).sum);
-   if (m.length == 0)
+function getTotalMark(jury, marks, marksConfig, consensualVote) {
+   const all = jury.map(j => findMarkOf(marks, j)).filter(m => m).map(m => m.marks);
+   if (all.length == 0)
       return null;
-   return m.reduce((a, b) => a + b, 0) / m.length;
+
+   if (!consensualVote) {
+      return all.map(m => calcMark(m, marksConfig).sum).reduce((a, b) => a + b, 0) / all.length;
+   } else {
+      if (all.length > 1) {
+         if (!all.reduce((a, b) => isSameMark(a, b) && a)) {
+            return null;
+         }
+      }
+      return calcMark(all[0], marksConfig).sum;
+   }
 }
 
 function sort(items, by, asc) {
@@ -75,9 +85,9 @@ const ArticlesList = React.createClass({
          e.preventDefault();
       }
    },
-   getData(articles, { jury, marks: marksConfig }) {
+   getData(articles, { jury, marks: marksConfig, consensualVote }) {
       const getTotal = (articles) => {
-         const marks = articles.map(article => getTotalMark(jury, article.marks, marksConfig)).filter(x => x !== null);
+         const marks = articles.map(article => getTotalMark(jury, article.marks, marksConfig, consensualVote)).filter(x => x !== null);
          if (!marks.length) return null;
          return marks.reduce((s, m) => s + m, 0);
       }
@@ -96,7 +106,7 @@ const ArticlesList = React.createClass({
       return this.props.translation.translate('formatNumber', ...args);
    },
    formatMark(mark) {
-      return mark === null ? '' : this.formatNumber(mark, { places: 2 });
+      return mark === null ? '' : this.formatNumber(mark, { places: this.props.editathon.consensualVote ? 0 : 2 });
    },
    renderHeader(editathon) {
       var now = moment.utc();
@@ -173,7 +183,7 @@ const ArticlesList = React.createClass({
          </div>
       );
    },
-   renderArticles({ wiki, jury, marks: marksConfig }, user) {
+   renderArticles({ wiki, jury, marks: marksConfig, consensualVote }, user) {
       return (
          <table className='articles'>
             <thead>
@@ -188,7 +198,7 @@ const ArticlesList = React.createClass({
                   <tr className='summary'>
                      <td className='article'><WikiLink to={a.name} wiki={wiki} /></td>
                      <td className='dateAdded'>{this.tr('dateAdded', moment(a.dateAdded).utc())}</td>
-                     <td className='mark'>{this.formatMark(getTotalMark(jury, a.marks, marksConfig))}</td>
+                     <td className='mark'>{this.formatMark(getTotalMark(jury, a.marks, marksConfig, consensualVote))}</td>
                   </tr>,
                   <tr className='details'>
                      <td colSpan={3}>

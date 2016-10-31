@@ -1,3 +1,5 @@
+import eq from 'shallow-equals'
+
 export function findMarkOf(marks, user = Global.user.name) {
    return marks.filter(m => m.user === user)[0];
 }
@@ -59,4 +61,8 @@ export function calcMark(mark, marks) {
 
       return res;
    }(getActiveMarks(mark, marks));
+}
+
+export function isSameMark(m1, m2) {
+   return eq(m1, m2);
 }

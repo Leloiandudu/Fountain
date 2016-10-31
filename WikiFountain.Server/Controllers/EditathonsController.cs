@@ -51,6 +51,7 @@ namespace WikiFountain.Server.Controllers
                 e.Start,
                 e.Finish,
                 e.Wiki,
+                e.ConsensualVote,
                 e.Jury,
                 e.Marks,
                 Rules = e.Rules.Select(r => new
