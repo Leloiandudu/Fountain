@@ -24,8 +24,8 @@ export default {
    delimiter: ', ',
 
    Header: {
-      signIn: 'Einloggen',
-      signOut: 'Ausloggen',
+      signIn: '登录',
+      signOut: '登出',
    },
 
    Footer: {
@@ -35,7 +35,7 @@ export default {
    },
 
    EditathonList: {
-      title: 'Edit-a-thons',
+      title: '编辑马拉松',
    },
 
    ArticlesList: {

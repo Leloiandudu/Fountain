@@ -79,7 +79,7 @@ class LangSwitcher extends React.Component {
    }
 
    onBlur() {
-      setTimeout(() => this.setState({ isOpen: false }), 100);
+      setTimeout(() => this.setState({ isOpen: false }), 150);
    }
 
    renderItem(x) {
