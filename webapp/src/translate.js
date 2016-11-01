@@ -123,7 +123,9 @@ export class TranslationContext extends React.Component {
    }
 
    getChildContext() {
-      const curLang = this.state.curLang || this.props.defaultLang;
+      let curLang = this.state.curLang || this.props.defaultLang;
+      if (!Langs[curLang])
+         curLang = 'en';
       return {
          'TranslationContext': {
             curLang,
