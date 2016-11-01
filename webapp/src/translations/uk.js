@@ -1,4 +1,3 @@
-import moment from 'moment';
 import 'moment/locale/uk';
 import { plural, numberFormatter, dateFormatter, gender } from '../translate';
 

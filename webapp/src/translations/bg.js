@@ -1,4 +1,3 @@
-import moment from 'moment';
 import 'moment/locale/bg';
 import { plural, numberFormatter, dateFormatter, gender } from '../translate';
 
