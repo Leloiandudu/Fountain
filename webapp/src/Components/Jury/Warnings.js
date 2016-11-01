@@ -52,9 +52,9 @@ const Warnings = React.createClass({
 
       return (<div>
          {author}
-         {rules.map(rule => {
+         {rules.map((rule, i) => {
             const result = rule.check(info, ctx);
-            return this.renderStat(rule.type, RuleMessages[rule.type](rule, result, info, ctx, tr, wiki), result);
+            return this.renderStat(i, RuleMessages[rule.type](rule, result, info, ctx, tr, wiki), result);
          })}
       </div>).props.children;
    },

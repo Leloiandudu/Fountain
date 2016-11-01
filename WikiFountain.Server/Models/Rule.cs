@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using Newtonsoft.Json.Linq;
 
 namespace WikiFountain.Server.Models
 {
@@ -7,14 +8,14 @@ namespace WikiFountain.Server.Models
     {
         public long Id { get; set; }
         public string Type { get; set; }
-        public RuleSeverity Severity { get; set; }
+        public RuleFlags Flags { get; set; }
         public JObject Params { get; set; }
     }
 
-    public enum RuleSeverity
+    [Flags]
+    public enum RuleFlags
     {
-        Requirement,
-        Warning,
-        Info,
+        Optional = 1,
+        Informational = 2,
     }
 }

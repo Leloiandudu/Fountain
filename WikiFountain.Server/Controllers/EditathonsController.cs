@@ -57,7 +57,7 @@ namespace WikiFountain.Server.Controllers
                 Rules = e.Rules.Select(r => new
                 {
                     r.Type,
-                    r.Severity,
+                    r.Flags,
                     r.Params,
                 }),
                 Articles = e.Articles.OrderByDescending(a => a.DateAdded).Select(a => new
@@ -110,7 +110,7 @@ namespace WikiFountain.Server.Controllers
                 return Forbidden();
 
             var rules = e.Rules
-                .Where(r => r.Severity == RuleSeverity.Requirement)
+                .Where(r => !r.Flags.HasFlag(RuleFlags.Optional))
                 .Select(r => r.Get())
                 .ToArray();
 

@@ -4,7 +4,7 @@ import sortBy from './../../sortBy';
 import url from './../../url';
 import Api from './../../Api';
 import { getMwApi } from './../../MwApi';
-import readRules, { getRulesReqs, RuleSeverity } from './../../rules';
+import readRules, { getRulesReqs, RuleFlags } from './../../rules';
 import getArticleData from './../../getArticleData';
 import { withTranslation } from './../../translate';
 import { findMarkOf } from './../../jury';
@@ -110,7 +110,7 @@ const Jury = React.createClass({
    },
 
    getRules() {
-      return readRules(this.state.editathon.rules, [ RuleSeverity.warning, RuleSeverity.info ]);
+      return readRules(this.state.editathon.rules).filter(r => r.flags & (RuleFlags.optional | RuleFlags.informational));
    },
 
    onChanged() {

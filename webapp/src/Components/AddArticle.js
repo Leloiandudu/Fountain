@@ -2,7 +2,8 @@ import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
 import url from './../url'
-import readRules, { getRulesReqs, RuleSeverity } from './../rules';
+import sortBy from './../sortBy'
+import readRules, { getRulesReqs, RuleFlags } from './../rules';
 import getArticleData from './../getArticleData';
 import Api, { UnauthorizedHttpError } from './../Api';
 import { getMwApi } from './../MwApi';
@@ -85,7 +86,7 @@ const AddArticle = React.createClass({
       this.props.onReloadEditathon && await this.props.onReloadEditathon();
    },
    getRules() {
-      return readRules(this.props.editathon.rules, [ RuleSeverity.requirement, RuleSeverity.warning ]);
+      return readRules(this.props.editathon.rules);
    },
    render() {
       return (
@@ -120,7 +121,7 @@ const AddArticle = React.createClass({
       const ctx = {
          user: Global.user,
       };
-      for (const rule of this.getRules().filter(rule => rule.userOnly && rule.severity == RuleSeverity.requirement)) {
+      for (const rule of this.getRules().filter(rule => rule.userOnly && !(rule.flags & RuleFlags.optional))) {
          if (!rule.check(null, ctx)) {
             errors.push(rule);
          }
@@ -176,11 +177,13 @@ const AddArticle = React.createClass({
          for (const rule of this.getRules().filter(rule => !rule.userOnly)) {
             const result = rule.check(stats, ctx);
             rules.push([rule, result]);
-            if (rule.severity == RuleSeverity.requirement) {
+            if (!(rule.flags & RuleFlags.optional)) {
                ok = ok && result;
             }
          }
       }
+
+      console.log(rules);
 
       return (
          <div>
@@ -195,11 +198,15 @@ const AddArticle = React.createClass({
                   <div className='stats'>
                      {title}
                      {addedBy && this.renderStat('addedBy', addedBy.user === Global.user.name ? this.tr('youAlreadyAdded') : this.tr('someoneAlreadyAdded'), false, true)}
-                     {rules.map(([ rule, result ]) => this.renderStat(
-                        rule.type, 
+                     {[...rules].sort(sortBy( // sorting by result (error, warning, ok), then by type
+                        ([ rule, result ]) => result, 
+                        ([ rule, result ]) => result || (rule.flags & RuleFlags.optional),
+                        ([ rule, result ]) => rule.type
+                     )).map(([ rule, result ], i) => this.renderStat(
+                        i, 
                         RuleMessages[rule.type](this.ruleTr(), rule, result, stats, editathon.wiki), 
                         result, 
-                        rule.severity === RuleSeverity.requirement)
+                        !(rule.flags & RuleFlags.optional))
                      )}
                   </div>
                   {this.renderCard()}

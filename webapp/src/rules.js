@@ -12,9 +12,10 @@ function withReqs(fn, reqs) {
 
 function articleSize({ chars, bytes, words }) {
    return withReqs(function articleSize(data) {
-      return chars && data.chars >= chars.atLeast
-          || bytes && data.bytes >= bytes.atLeast
-          || words && data.words >= words.atLeast;
+      return !!(
+         chars && data.chars >= chars.atLeast ||
+         bytes && data.bytes >= bytes.atLeast ||
+         words && data.words >= words.atLeast);
    }, {
       chars: !!chars,
       bytes: !!bytes,
@@ -50,20 +51,19 @@ function namespace({ isIn }) {
 const allRules = { articleSize, submitterIsCreator, articleCreated, submitterRegistered, namespace };
 const userRules = [ 'submitterRegistered' ];
 
-export const RuleSeverity = Object.freeze({
-   requirement: 0,
-   warning: 1,
-   info: 2,
+export const RuleFlags = Object.freeze({
+   optional: 1,
+   informational: 2,
 });
 
-export default function readRules(rules, severity = []) {
+export default function readRules(rules) {
    return rules.map(rule => ({
       type: rule.type,
-      severity: rule.severity,
+      flags: rule.flags,
       params: rule.params,
       check: allRules[rule.type](rule.params),
       userOnly: userRules.indexOf(rule.type) !== -1,
-   })).filter(rule => !severity.length || severity.indexOf(rule.severity) !== -1);
+   }));
 }
 
 export function getRulesReqs(rules) {
