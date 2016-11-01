@@ -21,7 +21,7 @@ async function query(method, url, params) {
    if (response.status === 401)
       throw new UnauthorizedHttpError();
    if (!response.ok)
-      throw new Error(`${response.status} ${response.statusText}`);
+      throw new Error(`${response.status} ${response.statusText}\n` + await response.text());
    if (response.status === 204 || response.headers.get('Content-Length') == 0)
       return;
    return postProcess(await response.json());

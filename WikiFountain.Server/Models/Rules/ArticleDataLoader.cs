@@ -176,6 +176,20 @@ namespace WikiFountain.Server.Models.Rules
                     Callback = data => data["query"]["pages"][0]["revisions"][0].Value<DateTime>("timestamp"),
                 }
             },
+            {
+                RuleReq.Creator, 
+                new Loader
+                {
+                    Type = LoaderType.FirstRev,
+                    Params = new
+                    {
+                        prop = new[] { "revisions" },
+                        rvprop = new[] { "user" },
+                        rvlimit = 1,
+                    },
+                    Callback = data => data["query"]["pages"][0]["revisions"][0].Value<string>("user"),
+                }
+            },
         };
 
         private static string GetContent(JObject queryResult)

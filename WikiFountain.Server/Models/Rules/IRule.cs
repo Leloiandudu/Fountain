@@ -22,5 +22,6 @@ namespace WikiFountain.Server.Models.Rules
         Chars,
         Words,
         Created,
+        Creator,
     }
 }

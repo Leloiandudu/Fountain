@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace WikiFountain.Server.Models.Rules
 {
@@ -12,11 +13,13 @@ namespace WikiFountain.Server.Models.Rules
             { "articleSize", typeof(ArticleSizeRule) },
             { "namespace", typeof(NamespaceRule) },
             { "submitterRegistered", typeof(SubmitterRegisteredRule) },
+            { "submitterIsCreator", typeof(SubmitterIsCreatorRule) },
         };
 
         public static IRule Get(this Rule rule)
         {
-            return (IRule)rule.Params.ToObject(All[rule.Type]);
+            var pars = rule.Params ?? new JObject();
+            return (IRule)pars.ToObject(All[rule.Type]);
         }
     }
 }

@@ -182,6 +182,7 @@
     <Compile Include="Models\Rules\NamespaceRule.cs" />
     <Compile Include="Models\Rules\ArticleDataLoader.cs" />
     <Compile Include="Models\Rules\Rules.cs" />
+    <Compile Include="Models\Rules\SubmitterIsCreatorRule.cs" />
     <Compile Include="Models\Rules\SubmitterRegisteredRule.cs" />
     <Compile Include="Models\UserIdentity.cs" />
     <Compile Include="Models\UserInfo.cs" />
