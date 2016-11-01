@@ -47,6 +47,11 @@ const Jury = React.createClass({
          return;
       }
 
+      if (!editathon.articles.length) {
+         this.close()
+         return;
+      }
+
       editathon.articles.sort(sortBy('dateAdded'));
 
       let article = editathon.articles[0];

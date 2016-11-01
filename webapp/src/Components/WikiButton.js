@@ -4,7 +4,7 @@ import classNames from 'classnames';
 function WikiButton({ type, children, className, submit, loading, ...props }) {
    let element = <button type={submit ? 'submit' : 'button'} />;
 
-   if (React.isValidElement(children)) {
+   if (!props.disabled && React.isValidElement(children)) {
       element = children;
       children = element.props.children;
    }
