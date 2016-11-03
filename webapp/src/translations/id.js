@@ -95,7 +95,7 @@ export default {
 
       Evaluation: {
          comment: 'komentar',
-         total: n => `Jumlah: ${n}`,
+         total: n => `Jumlah: ${formatNumber(n)}`,
          save: 'Simpan',
          skip: 'Lewati',
 

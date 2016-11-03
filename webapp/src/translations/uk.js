@@ -95,7 +95,7 @@ export default {
 
       Evaluation: {
          comment: 'коментар',
-         total: n => `Усього: ${n}`,
+         total: n => `Усього: ${formatNumber(n)}`,
          save: 'Зберегти',
          skip: 'Пропустити',
 

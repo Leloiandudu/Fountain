@@ -93,6 +93,7 @@ export function translator(dict) {
 // const { translations: Langs } = require('./translations/*.js', { mode: 'hash' });
 const Langs = {
    bg: require('./translations/bg').default,
+   bn: require('./translations/bn').default,
    de: require('./translations/de').default,
    en: require('./translations/en').default,
    id: require('./translations/id').default,

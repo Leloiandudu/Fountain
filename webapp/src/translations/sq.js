@@ -95,7 +95,7 @@ export default {
 
       Evaluation: {
          comment: 'komento',
-         total: n => `Gjithësej: ${n}`,
+         total: n => `Gjithësej: ${formatNumber(n)}`,
          save: 'Ruaj',
          skip: 'Tejkalo',
 

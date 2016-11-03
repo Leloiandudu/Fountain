@@ -107,7 +107,7 @@ export default {
 
       Evaluation: {
          comment: '评论',
-         total: n => `总计: ${n}`,
+         total: n => `总计: ${formatNumber(n)}`,
          save: '保存',
          skip: '跳过',
 

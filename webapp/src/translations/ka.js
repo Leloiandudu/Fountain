@@ -95,7 +95,7 @@ export default {
 
       Evaluation: {
          comment: 'კომენტარი',
-         total: n => `სულ: ${n}`,
+         total: n => `სულ: ${formatNumber(n)}`,
          save: 'შენახვა',
          skip: 'გამოტოვება',
 

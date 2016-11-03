@@ -95,7 +95,7 @@ export default {
 
       Evaluation: {
          comment: 'അഭിപ്രായം',
-         total: n => `ആകെ: ${n}`,
+         total: n => `ആകെ: ${formatNumber(n)}`,
          save: 'സംരക്ഷിക്കുക',
          skip: 'ഒഴിവാക്കുക',
 

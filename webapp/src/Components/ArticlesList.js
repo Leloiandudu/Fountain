@@ -239,13 +239,13 @@ const ArticlesList = React.createClass({
       let i = 0;
       for (var p in parts) {
          const v = parts[p];
-         details.push(<dt>{v && (v > 0 ? '+' : '−') + Math.abs(v) + ' ' || ''}</dt>);
+         details.push(<dt>{v && this.formatNumber(v, { forcePlus: true }) + ' ' || ''}</dt>);
          details.push(<dd>{p}</dd>);
       }
 
       return (
          <li className='mark' key={index}>
-            <span className='jury'>{mark.user}</span>{': '}<span className='sum'>{this.formatNumber(sum, 2)}</span>
+            <span className='jury'>{mark.user}</span>{': '}<span className='sum'>{this.formatNumber(sum)}</span>
             <dl className='details'>
                {details}
             </dl>
