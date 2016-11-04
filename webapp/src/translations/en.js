@@ -18,7 +18,7 @@ export default {
    Footer: {
       'preLink': 'Please contact ',
       'link': 'Le Loy',
-      'postLink': ' if you have problems with this tool',
+      'postLink': ' if you have problems with this tool.',
    },
 
    EditathonList: {

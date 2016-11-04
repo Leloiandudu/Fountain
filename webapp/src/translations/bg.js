@@ -19,7 +19,7 @@ export default {
    Footer: {
       'preLink': 'Ако имате проблеми с този инструмент моля, свържете се с ',
       'link': 'Ле Лой',
-      'postLink': '',
+      'postLink': '.',
    },
 
    EditathonList: {

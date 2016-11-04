@@ -19,7 +19,7 @@ export default {
    Footer: {
       'preLink': 'Jika mendapati masalah dengan alat ini, hubungi ',
       'link': 'Le Loy',
-      'postLink': '',
+      'postLink': '.',
    },
 
    EditathonList: {

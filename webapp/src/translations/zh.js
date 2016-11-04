@@ -31,7 +31,7 @@ export default {
    Footer: {
       'preLink': '若关于本工具有任何疑问请联系 ',
       'link': 'Le Loy',
-      'postLink': '',
+      'postLink': '。',
    },
 
    EditathonList: {

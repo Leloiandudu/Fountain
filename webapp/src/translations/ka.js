@@ -19,7 +19,7 @@ export default {
    Footer: {
       'preLink': 'ხელსაწყოსთან დაკავშირებული პრობლემის შემთხვევაში დაუკავშირდით ',
       'link': 'Le Loy',
-      'postLink': '-ს',
+      'postLink': '-ს.',
    },
 
    EditathonList: {

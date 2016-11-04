@@ -27,7 +27,7 @@ export default {
    Footer: {
       'preLink': 'В случае проблем с инструментом обратитесь к ',
       'link': 'Ле Лою',
-      'postLink': '',
+      'postLink': '.',
    },
 
    EditathonList: {
