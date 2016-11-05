@@ -19,6 +19,11 @@ var exorcist = require('exorcist');
 var envify = require('envify');
 var gulpif = require('gulp-if');
 var argv = require('yargs').argv;
+var taskTime = require('./build/gulp-total-task-time');
+
+taskTime.init(function(s) {
+   notify().write('Done in ' + s.toFixed(1) + ' seconds');
+});
 
 var paths = {
    src: './src/main.js',
@@ -93,10 +98,12 @@ gulp.task('less', function() {
 
 gulp.task('watchify', function() {
    var b = watchify(createBrowserify());
-   b.on('update', rebundle).on('time', time => notify().write('Done in ' + (time / 1000).toFixed(1) + ' seconds'));
-   return rebundle();
+   var shouldNotify = false;
+   b.on('update', rebundle).on('time', time => shouldNotify && notify().write('Done in ' + (time / 1000).toFixed(1) + ' seconds'));
+   return runBrowserify(b);
 
    function rebundle() {
+      shouldNotify = true;
       return runBrowserify(b)
    }
 });
