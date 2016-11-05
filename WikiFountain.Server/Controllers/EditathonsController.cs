@@ -103,7 +103,7 @@ namespace WikiFountain.Server.Controllers
             if (e.Articles.Any(a => a.Name == body.Title))
                 return Forbidden();
 
-            var wiki = new MediaWiki("https://" + e.Wiki +  ".wikipedia.org/w/api.php", _identity);
+            var wiki = MediaWikis.Create(e.Wiki, _identity);
 
             var page = await wiki.GetPage(body.Title);
             if (page == null)

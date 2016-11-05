@@ -163,6 +163,7 @@
     <Compile Include="App_Start\Bootstrapper.cs" />
     <Compile Include="App_Start\JObjectType.cs" />
     <Compile Include="Core\MediaWiki.cs" />
+    <Compile Include="Core\MediaWikis.cs" />
     <Compile Include="Core\MvcControllerBase.cs" />
     <Compile Include="Core\HttpContextBaseExtensions.cs" />
     <Compile Include="Core\ParserUtils.cs" />

@@ -1,9 +1,20 @@
 import pkg from './../package.json';
 
+const wikisMap = [
+   [ 'meta', 'meta.wikimedia.org' ],
+   [ /^([a-z]+)$/, '$1.wikipedia.org' ],
+   [ /^q:([a-z]+)$/, '$1.wikiquote.org' ],
+];
+
 export function getWikiHost(wiki) {
-   return {
-      'meta': 'meta.wikimedia.org',
-   }[wiki] || (wiki + '.wikipedia.org');
+   for (const [ key, value ] of wikisMap) {
+      if (key === wiki) {
+         return value;
+      } else if (key instanceof RegExp && key.test(wiki)) {
+         return wiki.replace(key, value);
+      }
+   }
+   throw new Error(`Unknown wiki '${wiki}'.`);
 }
 
 export default function MwApi(url) {
