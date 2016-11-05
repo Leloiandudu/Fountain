@@ -102,6 +102,7 @@ const Langs = {
    ml: require('./translations/ml').default,
    pt: require('./translations/pt').default,
    ru: require('./translations/ru').default,
+   sah: require('./translations/sah').default,
    sq: require('./translations/sq').default,
    uk: require('./translations/uk').default,
    vi: require('./translations/vi').default,
