@@ -183,8 +183,6 @@ const AddArticle = React.createClass({
          }
       }
 
-      console.log(rules);
-
       return (
          <div>
             {this.state.updating ? <Loader /> : (<div>

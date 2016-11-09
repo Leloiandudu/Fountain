@@ -2,8 +2,8 @@ import pkg from './../package.json';
 
 const wikisMap = [
    [ 'meta', 'meta.wikimedia.org' ],
-   [ /^([a-z]+)$/, '$1.wikipedia.org' ],
-   [ /^q:([a-z]+)$/, '$1.wikiquote.org' ],
+   [ /^([a-z\-]+)$/, '$1.wikipedia.org' ],
+   [ /^q:([a-z\-]+)$/, '$1.wikiquote.org' ],
 ];
 
 export function getWikiHost(wiki) {
