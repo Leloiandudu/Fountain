@@ -24,7 +24,7 @@ const Evaluation = React.createClass({
       }
    },
    readMarks({ mark: { marks = {}, comment = null } = {} }) {
-      this.setState({ marks: Object.assign({}, marks), comment });
+      this.setState({ marks: { ...marks }, comment });
    },
    openComment() {
       this.setState({
@@ -82,8 +82,13 @@ const Evaluation = React.createClass({
       </ul>
    },
    hasChanges() {
-      const newMark = this.state.marks;
-      const { marks: oldMark = {} } = this.props.mark || {};
+      const { marks: oldMark = {}, oldComment } = this.props.mark || {};
+      const { marks: newMark, comment: newComment } = this.state;
+
+      if ((newComment || '') !== (oldComment || '')) {
+         return true;
+      }
+
       for (var key in newMark) {
          if (oldMark[key] !== newMark[key]) {
             return true;
@@ -110,7 +115,7 @@ const Evaluation = React.createClass({
    },
    onSave() {
       this.props.onSaveMarks({
-         marks: this.state.marks,
+         marks: { ...this.state.marks },
          comment: this.state.comment,
       });
    },
