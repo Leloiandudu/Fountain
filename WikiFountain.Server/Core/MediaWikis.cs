@@ -11,7 +11,13 @@ namespace WikiFountain.Server.Core
         {
             Const("meta", "meta.wikimedia.org"),
             Regex(@"^([a-z\-]+)$", "$1.wikipedia.org"),
+            Const("commons", "commons.wikimedia.org"),
             Regex(@"^q:([a-z\-]+)$", "$1.wikiquote.org"),
+            Regex(@"^s:([a-z\-]+)$", "$1.wikisource.org"),
+            Regex(@"^b:([a-z\-]+)$", "$1.wikibooks.org"),
+            Regex(@"^n:([a-z\-]+)$", "$1.wikinews.org"),
+            Regex(@"^v:([a-z\-]+)$", "$1.wikiversity.org"),
+            Regex(@"^wikt:([a-z\-]+)$", "$1.wiktionary.org"),
         };
 
         private static Wiki Const(string code, string url)
