@@ -32,4 +32,3 @@ export default function sortBy(...parts) {
 
    return compare;
 }
-

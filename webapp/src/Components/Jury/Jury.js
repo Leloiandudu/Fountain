@@ -209,7 +209,7 @@ const Jury = React.createClass({
             </Header>
             <main>
                <Expander expanded={this.state.menuOpen}>
-                  <ArticlesList articles={editathon.articles} selected={this.state.selected} onArticleSelected={this.selectArticle} />
+                  <ArticlesList editathon={editathon} selected={this.state.selected} onArticleSelected={this.selectArticle} />
                </Expander>
                <Preview title={this.state.selected} wiki={editathon.wiki} info={info} />
                <Evaluation onNext={this.moveNext} onSaveMarks={this.onSaveMark} article={article} marks={editathon.marks} mark={findMarkOf(article.marks)} onChanged={this.onChanged} />

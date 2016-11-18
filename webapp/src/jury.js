@@ -63,6 +63,29 @@ export function calcMark(mark, marks) {
    }(getActiveMarks(mark, marks));
 }
 
-export function isSameMark(m1, m2) {
-   return eq(m1, m2);
+function isSameMark(m1, m2, marksConfig) {
+   m1 = calcMark(m1, marksConfig);
+   m2 = calcMark(m2, marksConfig);
+   if (!m1 || !m2) return m1 === m2;
+   return eq(m1.parts, m2.parts);
+}
+
+function getConsensualMark(marks, marksConfig) {
+   if (marks.length > 1) {
+      if (!marks.reduce((a, b) => isSameMark(a, b, marksConfig) && a)) {
+         return null;
+      }
+   }
+   return calcMark(marks[0], marksConfig).sum;
+}
+
+export function calcTotalMark(jury, marks, marksConfig) {
+   const all = jury.map(j => findMarkOf(marks, j)).filter(m => m).map(m => m.marks);
+   if (all.length == 0)
+      return null;
+
+   return {
+      average: all.map(m => calcMark(m, marksConfig).sum).reduce((a, b) => a + b, 0) / all.length,
+      consensual: getConsensualMark(all, marksConfig),
+   }
 }

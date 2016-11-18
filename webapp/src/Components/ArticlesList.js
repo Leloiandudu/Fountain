@@ -5,7 +5,7 @@ import stable from 'stable';
 import sortBy from './../sortBy';
 import Api from './../Api';
 import url from './../url';
-import { findMarkOf, calcMark, isSameMark } from './../jury';
+import { findMarkOf, calcMark, calcTotalMark } from './../jury';
 import { withTranslation } from './../translate';
 import Link from './Link';
 import WikiLink from './WikiLink';
@@ -14,20 +14,8 @@ import ModalDialog from './ModalDialog';
 import Loader from './Loader';
 
 function getTotalMark(jury, marks, marksConfig, consensualVote) {
-   const all = jury.map(j => findMarkOf(marks, j)).filter(m => m).map(m => m.marks);
-   if (all.length == 0)
-      return null;
-
-   if (!consensualVote) {
-      return all.map(m => calcMark(m, marksConfig).sum).reduce((a, b) => a + b, 0) / all.length;
-   } else {
-      if (all.length > 1) {
-         if (!all.reduce((a, b) => isSameMark(a, b) && a)) {
-            return null;
-         }
-      }
-      return calcMark(all[0], marksConfig).sum;
-   }
+   const mark = calcTotalMark(jury, marks, marksConfig);
+   return mark && (consensualVote ? mark.consensual : mark.average);
 }
 
 function sort(items, by, asc) {
