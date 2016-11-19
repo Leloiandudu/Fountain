@@ -84,6 +84,9 @@ namespace WikiFountain.Server.Controllers
         [HttpPost]
         public async Task<HttpResponseMessage> AddArticle(string code, [FromBody] ArticlePostData body)
         {
+            if (body == null || string.IsNullOrWhiteSpace(body.Title))
+                return Request.CreateResponse(System.Net.HttpStatusCode.BadRequest);
+
             var user = _identity.GetUserInfo();
             if (user == null)
                 return Unauthorized();
