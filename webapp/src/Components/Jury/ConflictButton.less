@@ -1,0 +1,52 @@
+.ConflictButton {
+   display: flex;
+
+   > button {
+      width: 32px;
+      height: 32px;
+      background: url('conflict.png') no-repeat center;
+      align-self: center;
+      cursor: pointer;
+
+      &.firstTime {
+         animation: jump 1.5s ease infinite;
+      }
+   }
+
+   .ModalDialog {
+      font-size: .8em;
+
+      .content {
+         max-width: 90%;
+      }
+
+      tr:not(:first-child) > td {
+         border-top: dashed 1px #ccc;
+      }
+
+      .jury {
+         font-weight: 600;
+      }
+
+      .mark {
+         padding: 0 .5em;
+      }
+
+      .comment {
+         font-size: .8em;
+      }
+
+      dl, dt, dd {
+         text-align: left;
+         display: inline;
+      }
+
+      dd {
+         white-space: nowrap;
+
+         &:not(:last-child):after {
+            content: ', ';
+         }
+      }
+   }
+}

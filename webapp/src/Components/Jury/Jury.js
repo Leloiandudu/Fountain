@@ -161,17 +161,18 @@ const Jury = React.createClass({
    async onSaveMark({ comment, marks }) {
       const mark = { marks, comment };
       const article = this.getSelectedArticle();
-      this.setMark(article, mark);
-      this.setState({
-         editathon: this.state.editathon,
-         changed: false,
-      });
 
       try {
          await Api.setMark(this.getCode(), {
             title: article.name,
             marks: mark.marks,
             comment: mark.comment,
+         });
+         
+         this.setMark(article, mark);
+         this.setState({
+            editathon: this.state.editathon,
+            changed: false,
          });
          this.moveNext();
       } catch (err) {
@@ -204,7 +205,7 @@ const Jury = React.createClass({
 
       return (
          <div className='Jury'>
-            <Header title={this.state.selected} wiki={editathon.wiki} menuOpen={this.state.menuOpen} toggleMenu={this.toggleMenu} onClose={this.tryClose}>
+            <Header article={article} editathon={editathon} menuOpen={this.state.menuOpen} toggleMenu={this.toggleMenu} onClose={this.tryClose}>
                <Warnings info={info} rules={this.getRules()} article={article} wiki={editathon.wiki} />
             </Header>
             <main>

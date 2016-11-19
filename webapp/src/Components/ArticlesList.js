@@ -224,7 +224,6 @@ const ArticlesList = React.createClass({
       const { sum, parts } = calcMark(mark.marks, marksConfig);
 
       const details = [];
-      let i = 0;
       for (var p in parts) {
          const v = parts[p];
          details.push(<dt>{v && this.formatNumber(v, { forcePlus: true }) + ' ' || ''}</dt>);

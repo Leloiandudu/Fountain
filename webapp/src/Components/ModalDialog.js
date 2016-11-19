@@ -6,5 +6,5 @@ export default ({ isOpen, children, tryClose, ...props }) =>
       <div className={classNames([ 'content', props.className ])}>
          {children}
       </div>
-      <div className='wrapper' />
+      <div className='wrapper' onClick={tryClose} />
    </div>) || null;

@@ -8,7 +8,7 @@ import classNames from 'classnames';
 const RuleMessages = {
    submitterIsCreator: (rule, ok, stats, ctx, tr, wiki) => [ 
       tr('author'),
-      <WikiLink to={`User_talk:${stats.creator}`} wiki={wiki} />,
+      <WikiLink to={`User_talk:${stats.creator}`} wiki={wiki} target='_blank' />,
    ],
    articleCreated: (rule, ok, stats, ctx, tr) => [
       tr('createdOn'),

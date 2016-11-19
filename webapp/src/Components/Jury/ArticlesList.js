@@ -11,7 +11,7 @@ export default React.createClass({
    hasMark(article) {
       return findMarkOf(article.marks) !== undefined;
    },
-    isConflict(article) {
+   isConflict(article) {
       const { jury, marks, consensualVote } = this.props.editathon;
       if (!consensualVote) return false;
       const mark = calcTotalMark(jury, article.marks, marks);
