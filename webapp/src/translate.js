@@ -92,14 +92,18 @@ export function translator(dict) {
 
 // const { translations: Langs } = require('./translations/*.js', { mode: 'hash' });
 const Langs = {
+   az: require('./translations/az').default,
    be: require('./translations/be').default,
    bg: require('./translations/bg').default,
    bn: require('./translations/bn').default,
    de: require('./translations/de').default,
    en: require('./translations/en').default,
    id: require('./translations/id').default,
+   ja: require('./translations/ja').default,
    ka: require('./translations/ka').default,
+   lo: require('./translations/lo').default,
    ml: require('./translations/ml').default,
+   ne: require('./translations/ne').default,
    pt: require('./translations/pt').default,
    ru: require('./translations/ru').default,
    sah: require('./translations/sah').default,

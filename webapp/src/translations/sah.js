@@ -132,7 +132,7 @@ export default {
          articleCreated: date => `Ыстатыйа баччаҕа ${formatDate(date, 'L LT')} айыллыбыт`,
          chars: n => `${formatNumber(n)} ${plural(n, 'бэлиэ', 'бэлиэлээх')}`,
          bytes: n => `${formatNumber(n)} ${plural(n, 'баайт', 'баайтаах')}`,
-         words: n => `${formatNumber(n)} ${plural(n, 'тыл', 'тыллар')}`,
+         words: n => `${formatNumber(n)} ${plural(n, 'тыл', 'тыллаах')}`,
       },
 
       unauthorized: 'Киирбэтэххин.',
@@ -163,7 +163,7 @@ export default {
       Warnings: {
          chars: n => `${formatNumber(n)} ${plural(n, 'бэлиэ', 'бэлиэлээх')}`,
          bytes: n => `${formatNumber(n)} ${plural(n, 'баайт', 'баайтаах')}`,
-         words: n => `${formatNumber(n)} ${plural(n, 'тыл', 'тыллар')}`,
+         words: n => `${formatNumber(n)} ${plural(n, 'тыл', 'тыллаах')}`,
          author: 'Ааптар',
          createdOn: 'Айыллыбыт',
          createdDate: date => formatDate(date, 'L LT'),
