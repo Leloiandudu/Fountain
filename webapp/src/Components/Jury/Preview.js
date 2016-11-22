@@ -20,7 +20,7 @@ const Preview = React.createClass({
       <html>
       <head>
          <base href='https://${getWikiHost(this.props.wiki)}/wiki/' target='_blank'>
-         <link rel='stylesheet' href='/w/load.php?debug=false&lang=${this.props.translation.curLang}&modules=site.styles%7Cext.cite.styles%7Cext.echo.badgeicons%7Cext.echo.styles.badge%7Cext.flaggedRevs.basic%7Cext.gadget.BKL%2CDYK%2CWikilinker%2Ccollapserefs%2CdirectLinkToCommons%2CeditZeroSection%2Clogo%2Cmarkadmins%2Cmarkblocked%2Cpreview%2CrefToolbar%2CreferenceTooltips%7Cext.math.scripts%2Cstyles%7Cext.tmh.thumbnail.styles%7Cext.uls.nojs%7Cext.visualEditor.desktopArticleTarget.noscript%7Cext.wikimediaBadges%7Cmediawiki.legacy.commonPrint%2Cshared%7Cmediawiki.sectionAnchor%7Cmediawiki.skinning.interface%7Cskins.vector.styles%7Cwikibase.client.init&only=styles&skin=vector' />
+         <link rel='stylesheet' href='/w/load.php?debug=false&lang=${this.props.translation.curLang}&modules=ext.cite.styles%7Cext.echo.badgeicons%7Cext.echo.styles.badge%7Cext.flaggedRevs.basic%7Cext.gadget.logo%7Cext.uls.interlanguage%7Cext.math.scripts,styles%7Cext.tmh.thumbnail.styles%7Cext.uls.nojs%7Cext.wikimediaBadges%7Cmediawiki.legacy.commonPrint,shared%7Cmediawiki.page.gallery.styles%7Cmediawiki.sectionAnchor%7Cmediawiki.skinning.interface%7Csite.styles%7Cskins.vector.styles%7Cwikibase.client.init&only=styles&skin=vector' />
       </head>
       <body class='mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject skin-vector' style='background: white'>
          <div id='bodyContent' class='mw-body-content' style='padding: 10px'>
