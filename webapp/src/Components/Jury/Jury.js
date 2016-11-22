@@ -52,7 +52,12 @@ const Jury = React.createClass({
          return;
       }
 
-      editathon.articles.sort(sortBy('dateAdded'));
+      const marksCount = new Map(editathon.articles.map(article => [ 
+         article,
+         editathon.jury.filter(j => findMarkOf(article.marks, j)).length
+      ]));
+
+      editathon.articles.sort(sortBy(a => marksCount.get(a), 'dateAdded'));
 
       let article = editathon.articles[0];
       this.setState({

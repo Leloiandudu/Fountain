@@ -9,6 +9,7 @@
    li {
       white-space: nowrap;
       display: flex;
+      padding: 0 .2em;
    
       a {
          overflow: hidden;
@@ -19,6 +20,23 @@
 
          &:hover {
             text-decoration: underline;
+         }
+      }
+
+      .marks {
+         margin-right: .5em;
+         display: flex;
+         align-items: center;
+
+         div {
+            border: solid 1px #777;
+            width: .5em;
+            height: .5em;
+            margin-right: .25em;
+
+            &.hasMark {
+               background: #777;
+            }
          }
       }
 

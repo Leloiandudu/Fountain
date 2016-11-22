@@ -17,7 +17,7 @@ export default {
    formatNumber,
    formatDate,
    formatDateIn,
-   delimiter: ', ',
+   delimiter: '、',
 
    Header: {
       signIn: 'ログイン',
