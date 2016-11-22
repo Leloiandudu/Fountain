@@ -50,7 +50,7 @@ function createBrowserify() {
       NODE_ENV: argv.release ? 'production' : 'development',
    }).transform('babelify', {
       global: true,
-      ignore: /\/node_modules\/(?!(react-day-picker)\/)/,
+      ignore: /\/node_modules\//,
       'presets': [ 'es2015', 'react' ],
       'plugins': [ 'transform-async-to-generator', 'transform-object-rest-spread' ]
    });
