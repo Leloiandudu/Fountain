@@ -17,6 +17,7 @@ const Preview = React.createClass({
    },
    setContent(html) {
       html = `
+      <!DOCTYPE html>
       <html>
       <head>
          <base href='https://${getWikiHost(this.props.wiki)}/wiki/' target='_blank'>
@@ -26,6 +27,26 @@ const Preview = React.createClass({
          <div id='bodyContent' class='mw-body-content' style='padding: 10px'>
             ${html}
          </div>
+         <script type='text/javascript'>
+            var url = window.location.href;
+
+            function getAnchor(element) {
+               for (;;) {
+                  if (!element) return null;
+                  if (element.nodeName === 'A') return element;
+                  element = element.parentElement;
+               }
+            }
+
+            document.body.addEventListener('click', function(e) {
+               var anchor = getAnchor(e.target);
+               if (!anchor) return;
+               var href = anchor.getAttribute('href');
+               if (!href || href[0] != '#') return;
+               anchor.setAttribute('href', url + href)
+               anchor.setAttribute('target', '_self')
+            }, true);
+         </script>
       </body>
       </html>`;
 
