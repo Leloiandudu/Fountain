@@ -159,14 +159,16 @@ const ArticlesList = React.createClass({
                      <th className='expander'></th>
                      <th className='user'>{this.renderSorter('name', this.tr('user'))}</th>
                      <th className='count'>{this.renderSorter('count', this.tr('acticlesCount'))}</th>
-                     <th className='total'>{this.renderSorter('total', this.tr('totalScore'))}</th>
+                     {this.showMarks() && <th className='total'>{this.renderSorter('total', this.tr('totalScore'))}</th>}
                   </tr>
                </thead>
                <tbody>
                   <tr className='spacer' />
                </tbody>
                {data.map(user => 
-                  <ExpandableRow key={user.name} user={user} wiki={editathon.wiki} formatMark={this.formatMark} formatNumber={this.formatNumber}>
+                  <ExpandableRow key={user.name} user={user} wiki={editathon.wiki} 
+                                 formatMark={this.formatMark} formatNumber={this.formatNumber}
+                                 showMarks={this.showMarks()}>
                      {this.renderArticles(editathon, user)}
                   </ExpandableRow>
                )}
@@ -182,7 +184,7 @@ const ArticlesList = React.createClass({
                <tr>
                   <th className='article'>{this.tr('acticle')}</th>
                   <th className='dateAdded'>{this.tr('addedOn')}</th>
-                  <th className='mark'>{this.tr('score')}</th>
+                  {this.showMarks() && <th className='mark'>{this.tr('score')}</th>}
                </tr>
             </thead>
             <tbody>
@@ -190,9 +192,9 @@ const ArticlesList = React.createClass({
                   <tr className='summary'>
                      <td className='article'><WikiLink to={a.name} wiki={wiki} /></td>
                      <td className='dateAdded'>{this.tr('dateAdded', moment(a.dateAdded).utc())}</td>
-                     <td className='mark'>{this.formatMark(getTotalMark(jury, a.marks, marksConfig, consensualVote))}</td>
+                     {this.showMarks() && <td className='mark'>{this.formatMark(getTotalMark(jury, a.marks, marksConfig, consensualVote))}</td>}
                   </tr>,
-                  <tr className='details'>
+                  this.showMarks() && <tr className='details'>
                      <td colSpan={3}>
                         <ul>
                            {jury
@@ -206,6 +208,9 @@ const ArticlesList = React.createClass({
             </tbody>
          </table>
       );
+   },
+   showMarks() {
+      return !(this.props.editathon.flags & EditathonFlags.hiddenMarks);
    },
    sortBy(sortBy) {
       const sortAsc = sortBy === this.state.sortBy ? !this.state.sortAsc : true;
@@ -271,10 +276,10 @@ const ExpandableRow = React.createClass({
                </td>
                <td className='user'><WikiLink to={`User_talk:${user.name}`} wiki={wiki} /></td>
                <td className='count'>{formatNumber(user.count)}</td>
-               <td className='total'>{formatMark(user.total)}</td>
+               {this.props.showMarks && <td className='total'>{formatMark(user.total)}</td>}
             </tr>
             {expanded && <tr className='expanded'>
-               <td colSpan={4}>
+               <td colSpan={this.props.showMarks ? 4 : 3}>
                   {children}
                </td>
             </tr>}

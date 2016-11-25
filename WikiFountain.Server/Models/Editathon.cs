@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using NHibernate.Mapping.ByCode.Conformist;
 
@@ -29,6 +30,16 @@ namespace WikiFountain.Server.Models
         public ISet<Rule> Rules { get; set; }
         public JObject Template { get; set; }
         public JObject Marks { get; set; }
+
+        public IEnumerable<Mark> GetArticleMarks(Article a, UserInfo currentUser)
+        {
+            if (!Flags.HasFlag(EditathonFlags.HiddenMarks))
+                return a.Marks;
+            if (currentUser == null)
+                return Enumerable.Empty<Mark>();
+
+            return a.Marks.Where(m => m.User == currentUser.Username);
+        }
     }
 
     [Flags]

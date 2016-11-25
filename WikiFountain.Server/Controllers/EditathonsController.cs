@@ -43,6 +43,9 @@ namespace WikiFountain.Server.Controllers
 
             if (e == null)
                 return NotFound();
+
+            var user = _identity.GetUserInfo();
+
             return Ok(new
             {
                 e.Code,
@@ -66,7 +69,7 @@ namespace WikiFountain.Server.Controllers
                     a.DateAdded,
                     a.Name,
                     a.User,
-                    Marks = a.Marks.Select(m => new
+                    Marks = e.GetArticleMarks(a, user).Select(m => new
                     {
                         m.User,
                         m.Marks,
