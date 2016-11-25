@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import ModalDialog from '../ModalDialog';
 import WikiLink from '../WikiLink';
-import { findMarkOf, calcMark, calcTotalMark } from './../../jury';
+import { findMarkOf, calcMark, isConflict } from './../../jury';
 import { withTranslation } from './../../translate';
 
 class ConflictButton extends React.Component {
@@ -22,14 +22,8 @@ class ConflictButton extends React.Component {
    }
 
    isConflict() {
-      const { jury, marks, consensualVote } = this.props.editathon;
-      if (!consensualVote) return false;
-
       const article = this.props.article;
-      if (findMarkOf(article.marks) === undefined) return false;
-
-      const mark = calcTotalMark(jury, article.marks, marks);
-      return mark && mark.consensual === null;
+      return findMarkOf(article.marks) !== undefined && isConflict(this.props.editathon, article);
    }
 
    formatNumber(...args) {

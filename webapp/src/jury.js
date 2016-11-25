@@ -1,4 +1,9 @@
-import eq from 'shallow-equals'
+import eq from 'shallow-equals';
+
+export const EditathonFlags = Object.freeze({
+   consensualVote: 1,
+   hiddenMarks: 2,
+});
 
 export function findMarkOf(marks, user = Global.user.name) {
    return marks.filter(m => m.user === user)[0];
@@ -88,4 +93,11 @@ export function calcTotalMark(jury, marks, marksConfig) {
       average: all.map(m => calcMark(m, marksConfig).sum).reduce((a, b) => a + b, 0) / all.length,
       consensual: getConsensualMark(all, marksConfig),
    }
+}
+
+export function isConflict(editathon, article) {
+   const { jury, marks, flags } = editathon;
+   if (!(flags & EditathonFlags.consensualVote)) return false;
+   const mark = calcTotalMark(jury, article.marks, marks);
+   return mark && mark.consensual === null;
 }

@@ -5,6 +5,7 @@ import stable from 'stable';
 import sortBy from './../sortBy';
 import Api from './../Api';
 import url from './../url';
+import { EditathonFlags } from './../jury';
 import { findMarkOf, calcMark, calcTotalMark } from './../jury';
 import { withTranslation } from './../translate';
 import Link from './Link';
@@ -73,7 +74,8 @@ const ArticlesList = React.createClass({
          e.preventDefault();
       }
    },
-   getData(articles, { jury, marks: marksConfig, consensualVote }) {
+   getData(articles, { jury, marks: marksConfig, flags }) {
+      const consensualVote = !!(flags & EditathonFlags.consensualVote);
       const getTotal = (articles) => {
          const marks = articles.map(article => getTotalMark(jury, article.marks, marksConfig, consensualVote)).filter(x => x !== null);
          if (!marks.length) return null;
@@ -94,7 +96,8 @@ const ArticlesList = React.createClass({
       return this.props.translation.translate('formatNumber', ...args);
    },
    formatMark(mark) {
-      return mark === null ? '' : this.formatNumber(mark, { places: this.props.editathon.consensualVote ? 0 : 2 });
+      const consensualVote = this.props.editathon.flags & EditathonFlags.consensualVote;
+      return mark === null ? '' : this.formatNumber(mark, { places: consensualVote ? 0 : 2 });
    },
    renderHeader(editathon) {
       var now = moment.utc();
@@ -171,7 +174,8 @@ const ArticlesList = React.createClass({
          </div>
       );
    },
-   renderArticles({ wiki, jury, marks: marksConfig, consensualVote }, user) {
+   renderArticles({ wiki, jury, marks: marksConfig, flags }, user) {
+      const consensualVote = !!(flags & EditathonFlags.consensualVote);
       return (
          <table className='articles'>
             <thead>

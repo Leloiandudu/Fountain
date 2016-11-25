@@ -22,13 +22,20 @@ namespace WikiFountain.Server.Models
         public DateTime Start { get; set; }
         public DateTime Finish { get; set; }
         public string Wiki { get; set; }
-        public bool ConsensualVote { get; set; }
+        public EditathonFlags Flags { get; set; }
 
         public ISet<Article> Articles { get; set; }
         public ISet<string> Jury { get; set; }
         public ISet<Rule> Rules { get; set; }
         public JObject Template { get; set; }
         public JObject Marks { get; set; }
+    }
+
+    [Flags]
+    public enum EditathonFlags
+    {
+        ConsensualVote = 1,
+        HiddenMarks = 2,
     }
 
     public class EditathonMapping : ClassMapping<Editathon>

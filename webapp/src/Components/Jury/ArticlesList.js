@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import Header from './Header';
-import { findMarkOf, calcTotalMark } from './../../jury';
+import { findMarkOf, isConflict } from './../../jury';
 import { withTranslation } from './../../translate';
 import sortBy from './../../sortBy';
 
@@ -12,12 +12,6 @@ const ArticlesList = React.createClass({
    },
    hasMark(article) {
       return findMarkOf(article.marks) !== undefined;
-   },
-   isConflict(article) {
-      const { jury, marks, consensualVote } = this.props.editathon;
-      if (!consensualVote) return false;
-      const mark = calcTotalMark(jury, article.marks, marks);
-      return mark && mark.consensual === null;
    },
    getJuryWithMarks(article) {
       const { jury } = this.props.editathon;
@@ -31,7 +25,7 @@ const ArticlesList = React.createClass({
          selected: article.name === this.props.selected,
          hasMark: this.hasMark(article),
          invalid: article.stats && this.props.validators.map(v => v.validate(article.stats)).some(x => !x.valid),
-         conflict: this.hasMark(article) && this.isConflict(article),
+         conflict: this.hasMark(article) && isConflict(editathon, article),
       })} key={article.name}>
          <div className='marks' title={juryWithMarks.join(translation.translate('delimiter'))}>
             {editathon.jury.map((j, i) => <div key={i} className={classNames({ hasMark: juryWithMarks.indexOf(j) !== -1 })} />)}
