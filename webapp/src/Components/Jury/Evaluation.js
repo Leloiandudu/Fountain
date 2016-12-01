@@ -44,12 +44,14 @@ const Evaluation = React.createClass({
       this.props.onChanged();
    },
    renderCheck(id, mark) {
-      return <button className={classNames({
-            check: true,
-            selected: this.state.marks[id],
-         })} title={mark.description} onClick={() => this.setMark(id)}>
-         {mark.title}
-      </button>;
+      return <div className='check'>
+         <button className={classNames({
+               selected: this.state.marks[id],
+            })} title={mark.description} onClick={() => this.setMark(id)}>
+            {mark.title}
+         </button>
+         {this.renderMarkControls(mark.children)}
+      </div>;
    },
    renderRadio(id, mark) {
       return <div className='radio'>

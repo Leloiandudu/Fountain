@@ -40,8 +40,14 @@
       }
 
       .check {
-         .button();
          margin: .2em;
+         display: flex;
+         flex-flow: row wrap;
+         align-items: center;
+         
+         button {
+            .button();
+         }
       }
 
       .radio {
