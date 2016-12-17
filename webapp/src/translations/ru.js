@@ -59,6 +59,7 @@ export default {
          chars: n => `${formatNumber(n)} ${plural(n, 'символ', 'символа', 'символов')}`,
          bytes: n => `${formatNumber(n)} байт`,
          words: n => `${formatNumber(n)} ${plural(n, 'слово', 'слова', 'слов')}`,
+         addedForCleanupRu: date => date ? [ 'На КУЛ с ', formatDate(date, 'L'), '' ] : [ 'Шаблон КУЛ ', 'не найден', '' ],
       },
 
       unauthorized: 'Вы не авторзиованы.',
@@ -94,6 +95,7 @@ export default {
          createdOn: 'Создана',
          createdDate: date => formatDate(date, 'L LT'),
          submittedBy: g => gender(g, 'Добавила', 'Добавил'),
+         addedForCleanupRu: date => date ? [ 'На КУЛ с ', formatDate(date, 'L') ] : [ 'Шаблон КУЛ', 'не найден' ],
       },
 
       Preview: {

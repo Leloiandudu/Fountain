@@ -23,6 +23,17 @@ const RuleMessages = {
       rule.params.chars && tr('chars', stats.chars),
       rule.params.words && tr('words', stats.words),
    ].filter(x => x).join(tr.translate('delimiter')),
+   addedForCleanupRu: (tr, rule, ok, stats, wiki, title) => {
+      const [ prefix, link, suffix ] = tr('addedForCleanupRu', stats.addedForCleanupRu.date);
+      return [ 
+         prefix,
+         <WikiLink key='link' wiki={wiki}
+                   to={stats.addedForCleanupRu.date ? `?oldid=${stats.addedForCleanupRu.revId}&diff=cur` : `${title}?action=history`}>
+            {link}
+         </WikiLink>,
+         suffix
+      ];
+   },
 };
 
 const AddArticle = React.createClass({
@@ -161,9 +172,10 @@ const AddArticle = React.createClass({
       const { editathon } = this.props;
       const stats = this.state.stats;
       const missing = !stats;
+      const title = stats && stats.title || this.state.title;
 
-      const title = <h2>
-         <WikiLink to={stats && stats.title || this.state.title} wiki={editathon.wiki} red={missing} />
+      const header = <h2>
+         <WikiLink to={title} wiki={editathon.wiki} red={missing} />
       </h2>;
 
       const addedBy = stats && editathon.articles.filter(a => a.name === stats.title)[0];
@@ -188,13 +200,13 @@ const AddArticle = React.createClass({
             {this.state.updating ? <Loader /> : (<div>
                {missing ? 
                <div>
-                  {title}
+                  {header}
                   <div>{this.tr('notFound')}</div>
                </div> 
                :
                <div className='info'>
                   <div className='stats'>
-                     {title}
+                     {header}
                      {addedBy && this.renderStat('addedBy', addedBy.user === Global.user.name ? this.tr('youAlreadyAdded') : this.tr('someoneAlreadyAdded'), false, true)}
                      {[...rules].sort(sortBy( // sorting by result (error, warning, ok), then by type
                         ([ rule, result ]) => result, 
@@ -202,7 +214,7 @@ const AddArticle = React.createClass({
                         ([ rule, result ]) => rule.type
                      )).map(([ rule, result ], i) => this.renderStat(
                         i, 
-                        RuleMessages[rule.type](this.ruleTr(), rule, result, stats, editathon.wiki), 
+                        RuleMessages[rule.type](this.ruleTr(), rule, result, stats, editathon.wiki, title), 
                         result, 
                         !(rule.flags & RuleFlags.optional))
                      )}

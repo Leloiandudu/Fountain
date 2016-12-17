@@ -19,6 +19,16 @@ const RuleMessages = {
       rule.params.chars && tr('chars', stats.chars),
       rule.params.words && tr('words', stats.words),
    ].filter(x => x),
+   addedForCleanupRu: (rule, ok, stats, ctx, tr, wiki, title) => {
+      const [ header, link ] = tr('addedForCleanupRu', stats.addedForCleanupRu.date);
+      return [ 
+         header,
+         <WikiLink key='link' wiki={wiki} target='_blank' 
+                   to={stats.addedForCleanupRu.date ? `?oldid=${stats.addedForCleanupRu.revId}&diff=cur` : `${title}?action=history`}>
+            {link}
+         </WikiLink>,
+      ];
+   },
 };
 
 const Warnings = React.createClass({
@@ -54,7 +64,7 @@ const Warnings = React.createClass({
          {author}
          {rules.map((rule, i) => {
             const result = rule.check(info, ctx);
-            return this.renderStat(i, RuleMessages[rule.type](rule, result, info, ctx, tr, wiki), result);
+            return this.renderStat(i, RuleMessages[rule.type](rule, result, info, ctx, tr, wiki, article.name), result);
          })}
       </div>).props.children;
    },

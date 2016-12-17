@@ -1,22 +1,29 @@
-import { getPlainText, getWordCount } from './parsing';
+import moment from 'moment';
+import { getPlainText, getWordCount, findTemplate } from './parsing';
 
 class Request {
    constructor() {
       this.items = new Map();
       this.callbacks = [];
+      this.lastCustomTypeId = 0;
    }
 
    add(type, params, cb) {
       let item = this.items.get(type);
       if (item === undefined) {
-         if (type !== 'firstRev' && type !== 'lastRev')
+         if (type === 'firstRev' || type === 'lastRev') {
+            item = {
+               action: 'query',
+               redirects: true,
+               rvdir: type === 'firstRev' ? 'newer' : 'older',
+            };
+         } else if (type === 'custom') {
+            type = 'custom-' + ++this.lastCustomTypeId;
+            item = {};
+         } else {
             throw new Error(`Unknown type '${type}'`);
+         }
 
-         item = {
-            action: 'query',
-            redirects: true,
-            rvdir: type === 'firstRev' ? 'newer' : 'older',
-         };
          this.items.set(type, item);
       }
 
@@ -208,19 +215,59 @@ const Types = {
          }
       }) => timestamp,
    ],
+   addedForCleanupRu: ({ at }) => [
+      'custom', {
+         action: 'query',
+         redirects: true,
+         rvdir: 'older',
+         rvstart: moment(at).toISOString(),
+         prop: [ 'revisions' ],
+         rvprop: [ 'ids', 'content' ],
+         rvlimit: 1,
+      }, ({
+         query: {
+            pages: [{
+               revisions: [{
+                  revid,
+                  content,
+               }]
+            }]
+         }
+      }) => {
+         const template = findTemplate(content, 'К улучшению');
+         const arg = template && template.args[0];
+         return {
+            date: arg && arg.value && moment.utc(arg.value, 'YYYY-M-D', true),
+            revId: revid,
+         };
+      }
+   ],
 };
 
-// what: title, ns, html, chars, bytes, creator, created, card
+// what: title, ns, html, chars, bytes, creator, created, card, { type: addedForCleanupRu, arg: { at: 'date' } }
 export default async function getArticleData(mwApi, title, what) {
    const req = new Request();
    const result = {};
 
    for (const item of new Set(what)) {
-      if (!(item in Types))
-         throw new Error(`Unknown type '${item}'`);
+      let type, arg;
+      if (typeof item === 'string') {
+         type = item;
+         arg = null;
+      } else {
+         ({ type, arg } = item);
+      }
 
-      const [ type, params, cb ] = Types[item];
-      req.add(type, params, data => result[item] = cb(data));
+      if (!(type in Types))
+         throw new Error(`Unknown type '${type}'`);
+
+      let config = Types[type];
+      if (typeof config === 'function') {
+         config = config(arg);
+      }
+
+      const [ reqType, params, cb ] = config;
+      req.add(reqType, params, data => result[type] = cb(data));
    }
 
    if (!await req.runFor(mwApi, title))

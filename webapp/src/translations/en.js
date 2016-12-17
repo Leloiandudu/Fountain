@@ -50,6 +50,7 @@ export default {
          chars: n => `${formatNumber(n)} ${plural(n, 'symbol', 'symbols')}`,
          bytes: n => `${formatNumber(n)} bytes`,
          words: n => `${formatNumber(n)} words`,
+         addedForCleanupRu: date => date ? [ 'On Cleanup since ', formatDate(date, 'L'), '' ] : [ 'Cleanup template ', 'not found', '' ],
       },
 
       unauthorized: 'You\'re not authorised',
@@ -85,6 +86,7 @@ export default {
          createdOn: 'Created on',
          createdDate: date => formatDate(date, 'L LT'),
          submittedBy: 'Added by',
+         addedForCleanupRu: date => date ? [ 'On Cleanup since ', formatDate(date, 'L') ] : [ 'Clenup template', 'not found' ],
       },
 
       Preview: {

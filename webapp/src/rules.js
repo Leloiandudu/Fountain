@@ -2,9 +2,15 @@ import moment from 'moment';
 
 function withReqs(fn, reqs) {
    const arr = [];
-   for (var key in reqs) {
-      if (reqs[key])
-         arr.push(key);
+   for (const key in reqs) {
+      const val = reqs[key];
+      if (val) {
+         if (val === true) {
+            arr.push(key);
+         } else {
+            arr.push({ type: key, arg: val });
+         }
+      }
    }
    fn.reqs = arr;
    return fn;
@@ -48,7 +54,16 @@ function namespace({ isIn }) {
    }, { ns: true });
 }
 
-const allRules = { articleSize, submitterIsCreator, articleCreated, submitterRegistered, namespace };
+function addedForCleanupRu({ at, before }) {
+   return withReqs(function addedForCleanupRu(data) {
+      return data.addedForCleanupRu.date && moment(data.addedForCleanupRu.date).isBefore(before);
+   }, { addedForCleanupRu: { at } });
+}
+
+const allRules = { 
+   articleSize, submitterIsCreator, articleCreated, 
+   submitterRegistered, namespace, addedForCleanupRu,
+};
 const userRules = [ 'submitterRegistered' ];
 
 export const RuleFlags = Object.freeze({

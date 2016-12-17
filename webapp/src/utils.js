@@ -7,3 +7,20 @@ export function getNavitagorLang() {
    }
    return lang;
 }
+
+export function* matchAll(regex, input) {
+   if (!regex.global) {
+      yield regex.exec(input);
+      return;
+   }
+
+   for(;;) {
+      const res = regex.exec(input);
+      if (res === null) break;
+      yield res;
+   }
+}
+
+export function escapeRegExp(regex) {
+   return regex.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
