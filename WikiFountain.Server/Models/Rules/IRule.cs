@@ -16,7 +16,6 @@ namespace WikiFountain.Server.Models.Rules
 
     enum RuleReq
     {
-        Title,
         Ns,
         Bytes,
         Chars,

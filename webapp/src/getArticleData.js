@@ -13,10 +13,17 @@ class Request {
       if (item === undefined) {
          if (type === 'firstRev' || type === 'lastRev') {
             item = {
+               _title: 'titles',
                action: 'query',
                redirects: true,
                rvdir: type === 'firstRev' ? 'newer' : 'older',
             };
+         } else if (type === 'html') {
+            item = {
+               _title: 'page',
+               action: 'parse',
+               prop: [ 'text' ],
+            }
          } else if (type === 'custom') {
             type = 'custom-' + ++this.lastCustomTypeId;
             item = {};
@@ -58,10 +65,15 @@ class Request {
       const items = [...this.items.entries()];
 
       const promises = items.map(([type, item]) => {
-         const params = {
-            titles: title,
-         };
+         const params = { };
+
+         if (item._title) {
+            params[item._title] = title;
+         }
+
          for (const key in item) {
+            if (key[0] == '_') continue;
+
             let value = item[key];
             if (Array.isArray(value))
                value = value.join('|');
@@ -73,7 +85,7 @@ class Request {
       const results = new Map((await Promise.all(promises)).map((result, i) => [ items[i][0], result ]));
 
       for (const [ type, result ] of results) {
-         if (result.query.pages[0].missing)
+         if (result.query && result.query.pages[0].missing)
             return false;
       }
 
@@ -107,46 +119,19 @@ const Types = {
       }) => ns,
    ],
    html: [
-      'lastRev', {
-         prop: [ 'revisions' ],
-         rvprop: [ 'content' ],
-         rvparse: true,
-         rvlimit: 1,
-      }, ({
-         query: {
-            pages: [{
-               revisions: [{ content }]
-            }]
-         }
-      }) => content,
+      'html', {}, ({
+         parse: { text }
+      }) => text,
    ],
    chars: [
-      'lastRev', {
-         prop: [ 'revisions' ],
-         rvprop: [ 'content' ],
-         rvparse: true,
-         rvlimit: 1,
-      }, ({
-         query: {
-            pages: [{
-               revisions: [{ content }]
-            }]
-         }
-      }) => getPlainText(content).length,
+      'html', {}, ({
+         parse: { text }
+      }) => getPlainText(text).length,
    ],
    words: [
-      'lastRev', {
-         prop: [ 'revisions' ],
-         rvprop: [ 'content' ],
-         rvparse: true,
-         rvlimit: 1,
-      }, ({
-         query: {
-            pages: [{
-               revisions: [{ content }]
-            }]
-         }
-      }) => getWordCount(content),
+      'html', {}, ({
+         parse: { text }
+      }) => getWordCount(text),
    ],
    bytes: [
       'lastRev', {

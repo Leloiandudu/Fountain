@@ -22,18 +22,42 @@ namespace WikiFountain.Server.Models.Rules
                 JObject request;
                 if (!_requests.TryGetValue(loader.Type, out request))
                 {
-                    request = JObject.FromObject(new
+                    if (loader.Type == LoaderType.FirstRev || loader.Type == LoaderType.LastRev)
                     {
-                        action = "query",
-                        redirects = true,
-                        rvdir = loader.Type == LoaderType.FirstRev ? "newer" : "older",
-                    });
+                        request = JObject.FromObject(new
+                        {
+                            _title = "titles",
+                            action = "query",
+                            redirects = true,
+                            rvdir = loader.Type == LoaderType.FirstRev ? "newer" : "older",
+                        });
+                    }
+                    else if (loader.Type == LoaderType.Html)
+                    {
+                        request = JObject.FromObject(new
+                        {
+                            _title = "page",
+                            action = "parse",
+                            prop = new[] { "text" },
+                        });
+                    }
                     _requests.Add(loader.Type, request);
                 }
 
-                var pars = loader.Params is JObject ? (JObject)loader.Params : JObject.FromObject(loader.Params);
+                var pars = loader.Params as JObject;
+                if (pars == null)
+                {
+                    if (loader.Params != null)
+                        pars = JObject.FromObject(loader.Params);
+                    else
+                        pars = new JObject();
+                }
+
                 foreach (var prop in pars.Properties())
                 {
+                    if (prop.Name.StartsWith("_"))
+                        continue;
+
                     JToken value;
                     if (prop.Value is JArray)
                     {
@@ -76,7 +100,9 @@ namespace WikiFountain.Server.Models.Rules
         public async Task<JObject> LoadAsync(MediaWiki wiki, string title)
         {
             var results = (await Task.WhenAll(_requests.Values.Select(args => {
-                var obj = new JObject { { "titles", title } };
+                var obj = new JObject();
+                if (args["_title"] != null)
+                    obj[args.Value<string>("_title")] = title;
                 obj.Merge(args);
                 return obj;
             }).Select(wiki.Exec)))
@@ -92,19 +118,6 @@ namespace WikiFountain.Server.Models.Rules
 
         private static readonly IDictionary<RuleReq, Loader> Loaders = new Dictionary<RuleReq, Loader>
         {
-            {
-                RuleReq.Title, 
-                new Loader
-                {
-                    Type = LoaderType.LastRev,
-                    Params = new
-                    {
-                        prop = new[] { "revisions" },
-                        rvlimit = 1,
-                    },
-                    Callback = data => data["query"]["pages"][0].Value<string>("title"),
-                }
-            },
             {
                 RuleReq.Ns, 
                 new Loader
@@ -136,14 +149,7 @@ namespace WikiFountain.Server.Models.Rules
                 RuleReq.Chars, 
                 new Loader
                 {
-                    Type = LoaderType.LastRev,
-                    Params = new
-                    {
-                        prop = new[] { "revisions" },
-                        rvprop = new[] { "content" },
-                        rvparse = true,
-                        rvlimit = 1,
-                    },
+                    Type = LoaderType.Html,
                     Callback = data => ParserUtils.GetPlainText(GetContent(data)).Length,
                 }
             },
@@ -151,14 +157,7 @@ namespace WikiFountain.Server.Models.Rules
                 RuleReq.Words, 
                 new Loader
                 {
-                    Type = LoaderType.LastRev,
-                    Params = new
-                    {
-                        prop = new[] { "revisions" },
-                        rvprop = new[] { "content" },
-                        rvparse = true,
-                        rvlimit = 1,
-                    },
+                    Type = LoaderType.Html,
                     Callback = data => ParserUtils.GetWordCount(GetContent(data)),
                 }
             },
@@ -194,7 +193,7 @@ namespace WikiFountain.Server.Models.Rules
 
         private static string GetContent(JObject queryResult)
         {
-            return queryResult["query"]["pages"][0]["revisions"][0].Value<string>("content");
+            return queryResult["parse"].Value<string>("text");
         }
 
         class Loader
@@ -208,6 +207,7 @@ namespace WikiFountain.Server.Models.Rules
         {
             FirstRev,
             LastRev,
+            Html,
         }
     }
 }
