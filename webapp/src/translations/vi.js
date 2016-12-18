@@ -6,6 +6,7 @@ const { formatDateIn, formatDate } = dateFormatter('vi');
 
 export default {
    _name: 'Tiếng Việt',
+   _fallback: 'en',
    formatNumber,
    formatDate,
    formatDateIn,

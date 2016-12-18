@@ -18,6 +18,7 @@ const { formatDateIn, formatDate } = dateFormatter('zh-cn');
 
 export default {
    _name: '中文',
+   _fallback: 'en',
    formatNumber,
    formatDate,
    formatDateIn,

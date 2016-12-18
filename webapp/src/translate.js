@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import cloneDeep from 'clone-deep';
 
 export function plural(n, one, few, many) {
    if (many === undefined)
@@ -74,7 +75,8 @@ export function dateFormatter(lang) {
    }
 }
 
-export function translator(dict) {
+function translator(lang) {
+   const dict = buildTranslation(lang);
    return function translate(key, ...args) {
       const tr = key.split('.').reduce((d, k) => {
          const v = d[k];
@@ -113,6 +115,31 @@ const Langs = {
    zh: require('./translations/zh').default,
 };
 
+const Translations = {};
+
+function buildTranslation(lang) {
+   if (Translations[lang])
+      return Translations[lang];
+
+   const dict = cloneDeep(Langs[lang]);
+
+   if (dict._fallback) {
+      merge(dict, buildTranslation(dict._fallback));
+   }
+
+   return Translations[lang] = dict;
+}
+
+function merge(dst, src) {
+   for (const key in src) {
+      if (!(key in dst)) {
+         dst[key] = cloneDeep(src[key]);
+      } else if (src[key] && typeof src[key] === 'object') {
+         merge(dst[key], src[key]);
+      }
+   }
+}
+
 export class TranslationContext extends React.Component {
    static get childContextTypes() {
       return {
@@ -141,8 +168,8 @@ export class TranslationContext extends React.Component {
       return {
          'TranslationContext': {
             curLang,
-            translate: translator(Langs[curLang]),
-            translateFrom: (lang, ...args) => translator(Langs[lang])(...args),
+            translate: translator(curLang),
+            translateFrom: (lang, ...args) => translator(lang)(...args),
             setLang: lang => {
                if (!(lang in Langs)) {
                   throw new Error('Unknown language ' + lang);

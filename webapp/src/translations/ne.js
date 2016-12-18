@@ -6,6 +6,7 @@ const { formatDateIn, formatDate } = dateFormatter('ne');
 
 export default {
    _name: 'नेपाली भाषा ',
+   _fallback: 'en',
    formatNumber,
    formatDate,
    formatDateIn,

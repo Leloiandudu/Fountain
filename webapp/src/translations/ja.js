@@ -14,6 +14,7 @@ const { formatDateIn, formatDate } = dateFormatter('ja');
 
 export default {
    _name: '日本語',
+   _fallback: 'en',
    formatNumber,
    formatDate,
    formatDateIn,

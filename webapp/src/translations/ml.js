@@ -6,6 +6,7 @@ const { formatDateIn, formatDate } = dateFormatter('ml');
 
 export default {
    _name: 'ഇംഗ്ലീഷ്',
+   _fallback: 'en',
    formatNumber,
    formatDate,
    formatDateIn,

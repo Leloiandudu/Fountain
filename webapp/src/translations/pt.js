@@ -6,6 +6,7 @@ const { formatDateIn, formatDate } = dateFormatter('pt');
 
 export default {
    _name: 'português',
+   _fallback: 'en',
    formatNumber,
    formatDate,
    formatDateIn,

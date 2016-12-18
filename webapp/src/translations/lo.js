@@ -6,6 +6,7 @@ const { formatDateIn, formatDate } = dateFormatter('lo');
 
 export default {
    _name: 'ພາສາລາວ',
+   _fallback: 'en',
    formatNumber,
    formatDate,
    formatDateIn,

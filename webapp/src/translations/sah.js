@@ -88,6 +88,7 @@ const { formatDateIn, formatDate } = dateFormatter('sah');
 
 export default {
    _name: 'саха',
+   _fallback: 'ru',
    formatNumber,
    formatDate,
    formatDateIn,

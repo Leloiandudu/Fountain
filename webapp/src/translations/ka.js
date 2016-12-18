@@ -6,6 +6,7 @@ const { formatDateIn, formatDate } = dateFormatter('ka');
 
 export default {
    _name: 'ქართული',
+   _fallback: 'en',
    formatNumber,
    formatDate,
    formatDateIn,

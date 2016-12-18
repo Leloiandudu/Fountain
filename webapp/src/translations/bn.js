@@ -19,6 +19,7 @@ function formatNumber(...args) {
 
 export default {
    _name: 'বাংলা',
+   _fallback: 'en',
    formatNumber,
    formatDate,
    formatDateIn,

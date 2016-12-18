@@ -14,6 +14,7 @@ const { formatDateIn, formatDate } = dateFormatter('ru');
 
 export default {
    _name: 'русский',
+   _fallback: 'en',
    formatNumber,
    formatDate,
    formatDateIn,

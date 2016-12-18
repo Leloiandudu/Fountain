@@ -6,6 +6,7 @@ const { formatDateIn, formatDate } = dateFormatter('sq');
 
 export default {
    _name: 'Shqip',
+   _fallback: 'en',
    formatNumber,
    formatDate,
    formatDateIn,

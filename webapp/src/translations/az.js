@@ -6,6 +6,7 @@ const { formatDateIn, formatDate } = dateFormatter('az');
 
 export default {
    _name: 'Azərbaycan',
+   _fallback: 'en',
    formatNumber,
    formatDate,
    formatDateIn,
