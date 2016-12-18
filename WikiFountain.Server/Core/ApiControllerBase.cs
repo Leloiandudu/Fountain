@@ -9,13 +9,20 @@ namespace WikiFountain.Server.Core
 {
     public class ApiControllerBase : ApiController
     {
-        public override Task<HttpResponseMessage> ExecuteAsync(HttpControllerContext controllerContext, System.Threading.CancellationToken cancellationToken)
+        public override async Task<HttpResponseMessage> ExecuteAsync(HttpControllerContext controllerContext, System.Threading.CancellationToken cancellationToken)
         {
-            var task = base.ExecuteAsync(controllerContext, cancellationToken);
-            if (Type.GetType("Mono.Runtime") != null)
-                return Task.FromResult(task.Result);
-            else
-                return task;
+            try
+            {
+                var task = base.ExecuteAsync(controllerContext, cancellationToken);
+                if (Type.GetType("Mono.Runtime") != null)
+                    return task.Result;
+                else
+                    return await task;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
         }
 
         protected HttpResponseMessage Ok()

@@ -93,7 +93,10 @@ namespace WikiFountain.Server.Core
 
                 using (var resp = await http.SendAsync(req))
                 {
-                    return JObject.Parse(await resp.Content.ReadAsStringAsync());
+                    var result = JObject.Parse(await resp.Content.ReadAsStringAsync());
+                    if (result["error"] != null && result["error"].Value<string>("code") == "mwoauth-invalid-authorization")
+                        throw new UnauthorizedAccessException(result["error"].Value<string>("info"));
+                    return result;
                 }
             }
         }
