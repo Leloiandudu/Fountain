@@ -32,7 +32,7 @@ class ConflictButton extends React.Component {
 
    renderMark(parts) {
       const details = [];
-      for (var p in parts) {
+      for (const p in parts) {
          const v = parts[p];
          details.push(<dt key={'dt' + p}>{v && this.formatNumber(v, { forcePlus: true }) + ' ' || ''}</dt>);
          details.push(<dd key={'dd' + p}>{p}</dd>);

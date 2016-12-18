@@ -91,7 +91,7 @@ const Evaluation = React.createClass({
          return true;
       }
 
-      for (var key in newMark) {
+      for (const key in newMark) {
          if (oldMark[key] !== newMark[key]) {
             return true;
          }

@@ -50,10 +50,10 @@ const Preview = React.createClass({
       </body>
       </html>`;
 
-      var div = ReactDOM.findDOMNode(this.refs.iframe);
+      const div = ReactDOM.findDOMNode(this.refs.iframe);
       div.innerHTML = '<iframe></iframe>';
 
-      var doc = div.getElementsByTagName('iframe')[0].contentWindow.document;
+      const doc = div.getElementsByTagName('iframe')[0].contentWindow.document;
       doc.open();
       doc.write(html);
       doc.close();

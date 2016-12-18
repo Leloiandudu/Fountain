@@ -12,9 +12,9 @@ function eraseTags(tag, tags) {
 };
 
 export function getPlainText(text) {
-   var tags = ["sup", "sub", "table", "div", "ul", "ol", "li", "dl", "dd", "dt", "#comment", "h1", "h2", "h3", "h4", "h5", "h6"];
-   var parser = new DOMParser();
-   var html = parser.parseFromString(text, "text/html");
+   const tags = ["sup", "sub", "table", "div", "ul", "ol", "li", "dl", "dd", "dt", "#comment", "h1", "h2", "h3", "h4", "h5", "h6"];
+   const parser = new DOMParser();
+   const html = parser.parseFromString(text, "text/html");
    return eraseTags(html.body, tags);
 }
 

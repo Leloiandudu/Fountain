@@ -100,7 +100,7 @@ const ArticlesList = React.createClass({
       return mark === null ? '' : this.formatNumber(mark, { places: consensualVote ? 0 : 2 });
    },
    renderHeader(editathon) {
-      var now = moment.utc();
+      const now = moment.utc();
       if (now.isBefore(editathon.start, 'day')) {
          return <div className='header'>
             {this.tr('editathonWillStartIn', editathon.start)}
@@ -233,7 +233,7 @@ const ArticlesList = React.createClass({
       const { sum, parts } = calcMark(mark.marks, marksConfig);
 
       const details = [];
-      for (var p in parts) {
+      for (const p in parts) {
          const v = parts[p];
          details.push(<dt>{v && this.formatNumber(v, { forcePlus: true }) + ' ' || ''}</dt>);
          details.push(<dd>{p}</dd>);

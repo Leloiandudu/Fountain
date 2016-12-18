@@ -1,5 +1,4 @@
 import React from 'react';
-import cloneDeep from 'clone-deep';
 import sortBy from './../../sortBy';
 import url from './../../url';
 import Api from './../../Api';
