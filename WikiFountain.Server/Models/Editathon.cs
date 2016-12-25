@@ -38,7 +38,7 @@ namespace WikiFountain.Server.Models
             if (currentUser == null)
                 return Enumerable.Empty<Mark>();
 
-            return a.Marks.Where(m => m.User == currentUser.Username);
+            return a.Marks.Select(m => m.User == currentUser.Username ? m : new Mark { User = m.User });
         }
     }
 

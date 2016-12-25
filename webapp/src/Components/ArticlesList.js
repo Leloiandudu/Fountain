@@ -76,11 +76,14 @@ const ArticlesList = React.createClass({
    },
    getData(articles, { jury, marks: marksConfig, flags }) {
       const consensualVote = !!(flags & EditathonFlags.consensualVote);
-      const getTotal = (articles) => {
+      let getTotal = (articles) => {
          const marks = articles.map(article => getTotalMark(jury, article.marks, marksConfig, consensualVote)).filter(x => x !== null);
          if (!marks.length) return null;
          return marks.reduce((s, m) => s + m, 0);
       }
+
+      if (flags & EditathonFlags.hiddenMarks)
+         getTotal = () => null;
 
       return [...groupBy(articles, a => a.user)].map(([k, v]) => ({
          name: k,

@@ -97,6 +97,7 @@ export function calcTotalMark(jury, marks, marksConfig) {
 
 export function isConflict(editathon, article) {
    const { jury, marks, flags } = editathon;
+   if (flags & EditathonFlags.hiddenMarks) return false;
    if (!(flags & EditathonFlags.consensualVote)) return false;
    const mark = calcTotalMark(jury, article.marks, marks);
    return mark && mark.consensual === null;
