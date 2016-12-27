@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NHibernate.Mapping.ByCode.Conformist;
 
 namespace WikiFountain.Server.Models
 {
@@ -16,5 +17,16 @@ namespace WikiFountain.Server.Models
         public string User { get; set; }
         public DateTime DateAdded { get; set; }
         public ISet<Mark> Marks { get; set; }
+
+        private Editathon Editathon { get; set; }
+    }
+
+    public class ArticleMapping : ClassMapping<Article>
+    {
+        public ArticleMapping()
+        {
+            ManyToOne<Editathon>("Editathon", m => m.UniqueKey("ArticleInEditathon"));
+            Property(_ => _.Name, p => p.UniqueKey("ArticleInEditathon"));
+        }
     }
 }
