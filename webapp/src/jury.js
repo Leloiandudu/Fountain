@@ -10,7 +10,7 @@ export function findMarkOf(marks, user = Global.user.name) {
 }
 
 const Calc = {
-   'radio': function(mark, val) {
+   radio(mark, val) {
       // backwards compatibily
       if (val === false)
          val = 0;
@@ -19,8 +19,11 @@ const Calc = {
       const cur = mark.values[val];
       return cur && { ...cur, val };
    },
-   'check': function(mark, val) {
+   check(mark, val) {
       return val && { ...mark };
+   },
+   int(mark, val) {
+      return val !== undefined ? { ...mark, val, value: val } : undefined;
    },
 };
 
@@ -55,6 +58,8 @@ export function calcMark(mark, marks) {
             res.parts[m.cur.description || m.cur.title] = m.cur.value;
          } else if (m.type === 'check') {
             res.parts[m.title || m.description] = m.value;
+         } else if (m.type === 'int') {
+            res.parts[m.title || m.description] = m.cur.value;
          }
 
          if (m.children) {

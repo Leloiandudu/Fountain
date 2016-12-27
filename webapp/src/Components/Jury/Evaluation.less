@@ -6,20 +6,10 @@
    align-items: center;
    .space-items(.2em);
 
-   @button-radius: 2px;
-
    .button() {
-      background: white;
+      .button-style();
       padding: .1em .4em;
       min-width: 2em;
-      border: solid 1px #bbb;
-      border-radius: @button-radius;
-      text-align: center;
-
-      &:hover, &:focus {
-         box-shadow: 0 1px rgba(0, 0, 0, .1), 
-              inset 0 -2px rgba(0, 0, 0, .2);
-      }
 
       &.selected {
          border-color: #347bff;
@@ -77,6 +67,16 @@
                   border-bottom-right-radius: @button-radius;
                }
             }
+         }
+      }
+
+      .int {
+         display: flex;
+         flex-flow: row wrap;
+         align-items: center;
+
+         .title, .IntegerInput {
+            margin: .2em;
          }
       }
    }

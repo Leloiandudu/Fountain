@@ -46,6 +46,37 @@ button {
    flex-flow: column;
 }
 
+.hide-selection() {
+        -moz-user-select: none; /* Firefox */
+         -ms-user-select: none; /* Internet Explorer */
+      -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
+     -webkit-user-select: none; /* Chrome, Safari, and Opera */
+   -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
+}
+
+.button-style() {
+   @button-radius: 2px;
+
+   background: white;
+   border: solid 1px #ccc;
+   border-radius: @button-radius;
+   vertical-align: middle;
+   text-align: center;
+
+   transition: background .1s ease-in-out, color .1s ease-in-out, box-shadow .1s ease-in-out;
+
+   &:hover, &:focus {
+      box-shadow: 0 1px rgba(0, 0, 0, .1), 
+           inset 0 -2px rgba(0, 0, 0, .2);
+      outline: 0;
+   }
+
+   &:active {
+      box-shadow: none;
+      background: #eee;
+   }
+}
+
 input[type=text], input:not([type]) {
    border: 1px solid #ccc;
    padding: .3em .3em .3em .6em;
@@ -95,6 +126,7 @@ input[type=text], input:not([type]) {
 @import 'Components/EditathonPage.less';
 @import 'Components/Footer.less';
 @import 'Components/Header.less';
+@import 'Components/IntegerInput.less';
 @import 'Components/LangSwitcher.less';
 @import 'Components/Loader.less';
 @import 'Components/ModalDialog.less';

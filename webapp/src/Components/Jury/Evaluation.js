@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import Header from './Header';
+import IntegerInput from '../IntegerInput';
 import ModalDialog from '../ModalDialog';
 import WikiButton from '../WikiButton';
 import { withTranslation } from '../../translate';
@@ -9,7 +10,7 @@ import { calcMark, getActiveMarks } from '../../jury';
 
 const Evaluation = React.createClass({
    getInitialState() {
-      return { 
+      return {
          marks: {},
          comment: null,
          isCommentOpen: false,
@@ -43,6 +44,11 @@ const Evaluation = React.createClass({
       this.setState({ marks: this.state.marks });
       this.props.onChanged();
    },
+   clearMark(id) {
+      delete this.state.marks[id];
+      this.setState({ marks: this.state.marks });
+      this.props.onChanged();
+   },
    renderCheck(id, mark) {
       return <div className='check'>
          <button className={classNames({
@@ -66,10 +72,19 @@ const Evaluation = React.createClass({
          {this.renderMarkControls(mark.children)}
       </div>;
    },
+   renderInt(id, mark) {
+      return <div className='int'>
+         <span className='title'>{mark.title + ': '}</span>
+         <IntegerInput value={mark.cur ? mark.cur.val : undefined}
+                       min={mark.min} max={mark.max}
+                       onChange={v => v === undefined ? this.clearMark(id) : this.setMark(id, v)} />
+     </div>
+   },
    renderMarkControl(id, mark) {
       const components = {
          check: this.renderCheck,
          radio: this.renderRadio,
+         int: this.renderInt,
       };
 
       return components[mark.type](id, mark);
@@ -106,8 +121,13 @@ const Evaluation = React.createClass({
          for (const m of Object.values(marks)) {
             if (m.type === 'radio' && m.cur === undefined)
                return false;
-            return isValid(m.children)
+            if (m.type === 'int' && m.cur === undefined)
+               return false;
+            if (!isValid(m.children))
+               return false;
          }
+
+         return true;
       }
 
       return isValid(getActiveMarks(this.state.marks, this.props.marks));
