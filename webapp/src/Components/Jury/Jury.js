@@ -96,7 +96,7 @@ const Jury = React.createClass({
             const what = getRulesReqs(this.getRules());
             const mwApi = getMwApi(this.state.editathon.wiki);
             [ info, userGender ] = await Promise.all([
-               getArticleData(mwApi, title, [ ...what, 'html' ]),
+               getArticleData(mwApi, title, [ ...what, 'html', 'title' ]),
                mwApi.getUserGender(article.user)
             ]);
             if (info === null)

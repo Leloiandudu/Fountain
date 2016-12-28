@@ -23,6 +23,11 @@ export function getWikiHost(wiki) {
    throw new Error(`Unknown wiki '${wiki}'.`);
 }
 
+export function getArticleUrl(wiki, to = '') {
+   wiki = getWikiHost(wiki);
+   return `https://${wiki}/wiki/${to}`;
+}
+
 export default function MwApi(url) {
    async function exec(params) {
       params = Object.assign({}, {

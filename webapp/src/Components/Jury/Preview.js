@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Header from './Header';
 import { withTranslation } from '../../translate';
-import { getWikiHost } from './../../MwApi'
+import { getWikiHost, getArticleUrl } from './../../MwApi'
 import Loader from '../Loader';
 
 const Preview = React.createClass({
@@ -12,20 +12,40 @@ const Preview = React.createClass({
    componentDidUpdate() {
       const { info } = this.props;
       if (info && !info.error) {
-         this.setContent(info.html);
+         this.setContent();
       }
    },
-   setContent(html) {
-      html = `
+   setContent() {
+      const { info, title, wiki } = this.props;
+      const html = `
       <!DOCTYPE html>
       <html>
       <head>
-         <base href='https://${getWikiHost(this.props.wiki)}/wiki/' target='_blank'>
+         <base href='${getArticleUrl(wiki)}' target='_blank'>
          <link rel='stylesheet' href='/w/load.php?debug=false&lang=${this.props.translation.curLang}&modules=ext.cite.styles%7Cext.echo.badgeicons%7Cext.echo.styles.badge%7Cext.flaggedRevs.basic%7Cext.gadget.logo%7Cext.uls.interlanguage%7Cext.math.scripts,styles%7Cext.tmh.thumbnail.styles%7Cext.uls.nojs%7Cext.wikimediaBadges%7Cmediawiki.legacy.commonPrint,shared%7Cmediawiki.page.gallery.styles%7Cmediawiki.sectionAnchor%7Cmediawiki.skinning.interface%7Csite.styles%7Cskins.vector.styles%7Cwikibase.client.init&only=styles&skin=vector' />
+         <style>
+            h1 {
+               line-height: 1.2em;
+               padding-top: 0;
+               margin-bottom: 0.25em;
+            }
+
+            h1 > a,
+            h1 > a:visited,
+            h1 > a:hover,
+            h1 > a:focus,
+            h1 > a:active {
+               text-decoration: none;
+               color: inherit;
+            }
+         </style>
       </head>
       <body class='mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject skin-vector' style='background: white'>
          <div id='bodyContent' class='mw-body-content' style='padding: 10px'>
-            ${html}
+            ${info.title !== title ? `<h1>
+               <a href='${getArticleUrl(wiki, info.title)}'>${info.title}</a>
+            </h1>` : ''}
+            ${info.html}
          </div>
          <script type='text/javascript'>
             var url = window.location.href;
@@ -66,7 +86,7 @@ const Preview = React.createClass({
       )
    },
    renderContent() {
-      const { info, translation: { tr } } = this.props;
+      const { info, title, translation: { tr } } = this.props;
       if (info === undefined)
          return <div key='loader' className='content'>
             <Loader />

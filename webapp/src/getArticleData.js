@@ -22,6 +22,7 @@ class Request {
             item = {
                _title: 'page',
                action: 'parse',
+               redirects: true,
                prop: [ 'text' ],
             }
          } else if (type === 'custom') {
