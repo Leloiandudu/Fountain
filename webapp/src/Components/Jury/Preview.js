@@ -97,11 +97,16 @@ const Preview = React.createClass({
             {tr('notFound')}
          </div>;
 
-      if (info && info.error)
-         return <div key='error' className='content'>
+      if (info && info.error) {
+         console.error(info.error);
+         const error = info.error.stack
+            ? info.error.message + '\n' + info.error.stack
+            : JSON.stringify(info.error, null, 4);
+         return <div key='error' className='content error'>
             {tr('loadingError') + ' '}
-            <pre>{JSON.stringify(info.error, null, 4)}</pre>
+            <pre>{error}</pre>
          </div>;
+      }
 
       return <div key='iframe' ref='iframe' className='content' />
    },
