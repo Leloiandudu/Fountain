@@ -203,6 +203,7 @@ const Types = {
    ],
    addedForCleanupRu: ({ at }) => [
       'custom', {
+         _title: 'titles',
          action: 'query',
          redirects: true,
          rvdir: 'older',
