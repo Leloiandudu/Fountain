@@ -99,7 +99,7 @@ const Preview = React.createClass({
 
       if (info && info.error)
          return <div key='error' className='content'>
-            {tr('networkError') + ' '}
+            {tr('loadingError') + ' '}
             <pre>{JSON.stringify(info.error, null, 4)}</pre>
          </div>;
 
