@@ -20,6 +20,7 @@ var envify = require('envify');
 var gulpif = require('gulp-if');
 var argv = require('yargs').argv;
 var taskTime = require('./build/gulp-total-task-time');
+var fs = require('fs');
 
 var Package = require('./package.json');
 var dependencies = Object.keys(Package.dependencies);
@@ -77,11 +78,15 @@ function createBrowserify(libs) {
    }
 }
 
+function getSourceMapName(fn) {
+   return fn + '.map';
+}
+
 function bundleBrowserify(b, dstName) {
    return b
       .bundle()
       .on('error', notify.onError())
-      .pipe(gulpif(!argv.release, exorcist(paths.dst + dstName + '.map')))
+      .pipe(gulpif(!argv.release, exorcist(getSourceMapName(paths.dst + dstName))))
       .pipe(source(dstName))
       .pipe(buffer())
       .pipe(gulpif(argv.release, uglify()))
@@ -137,8 +142,22 @@ gulp.task('watchify', function() {
    }
 });
 
-gulp.task('watch', [ 'libs', 'watchify', 'serve', 'less' ], function() {
+gulp.task('clean', function(cb) {
+   var all = [
+      paths.dst + paths.app,
+      getSourceMapName(paths.dst + paths.app),
+      paths.dst + paths.libs,
+      getSourceMapName(paths.dst + paths.libs),
+      lessPaths.dst + lessPaths.dstName,
+   ];
+
+   var unlink = fn => new Promise((resolve, reject) => fs.unlink(fn, resolve));
+
+   Promise.all(all.map(p => unlink(p))).then(() => cb());
+});
+
+gulp.task('watch', [ 'clean', 'libs', 'watchify', 'serve', 'less' ], function() {
    watch(lessPaths.watch, () => runLess().pipe(browserSync.stream()));
 });
 
-gulp.task('default', [ 'libs', 'javascript', 'less' ]);
+gulp.task('default', [ 'clean', 'libs', 'javascript', 'less' ]);
