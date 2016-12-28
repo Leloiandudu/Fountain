@@ -21,6 +21,16 @@ var gulpif = require('gulp-if');
 var argv = require('yargs').argv;
 var taskTime = require('./build/gulp-total-task-time');
 
+var Package = require('./package.json');
+var dependencies = Object.keys(Package.dependencies);
+var additionalDependencies = [
+   'moment/locale/az', 'moment/locale/be', 'moment/locale/bg', 'moment/locale/bn',
+   'moment/locale/de', 'moment/locale/id', 'moment/locale/ja', 'moment/locale/ka',
+   'moment/locale/lo', 'moment/locale/ml', 'moment/locale/ne', 'moment/locale/pt',
+   'moment/locale/ru', 'moment/locale/sq', 'moment/locale/uk', 'moment/locale/vi',
+   'moment/locale/zh-cn'
+];
+
 taskTime.init(function(s) {
    notify().write('Done in ' + s.toFixed(1) + ' seconds');
 });
@@ -28,7 +38,8 @@ taskTime.init(function(s) {
 var paths = {
    src: './src/main.js',
    dst: '../WikiFountain.Server/Scripts/',
-   dstName: 'app.js',
+   app: 'app.js',
+   libs: 'libs.js',
 };
 
 var lessPaths = {
@@ -38,9 +49,9 @@ var lessPaths = {
    dstName: 'app.css',
 };
 
-function createBrowserify() {
-   return browserify(Object.assign({
-      entries: paths.src,
+function createBrowserify(libs) {
+   var b = browserify(Object.assign({
+      entries: libs ? undefined : paths.src,
       ignoreWatch: ['**/node_modules/**'],
       poll: true,
       debug: !argv.release,
@@ -54,17 +65,31 @@ function createBrowserify() {
       'presets': [ 'es2015', 'react' ],
       'plugins': [ 'transform-async-to-generator', 'transform-object-rest-spread' ]
    });
+
+   if (libs) {
+      return b
+         .require(dependencies)
+         .require(additionalDependencies);
+   } else {
+      return b
+         .external(dependencies)
+         .external(additionalDependencies);
+   }
 }
 
-function runBrowserify(b) {
+function bundleBrowserify(b, dstName) {
    return b
       .bundle()
       .on('error', notify.onError())
-      .pipe(gulpif(!argv.release, exorcist(paths.dst + paths.dstName + '.map')))
-      .pipe(source(paths.dstName))
+      .pipe(gulpif(!argv.release, exorcist(paths.dst + dstName + '.map')))
+      .pipe(source(dstName))
       .pipe(buffer())
       .pipe(gulpif(argv.release, uglify()))
-      .pipe(gulp.dest(paths.dst))
+      .pipe(gulp.dest(paths.dst));
+}
+
+function runBrowserify(b) {
+   return bundleBrowserify(b, paths.app)
       .pipe(browserSync.stream({ once: true }));
 }
 
@@ -77,7 +102,11 @@ function runLess() {
       .pipe(rename(lessPaths.dstName))
       .pipe(gulpif(!argv.release, sourcemaps.write()))
       .pipe(gulp.dest(lessPaths.dst));
-};
+}
+
+gulp.task('libs', function() {
+   return bundleBrowserify(createBrowserify(true), paths.libs);
+});
 
 gulp.task('serve', function() {
    browserSync({
@@ -86,7 +115,7 @@ gulp.task('serve', function() {
       host: '192.168.1.2',
       ghostMode: false,
    });
-})
+});
 
 gulp.task('javascript', function() {
    return runBrowserify(createBrowserify());
@@ -108,8 +137,8 @@ gulp.task('watchify', function() {
    }
 });
 
-gulp.task('watch', [ 'watchify', 'serve', 'less' ], function() {
+gulp.task('watch', [ 'libs', 'watchify', 'serve', 'less' ], function() {
    watch(lessPaths.watch, () => runLess().pipe(browserSync.stream()));
 });
 
-gulp.task('default', [ 'javascript', 'less' ]);
+gulp.task('default', [ 'libs', 'javascript', 'less' ]);
