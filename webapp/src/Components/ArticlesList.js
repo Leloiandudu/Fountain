@@ -13,6 +13,7 @@ import WikiLink from './WikiLink';
 import WikiButton from './WikiButton';
 import ModalDialog from './ModalDialog';
 import Loader from './Loader';
+import Dashboard from './Dashboard';
 
 function getTotalMark(jury, marks, marksConfig, consensualVote) {
    const mark = calcTotalMark(jury, marks, marksConfig);
@@ -140,6 +141,7 @@ const ArticlesList = React.createClass({
       return (
          <div className='ArticlesList'>
             {this.renderHeader(editathon)}
+            <Dashboard editathon={editathon} />
             <ModalDialog isOpen={this.state.needLogin} className='needLogin'>
                <div className='message'>{this.props.translation.translate('SignInWarning.title')}</div>
                <div className='buttons'>

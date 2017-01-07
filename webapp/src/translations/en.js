@@ -41,6 +41,13 @@ export default {
       dateAdded: date => formatDate(date, 'D MMM LT'),
    },
 
+   Dashboard: {
+      articles: 'Articles',
+      users: 'Users',
+      marks: 'Marks',
+      withoutMarks: 'Without marks',
+   },
+
    AddArticle: {
       Warnings: {
          submitterRegistered: date => `Only users who registered before ${formatDate(date, 'L')} can participate in this editathon`,

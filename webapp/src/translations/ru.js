@@ -51,6 +51,13 @@ export default {
       dateAdded: date => formatDate(date, 'D MMM LT'),
    },
 
+   Dashboard: {
+      articles: 'Статей',
+      users: 'Участников',
+      marks: 'Оценок',
+      withoutMarks: 'Не оценено',
+   },
+
    AddArticle: {
       Warnings: {
          submitterRegistered: date => `В этом марафоне могут соревноваться только участники, зарегистрировавшиеся не ранее ${formatDate(date, 'L')}`,
