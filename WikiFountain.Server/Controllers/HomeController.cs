@@ -23,7 +23,7 @@ namespace WikiFountain.Server.Controllers
             var user = _identity.GetUserInfo();
             return View(new
             {
-                UrlPrefix = HttpRuntime.AppDomainAppVirtualPath.TrimEnd('/'),
+                UrlPrefix = HttpContext.GetSiteRoot(),
                 User = user == null ? null : new
                 {
                     Name = user.Username,

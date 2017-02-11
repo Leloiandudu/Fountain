@@ -28,9 +28,14 @@ namespace WikiFountain.Server.Core
             ctx.Response.Cookies.Set(cookie);
         }
 
-        public static void ClearCookie(this HttpContextBase ctx, string name)
+        public static void ClearCookie(this HttpContextBase ctx, string name, string path)
         {
-            ctx.Response.Cookies.Set(new HttpCookie(name));
+            ctx.Response.Cookies.Add(new HttpCookie(name) { Path = path, Expires = new DateTime(1970, 1, 1) });
+        }
+
+        public static string GetSiteRoot(this HttpContextBase ctx)
+        {
+            return HttpRuntime.AppDomainAppVirtualPath.TrimEnd('/');
         }
     }
 }

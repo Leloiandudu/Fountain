@@ -123,8 +123,14 @@ namespace WikiFountain.Server.Core
         {
             if (UserId.HasValue)
                 ClearUser(UserId.Value);
-            _context.ClearCookie(UserIdCookieName);
-            _context.ClearCookie(EncryptionKeyCookieName);
+
+            var path = _context.GetSiteRoot();
+            foreach (var name in new[] { UserIdCookieName, EncryptionKeyCookieName })
+            {
+                // fix for the old behaviour when cookies were set for Path=/
+                if (path != "") _context.ClearCookie(name, "/");
+                _context.ClearCookie(name, path);
+            }
         }
 
         private Guid? UserId
@@ -169,6 +175,7 @@ namespace WikiFountain.Server.Core
                 HttpOnly = true,
                 Secure = true,
                 Expires = DateTime.MaxValue,
+                Path = _context.GetSiteRoot(),
             });
         }
 
