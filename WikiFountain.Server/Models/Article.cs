@@ -4,7 +4,7 @@ using NHibernate.Mapping.ByCode.Conformist;
 
 namespace WikiFountain.Server.Models
 {
-    [Persistent]
+    [Persistent, Auditable]
     public class Article
     {
         public Article()

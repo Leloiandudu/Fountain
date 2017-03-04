@@ -14,10 +14,12 @@ namespace WikiFountain.Server.Controllers
     public class EditathonsController : ApiControllerWithDb
     {
         private readonly Identity _identity;
+        private readonly AuditContext _auditContext;
 
-        public EditathonsController(Identity identity)
+        public EditathonsController(Identity identity, AuditContext auditContext)
         {
             _identity = identity;
+            _auditContext = auditContext;
         }
 
         public HttpResponseMessage Get()
@@ -87,6 +89,8 @@ namespace WikiFountain.Server.Controllers
         [HttpPost]
         public async Task<HttpResponseMessage> AddArticle(string code, [FromBody] ArticlePostData body)
         {
+            _auditContext.Operation = OperationType.AddArticle;
+
             if (body == null || string.IsNullOrWhiteSpace(body.Title))
                 return Request.CreateResponse(System.Net.HttpStatusCode.BadRequest);
 
@@ -197,6 +201,8 @@ namespace WikiFountain.Server.Controllers
         [HttpPost]
         public HttpResponseMessage SetMark(string code, [FromBody] MarkPostData body)
         {
+            _auditContext.Operation = OperationType.SetMark;
+
             var user = _identity.GetUserInfo();
             if (user == null)
                 return Unauthorized();

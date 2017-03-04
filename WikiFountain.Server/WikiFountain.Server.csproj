@@ -68,6 +68,10 @@
       <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Practices.Unity.WebApi, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.AspNet.WebApi.4.0.1\lib\net45\Microsoft.Practices.Unity.WebApi.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
@@ -159,6 +163,8 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Core\ApiControllerBase.cs" />
     <Compile Include="Core\ApiControllerWithDb.cs" />
+    <Compile Include="App_Start\AuditInterceptor.cs" />
+    <Compile Include="Core\AuditContext.cs" />
     <Compile Include="Core\AuthExpiredException.cs" />
     <Compile Include="App_Start\Bootstrapper.cs" />
     <Compile Include="App_Start\JObjectType.cs" />
@@ -173,6 +179,7 @@
     </Compile>
     <Compile Include="Core\Identity.cs" />
     <Compile Include="Models\Article.cs" />
+    <Compile Include="Models\Audit.cs" />
     <Compile Include="Models\Editathon.cs" />
     <Compile Include="Core\OAuthConsumer.cs" />
     <Compile Include="Models\Mark.cs" />

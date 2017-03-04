@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace WikiFountain.Server.Models
 {
-    [Persistent]
+    [Persistent, Auditable]
     public class Rule
     {
         public long Id { get; set; }

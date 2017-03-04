@@ -3,7 +3,7 @@ using NHibernate.Mapping.ByCode.Conformist;
 
 namespace WikiFountain.Server.Models
 {
-    [Persistent]
+    [Persistent, Auditable]
     public class Mark
     {
         public long Id { get; set; }
