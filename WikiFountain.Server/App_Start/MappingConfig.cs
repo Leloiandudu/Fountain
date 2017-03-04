@@ -27,6 +27,7 @@ namespace WikiFountain.Server
                 });
 
             nhConf.AddMapping(ImplicitMapping());
+            SchemaMetadataUpdater.QuoteTableAndColumns(nhConf);
 
             //new SchemaExport(nhConf).Execute(Log, false, false);
             //new SchemaUpdate(nhConf).Execute(Log, false);
