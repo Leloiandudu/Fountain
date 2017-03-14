@@ -73,7 +73,7 @@ export default function MwApi(url) {
    }
 
    this.getUserGender = async function getUserGender(name) {
-       const {
+      const {
          query: {
             users: [{
                gender = 'unknown'

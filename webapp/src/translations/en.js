@@ -22,7 +22,7 @@ export default {
    },
 
    EditathonList: {
-      title: 'Editations',
+      title: 'Editathons',
    },
 
    ArticlesList: {
