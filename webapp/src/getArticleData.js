@@ -229,6 +229,30 @@ const Types = {
          };
       }
    ],
+   fileUrl: [
+      'lastRev', {
+         prop: [ 'imageinfo' ],
+
+         iiprop: 'url',
+         iiurlwidth: 800,
+      }, ({
+         query: {
+            pages: [{
+               title,
+               imageinfo: [{
+                  url,
+                  thumburl,
+               }],
+            }],
+         }
+      }) => ({
+         title,
+         fileUrl: {
+            url,
+            thumburl,
+         },
+      }), 'merge',
+   ],
 };
 
 // what: title, ns, html, chars, bytes, creator, created, card, { type: addedForCleanupRu, arg: { at: 'date' } }
@@ -253,8 +277,15 @@ export default async function getArticleData(mwApi, title, what) {
          config = config(arg);
       }
 
-      const [ reqType, params, cb ] = config;
-      req.add(reqType, params, data => result[type] = cb(data));
+      const [ reqType, params, cb, mode ] = config;
+      req.add(reqType, params, data => {
+         const res = cb(data);
+         if (mode === 'merge') {
+            Object.assign(result, res);
+         } else {
+            result[type] = res;
+         }
+      });
    }
 
    if (!await req.runFor(mwApi, title))

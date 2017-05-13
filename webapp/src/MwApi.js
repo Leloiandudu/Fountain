@@ -88,6 +88,51 @@ export default function MwApi(url) {
 
       return gender;
    }
+
+   this.getNamespaces = async function getNamespaces() {
+      const result = await exec({
+         action: 'query',
+         meta: 'siteinfo',
+         siprop: 'namespaces|namespacealiases',
+         maxage: 30 * 24 * 60 * 60, // 30 days
+      });
+
+      const all = {};
+      const ns = result.query.namespaces;
+      for (const id in ns) {
+         all[id] = new Set([ ns[id].name, ns[id].canonical ].filter(x => x !== undefined));
+      }
+
+      for (const { id, alias } of result.query.namespacealiases) {
+         all[id].add(alias);
+      }
+
+      for (const id in all) {
+         all[id] = [ ...all[id] ];
+      }
+
+      return all;
+   }
+
+   // returns numberic id of the namespace, or null if there is no 
+   // prefix, or undefined if prefix is unknown
+   this.getNamespace = async function getNamespace(title) {
+      const allNs = await this.getNamespaces();
+
+      if (title[0] === ':') {
+         title = title.slice(1);
+      }
+
+      const index = title.indexOf(':');
+      if (index === -1) {
+         return null; 
+      }
+
+      const prefix = title.slice(0, index).toLowerCase();
+      return Object.keys(allNs)
+         .filter(n => allNs[n].some(x => x.toLowerCase() === prefix))
+         .map(n => parseInt(n))[0];
+   }
 }
 
 export function getMwApi(wiki) {

@@ -95,8 +95,16 @@ const Jury = React.createClass({
          try {
             const what = getRulesReqs(this.getRules());
             const mwApi = getMwApi(this.state.editathon.wiki);
+
+            // files
+            if (await mwApi.getNamespace(title) === 6) {
+               what.push('fileUrl');
+            } else {
+               what.push('title');
+            }
+
             [ info, userGender ] = await Promise.all([
-               getArticleData(mwApi, title, [ ...what, 'html', 'title' ]),
+               getArticleData(mwApi, title, [ ...what, 'html' ]),
                mwApi.getUserGender(article.user)
             ]);
             if (info === null)

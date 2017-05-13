@@ -45,6 +45,12 @@ const Preview = React.createClass({
             ${info.title !== title ? `<h1>
                <a href='${getArticleUrl(wiki, info.title)}'>${info.title}</a>
             </h1>` : ''}
+            ${info.fileUrl && `
+            <div>
+               <a href='${info.fileUrl.url}'>
+                  <img src='${info.fileUrl.thumburl}' />
+               </a>
+            </div>`}
             ${info.html}
          </div>
          <script type='text/javascript'>
