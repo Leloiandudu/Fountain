@@ -10,8 +10,8 @@ namespace WikiFountain.Server.Core
         private static readonly Wiki[] Wikis = 
         {
             Const("meta", "meta.wikimedia.org"),
-            Regex(@"^([a-z\-]+)$", "$1.wikipedia.org"),
             Const("commons", "commons.wikimedia.org"),
+            Regex(@"^([a-z\-]+)$", "$1.wikipedia.org"),
             Regex(@"^q:([a-z\-]+)$", "$1.wikiquote.org"),
             Regex(@"^s:([a-z\-]+)$", "$1.wikisource.org"),
             Regex(@"^b:([a-z\-]+)$", "$1.wikibooks.org"),

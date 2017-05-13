@@ -2,8 +2,8 @@ import pkg from './../package.json';
 
 const wikisMap = [
    [ 'meta', 'meta.wikimedia.org' ],
-   [ /^([a-z\-]+)$/, '$1.wikipedia.org' ],
    [ 'commons', 'commons.wikimedia.org' ],
+   [ /^([a-z\-]+)$/, '$1.wikipedia.org' ],
    [ /^q:([a-z\-]+)$/, '$1.wikiquote.org' ],
    [ /^s:([a-z\-]+)$/, '$1.wikisource.org' ],
    [ /^b:([a-z\-]+)$/, '$1.wikibooks.org' ],
