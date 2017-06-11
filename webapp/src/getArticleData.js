@@ -24,6 +24,7 @@ class Request {
                action: 'parse',
                redirects: true,
                prop: [ 'text' ],
+               wrapoutputclass: '',
             }
          } else if (type === 'custom') {
             type = 'custom-' + ++this.lastCustomTypeId;

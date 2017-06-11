@@ -39,6 +39,7 @@ namespace WikiFountain.Server.Models.Rules
                             _title = "page",
                             action = "parse",
                             prop = new[] { "text" },
+                            wrapoutputclass = "",
                         });
                     }
                     _requests.Add(loader.Type, request);
