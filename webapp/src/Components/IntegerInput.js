@@ -8,20 +8,27 @@ export default class IntegerInput extends React.Component {
       this.componentWillReceiveProps(props);
    }
 
-   componentWillReceiveProps({ value, max, min }) {
+   componentWillReceiveProps({ value, max, min, onChange }) {
       if (this.isEmpty(value)) {
          this.state = { value: '' };
          return;
       }
 
       value = parseInt(value) || 0;
+      let changed = false;
       if (value > max) {
          value = max;
+         changed = true;
       }
       if (value < min) {
          value = min;
+         changed = true;
       }
       this.state = { value };
+      
+      if (changed && onChange) {
+         onChange(value);
+      }
    }
 
    isEmpty(value) {
