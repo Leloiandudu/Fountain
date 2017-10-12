@@ -50,7 +50,7 @@ const Preview = React.createClass({
                <a href='${info.fileUrl.url}'>
                   <img src='${info.fileUrl.thumburl}' />
                </a>
-            </div>`}
+            </div>` || ''}
             ${info.html}
          </div>
          <script type='text/javascript'>
