@@ -1,0 +1,71 @@
+.DropDown {
+   display: inline-flex;
+   flex-flow: column;
+   min-width: 8em;
+   text-align: left;
+
+   .WikiButton {
+      text-align: left;
+      position: relative;
+      padding-right: 30px;
+      flex: 1 0 auto;
+
+      &:after {
+         content: '';
+         background: url('arrow-down.png') no-repeat center center;
+         position: absolute;
+         right: .5em;
+         top: 2px;
+         bottom: 0;
+         width: 16px;
+         opacity: .5;
+      }
+   }
+
+   .menu {
+      display: flex;
+      flex-flow: column;
+
+      max-height: 15em;
+      overflow-y: auto;
+      overflow-x: hidden;
+   }
+
+   .popup {
+      min-width: 100%;
+      font-size: small;
+   }
+
+   .Autocomplete {
+      display: flex;
+      flex-flow: column;
+   }
+
+   .input {
+      border-radius: 0;
+      border: solid 1px #347bff;
+
+      &:focus {
+         box-shadow: none;
+      }
+
+      &.hidden {
+         position: absolute;
+         height: 0;
+         border: none;
+         padding: 0;
+      }
+   }
+
+   .item {
+      cursor: pointer;
+      padding: 0.01em 0.25em;
+      padding-right: 20px;
+      white-space: nowrap;
+
+      &.selected {
+         background-color: #347bff;
+         color: #fff;
+      }
+   }
+}

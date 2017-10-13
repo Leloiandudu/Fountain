@@ -35,7 +35,7 @@
     "moment": "^2.13.0",
     "range": "0.0.3",
     "react": "^15.1.0",
-    "react-autocomplete": "^1.4.0",
+    "react-autocomplete": "^1.4.4",
     "react-day-picker": "^5.1.1",
     "react-dom": "^15.1.0",
     "react-router": "^2.6.1",
