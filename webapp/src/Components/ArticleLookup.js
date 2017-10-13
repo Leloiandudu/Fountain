@@ -52,11 +52,16 @@ export default React.createClass({
          }} />;
    },
    renderItem(item, selected) {
-      return <div className={classNames({ item: true, selected })}>{item}</div>;
+      return <div key={item} className={classNames({ item: true, selected })}>{item}</div>;
    },
    renderMenu(items, value, style) {
       if (!items.length)
-         return <div />
-      return <div className='popup' children={items} style={{ minWidth: style.minWidth, top: style.top }} />;
+         return <div />;
+
+      return <div className='popup-container'>
+         <div className='popup' style={{ minWidth: style.minWidth }}>
+            {items}
+         </div>
+      </div>;
    },
 });

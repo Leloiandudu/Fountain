@@ -49,7 +49,7 @@ export default class WikiLookup extends React.Component {
 
       const more = this.state.filteredItems.length > MaxItems;
 
-      return <div className='popupWrapper'>
+      return <div className='popup-container'>
          <div className='popup' style={{ minWidth: style.minWidth }}>
             <table>
                <thead>

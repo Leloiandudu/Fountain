@@ -2,26 +2,16 @@
    display: flex;
    flex-flow: column;
 
-   .popup {
-      position: absolute;
-      background: white;
-      z-index: 999;
-
-      border: solid 1px #ccc;
-      border-top: none;
-      box-sizing: border-box;
-
-      .item {
-         padding: 0.01em 0.25em;
-         overflow: hidden;
-         text-overflow: ellipsis;
-         white-space: nowrap;
-         cursor: default;
-         
-         &.selected {
-            background-color: #4c59a6;
-            color: #fff;
-         }
+   .item {
+      padding: 0.01em 0.25em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: default;
+      
+      &.selected {
+         background-color: #4c59a6;
+         color: #fff;
       }
    }
 }
