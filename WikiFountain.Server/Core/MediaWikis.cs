@@ -17,6 +17,7 @@ namespace WikiFountain.Server.Core
             Regex(@"^b:([a-z\-]+)$", "$1.wikibooks.org"),
             Regex(@"^n:([a-z\-]+)$", "$1.wikinews.org"),
             Regex(@"^v:([a-z\-]+)$", "$1.wikiversity.org"),
+            Regex(@"^voy:([a-z\-]+)$", "$1.wikivoyage.org"),
             Regex(@"^wikt:([a-z\-]+)$", "$1.wiktionary.org"),
         };
 

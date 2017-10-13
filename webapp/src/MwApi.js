@@ -9,6 +9,7 @@ const wikisMap = [
    [ /^b:([a-z\-]+)$/, '$1.wikibooks.org' ],
    [ /^n:([a-z\-]+)$/, '$1.wikinews.org' ],
    [ /^v:([a-z\-]+)$/, '$1.wikiversity.org' ],
+   [ /^voy:([a-z\-]+)$/, '$1.wikivoyage.org' ],
    [ /^wikt:([a-z\-]+)$/, '$1.wiktionary.org' ],
 ];
 
@@ -133,6 +134,54 @@ export default function MwApi(url) {
          .filter(n => allNs[n].some(x => x.toLowerCase() === prefix))
          .map(n => parseInt(n))[0];
    }
+}
+
+export async function getSiteMatrix() {
+   const matrix = await getMwApi('meta').exec({
+      action: 'sitematrix',
+      smsiteprop: 'code|sitename',
+      maxage: 30 * 24 * 60 * 60, // 30 days
+   });
+   delete matrix.sitematrix.count;
+   delete matrix.sitematrix.specials;
+
+   const map = {
+      'wiki': null,
+      'wikiquote': 'q',
+      'wikisource': 's',
+      'wikibooks': 'b',
+      'wikinews': 'n',
+      'wikiversity': 'v',
+      'wikivoyage': 'voy',
+      'wiktionary': 'wikt',
+   };
+
+   const results = [];
+   for (const i in matrix.sitematrix) {
+      const lang = matrix.sitematrix[i];
+
+      if (lang.site === undefined) {
+         console.log(lang);
+         continue;
+      }
+
+      const result = {
+         code: lang.code,
+         name: lang.name,
+         sites: lang.site
+            .filter(s => s.private === undefined && s.closed === undefined && s.fishbowl === undefined && s.code in map)
+            .map(s => ({
+               code: map[s.code],
+               name: s.sitename,
+            })),
+      };
+
+      if (result.sites.length) {
+         results.push(result);
+      }
+   }
+
+   return results;
 }
 
 export function getMwApi(wiki) {
