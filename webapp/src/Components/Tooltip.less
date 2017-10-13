@@ -1,0 +1,57 @@
+.Tooltip {
+   position: relative;
+   top: 5px;
+   font-size: small;
+
+   .pseudo(@width) {
+      content: '';
+
+      position: absolute;
+      left: 10px;
+      bottom: 100%;
+      z-index: 999;
+
+      border: solid @width transparent;
+   }
+
+   .content {
+      position: absolute;
+
+      border: solid 1px transparent;
+      border-radius: 3px;
+      padding: .2em .5em;
+
+      &:before {
+         .pseudo(6px);
+         margin-left: -1px;
+      }
+
+      &:after {
+         .pseudo(5px);
+      }
+   }
+
+   .TooltipColor(@color) {
+      @background: lighten(@color, 43%);
+      @border: tint(desaturate(@color, 60%), 50%);
+      color: shade(@color, 55%);
+
+      .content {
+         background-color: @background;
+         border-color: @border;
+
+         &:before {
+            border-bottom-color: shade(saturate(@border, 30%), 15%);
+            // border-bottom-color: @border;
+         }
+
+         &:after {
+            border-bottom-color: @background;
+         }
+      }
+   }
+
+   // .TooltipColor(#1df);
+   .TooltipColor(#f81111);
+   // .TooltipColor(#1df);
+}
