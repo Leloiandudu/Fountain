@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import GeneralPage from './GeneralPage';
 import WikiButton from '../WikiButton';
 import { withTranslation } from '../../translate';
 

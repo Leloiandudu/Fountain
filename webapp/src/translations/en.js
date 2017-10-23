@@ -118,5 +118,14 @@ export default {
       newEditathon: 'New Editathon',
       back: 'Back',
       next: 'Next',
+      GeneralPage: {
+         title: 'Title',
+         code: 'Code',
+         project: 'Project',
+         description: 'Description',
+         optional: '(optional)',
+         startDate: 'Start Date',
+         finishDate: 'Finish Date',
+      },
    },
 };
