@@ -8,7 +8,7 @@ import { withTranslation } from './../translate';
 import Warnings from './Warnings';
 import WikiButton from './WikiButton';
 import WikiLink from './WikiLink';
-import ArticleLookup from './ArticleLookup';
+import PageLookup from './PageLookup';
 import Loader from './Loader';
 
 const AddArticle = React.createClass({
@@ -129,7 +129,7 @@ const AddArticle = React.createClass({
                   rules={this.getRules().filter(rule => rule.userOnly)}
                   stats={null}
                   wiki={wiki} />
-            <ArticleLookup
+            <PageLookup
                wiki={wiki}
                inputProps={{ id: 'title' }}
                value={this.state.title}

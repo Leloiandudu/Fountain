@@ -25,8 +25,29 @@ export default React.createClass({
    componentWillUnmount() {
       this.callLookup && this.callLookup.cancel();
    },
-   lookup(value) {
-      return value && getMwApi(this.props.wiki).lookup(value) || [];
+   async lookup(value) {
+      value = (value || '').trim();
+      if (!value) return [];
+
+      const mw = getMwApi(this.props.wiki);
+      const restrictNs = this.props.ns !== undefined;
+      const allNs = restrictNs ? await mw.getNamespaces() : null;
+
+      if (restrictNs) {
+         const id = await mw.getNamespace(value);
+         if (id !== undefined && id !== null && id != ns) {
+            return [];
+         }
+      }
+
+      let results = await mw.lookup(value, this.props.ns);
+
+      if (restrictNs && this.props.ns !== 0) {
+         const prefixLength = allNs[this.props.ns][0].length + 1;
+         results = results.map(r => r.slice(prefixLength));
+      }
+
+      return results;
    },
    async onChange(value) {
       const { onChange } = this.props;
@@ -35,7 +56,7 @@ export default React.createClass({
    render() {
       return <Autocomplete
          inputProps={this.props.inputProps}
-         wrapperProps={{ className: 'ArticleLookup' }}
+         wrapperProps={{ className: 'PageLookup' }}
          wrapperStyle={{}}
          value={this.props.value}
          items={this.state.items}
