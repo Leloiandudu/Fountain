@@ -1,0 +1,41 @@
+.JuryPage {
+   display: flex;
+   flex-flow: column;
+
+   .item {
+      margin-top: .5em;
+      display: flex;
+      flex-flow: row;
+      align-items: center;
+
+      > span {
+         font-size: 1.5em;
+         line-height: 1em;
+         font-weight: bold;
+         margin: 0 .25em;
+      }
+
+      .delete {
+         margin-left: .5em;
+         padding: 1em .1em;
+         min-width: 2.5em;
+         background-size: auto 50%;
+      }
+   }
+
+   .add {
+      margin-top: .5em;
+      margin-right: auto;
+      padding: .3em .75em;
+   }
+
+   > label {
+      flex-flow: row;
+      margin-top: .5em;
+      align-items: center;
+      
+      input {
+         margin: 0 .5em 0 0;
+      }
+   }
+}

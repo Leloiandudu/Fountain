@@ -177,5 +177,9 @@ export default {
          add: 'add',
          preview: 'Preview',
       },
+      JuryPage: {
+         add: 'add',
+         sendInvites: 'send invites to the jury members',
+      },
    },
 };
