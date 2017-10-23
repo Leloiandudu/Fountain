@@ -1,0 +1,126 @@
+.EditathonCalendar {
+   margin-top: 20px;
+   margin-bottom: 50px;
+   padding: .5em 0;
+   overflow: auto;
+
+   > .content {
+      min-height: 5em;
+      position: relative;
+      display: flex;
+      flex-direction: column-reverse;
+      margin-bottom: 20px;
+   }
+   
+   @offset: 1em;
+
+   #axis {
+      display: flex;
+      flex-flow: row;
+
+      position: absolute;
+      left: @offset;
+      right: @offset;
+      top: 0;
+      bottom: 0;
+
+      @grid-color: lightgray;
+      color: gray;
+
+      .section {
+         flex: 0 0 100px;
+         border-bottom: solid 1px @grid-color;
+         position: relative;
+
+         .label {
+            position: absolute;
+            bottom: -1.5em;
+            left: -50px;
+            text-align: center;
+            display: block;
+            width: 100%;
+            white-space: nowrap;
+         }
+
+         .tick() {
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+         }
+
+         &:before {
+            .tick();
+            height: 10px;
+            border-left: solid 1px @grid-color;
+         }
+
+         &:after {
+            .tick();
+            border-left: dashed 1px @grid-color;
+            height: 100%;
+            z-index: 9;
+         }
+
+         &:last-child {
+            flex: 0 0 1px;
+            text-align: center;
+
+            .label {
+               left: 0;
+               width: auto;
+               transform: translate(-50%, 0);
+            }
+         }
+      }
+   }
+
+   .layer {
+      @height: 1em;
+
+      margin: 0 @offset;
+      padding: .5em 0;
+      position: relative;
+      height: @height;
+
+      .strip {
+         position: absolute;
+         height: @height;
+
+         display: flex;
+
+         .inner {
+            border: solid 1px lightgray;
+            background-color: #ded;
+            flex: 1;
+
+            &:hover {
+               background-color: #cfc;
+            }
+         }
+
+         .tooltip {
+            left: 0;
+            height: @height;
+
+            position: relative;
+            position: -webkit-sticky;
+            position: sticky;
+            
+            display: none;
+            white-space: pre;
+            z-index: 999;
+
+            .Tooltip {
+               height: 100%;
+            }
+         }
+
+         &:hover {
+            .tooltip {
+               display: block;
+            }
+         }
+      }
+   }
+}

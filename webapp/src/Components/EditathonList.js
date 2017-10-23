@@ -3,27 +3,124 @@ import classNames from 'classnames';
 import moment from 'moment';
 import Link from './Link';
 import RequiresLogin from './RequiresLogin';
+import DropDown from './DropDown';
+import EditathonCalendar from './EditathonCalendar';
 import WikiButton from './WikiButton';
+import { createBinder, setDefault } from './utils';
+import { getNavitagorLang } from './../utils';
 import Api from './../Api';
+import { getSiteMatrix } from './../MwApi';
 import { withTranslation } from '../translate';
+
+const ProjectTypes = {
+   'Wikipedia': '',
+   'Wikiquote': 'q',
+   'Wikisource': 's',
+   'Wikibooks': 'b',
+   'Wikinews': 'n',
+   'Wikiversity': 'v',
+   'Wikivoyage': 'voy',
+   'Wiktionary': 'wikt',
+};
+
+class EditathonFilter extends React.PureComponent {
+   constructor(props) {
+      super(props);
+      this.state = {
+         matrix: [],
+      };
+      this.bind = createBinder();
+   }
+
+   async componentWillMount() {
+      setDefault(this.props, () => ({
+         type: null,
+         lang: this.getDefaultLang(),
+      }));
+      this.setState({ matrix: await getSiteMatrix() });
+   }
+
+   renderButton(placeholder, value, text) {
+      if (value === null) {
+         return <WikiButton>
+            <button>
+               <span className='placeholder'>
+                  {placeholder}
+               </span>
+            </button>
+         </WikiButton>
+      } else {
+         return <WikiButton>{text}</WikiButton>
+      }
+   }
+
+   matchItem(item, value) {
+      value = value.toLowerCase();
+      return item.code.toLowerCase().startsWith(value) ||
+             item.name.toLowerCase().startsWith(value);
+   }
+
+   getDefaultLang() {
+      return localStorage.getItem('fountainFilterLang') || getNavitagorLang();
+   }
+
+   onLangChanged(lg) {
+      localStorage.setItem('fountainFilterLang', lg);
+   }
+
+   render() {
+      return <div className='EditathonFilter'>
+         {this.bind('text', <input type='text' placeholder='Search...' />)}
+         {this.bind('type', <DropDown 
+            placeholder='type'
+            items={[{
+               name: '(All)',
+               value: null,
+            }, ...Object.keys(ProjectTypes).map(x => ({
+               name: x,
+               value: ProjectTypes[x],
+            })) ]}
+            getValue={x => x.value} renderItem={x => x.name} renderButton={this.renderButton.bind(this, 'project...')} />)}
+         {this.bind('lang', <DropDown
+            showInput={true} filter={true}
+            matchItem={(item, value) => this.matchItem(item, value)}
+            placeholder='language' items={this.state.matrix}
+            renderItem={x => `${x.code}: ${x.name}`} getValue={x => x.code} />, lg => this.onLangChanged(lg))}
+      </div>;
+   }
+}
 
 const EditathonList = React.createClass({
    getInitialState() {
       return {};
    },
    async componentWillMount() {
-      this.setState({ list: await Api.getEditathons() });
+      this.setState({
+         list: await Api.getEditathons(),
+      });
    },
    onCreate(e) {
       if (!Global.user) {
          e.preventDefault();
       }
    },
+   filter(e) {
+      const [, type, lang ] = /^(?:(.+):)?(.+)$/.exec(e.wiki);
+      const { filter = {} } = this.state;
+      return (filter.type ? filter.type === type : true)
+          && (filter.lang ? filter.lang === lang : true)
+          && (filter.text ? e.name.startsWith(filter.text) : true);
+   },
    render() {
       const { translation: { tr } } = this.props;
+      const { filter = {}, list } = this.state
+      const editathons = list && list.filter(e => this.filter(e)) || [];
+
       return (
          <div className='EditathonList mainContentPane'>
             <h1>{tr('title')}</h1>
+            <EditathonFilter value={filter} onChange={filter => this.setState({ filter })} />
+            <EditathonCalendar editathons={editathons} />
             <RequiresLogin className='create' redirectTo='/editathons/new/config'>
                <WikiButton type='progressive'>
                   <Link to='/editathons/new/config' onClick={this.onCreate}>
@@ -32,7 +129,7 @@ const EditathonList = React.createClass({
                </WikiButton>
             </RequiresLogin>
             <ul>
-               {this.state.list && this.state.list.map(this.renderItem)}
+               {editathons.map(this.renderItem)}
             </ul>
          </div>
       );

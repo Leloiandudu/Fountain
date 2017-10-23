@@ -198,11 +198,26 @@ export function withTranslation(Component, prefix) {
          }
       }
 
-      render() {
-         const translation = { ...this.context['TranslationContext'] };
+      constructor(props, context) {
+         super(props);
+         this.updateContext(context);
+      }
+
+      componentWillReceiveProps(nextProps, nextContext) {
+         if (nextContext.TranslationContext !== this.context.TranslationContext) {
+            this.updateContext(nextContext);
+         }
+      }
+
+      updateContext(context) {
+         const translation = { ...context.TranslationContext };
          if (prefix)
             translation.tr = (key, ...args) => translation.translate(prefix + '.' + key,  ...args);
-         return <Component {...this.props} translation={translation} />
+         this._translation = translation;
+      }
+
+      render() {
+         return <Component {...this.props} translation={this._translation} />
       }
    }
 }

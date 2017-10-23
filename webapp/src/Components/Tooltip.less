@@ -1,15 +1,14 @@
 .Tooltip {
    position: relative;
-   top: 5px;
    font-size: small;
+   z-index: 999;
 
    .pseudo(@width) {
       content: '';
+      height: 0;
 
       position: absolute;
       left: 10px;
-      bottom: 100%;
-      z-index: 999;
 
       border: solid @width transparent;
    }
@@ -40,13 +39,34 @@
          background-color: @background;
          border-color: @border;
 
-         &:before {
-            border-bottom-color: shade(saturate(@border, 30%), 15%);
-            // border-bottom-color: @border;
+         &.top {
+            bottom: 100%;
+            margin-bottom: 5px;
+
+            &:before {
+               top: 100%;
+               border-top-color: shade(saturate(@border, 30%), 15%);
+            }
+
+            &:after {
+               top: 100%;
+               border-top-color: @background;
+            }
          }
 
-         &:after {
-            border-bottom-color: @background;
+         &.bottom {
+            top: 100%;
+            margin-top: 5px;
+
+            &:before {
+               bottom: 100%;
+               border-bottom-color: shade(saturate(@border, 30%), 15%);
+            }
+
+            &:after {
+               bottom: 100%;
+               border-bottom-color: @background;
+            }
          }
       }
    }

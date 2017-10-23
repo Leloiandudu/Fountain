@@ -7,6 +7,30 @@
       align-self: flex-end;
    }
 
+   .EditathonFilter {
+      display: flex;
+      flex-flow: row;
+      margin: .25em -.25em;
+
+      > * {
+         margin: .25em;
+      }
+
+      .placeholder {
+         font-weight: normal;
+         text-shadow: none;
+         color: gray;
+      }
+
+      // firefox has a different style for placeholders
+      @-moz-document url-prefix() {
+         .placeholder {
+            color: black;
+            opacity: .54;
+         }
+      }
+   }
+
    > ul {      
       > li {
          display: flex;

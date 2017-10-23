@@ -29,7 +29,7 @@ function setProp(me, prop, value, valueProp) {
       [prop]: value
    });
 }
-
+   
 function isObjectEmpty(obj) {
    return obj.constructor === Object && Object.keys(obj).length === 0;
 }
@@ -42,11 +42,14 @@ export function createSetter(valueProp = 'value') {
 
 export function createBinder(valueProp = 'value') {
    const bindProp = bind;
-   return function bind(prop, component) {
+   return function bind(prop, component, onChange) {
       return bindProp(component, () => {
          const value = this.props[valueProp];
          return value && value[prop];
-      }, v => setProp(this, prop, v, valueProp));
+      }, v => {
+         onChange && onChange(v);
+         setProp(this, prop, v, valueProp);
+      });
    }
 }
 
