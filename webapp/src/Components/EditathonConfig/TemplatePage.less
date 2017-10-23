@@ -1,0 +1,76 @@
+.TemplatePage {
+   input[type=radio],
+   input[type=checkbox] {
+      margin: 0;
+   }
+
+   header {
+      font-weight: 600;
+   }
+
+   #add, #placement > label {
+      flex-flow: row;
+      align-items: center;
+
+      > span {
+         padding: 0 .25em;
+      }
+   }
+
+   #placement {
+      label {
+         span {
+             font-weight: normal;
+         }
+      }
+   }
+
+   #args, #preview {
+      margin-top: 1em;
+   }
+
+   #args {
+      .args {
+         margin: .5em 0;
+
+         .arg {
+            margin-top: .5em;
+            display: flex;
+            flex-flow: row;
+            align-items: center;
+
+            > span {
+               font-size: 1.5em;
+               line-height: 1em;
+               font-weight: bold;
+               margin: 0 .25em;
+            }
+
+            .delete {
+               margin-left: .5em;
+               padding: 1em .1em;
+               min-width: 2.5em;
+               background-size: auto 50%;
+            }
+         }
+      }
+
+      .WikiButton {
+         margin-right: auto;
+         padding: .3em .75em;
+      }
+   }
+
+   #preview {
+      .preview {
+         > span {
+            color: #aaa;
+         }
+
+         > label {
+            cursor: pointer;
+            display: inline;
+         }
+      }
+   }
+}

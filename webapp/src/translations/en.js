@@ -167,5 +167,15 @@ export default {
             description: 'Article must belong to the main namespace',
          },
       },
+      TemplatePage: {
+         autoAdd: 'Automatically add template',
+         name: 'Template name',
+         placement: 'Template placement',
+         inArticle: 'in the article',
+         onTalkPage: 'on the talk page',
+         args: 'Arguments',
+         add: 'add',
+         preview: 'Preview',
+      },
    },
 };

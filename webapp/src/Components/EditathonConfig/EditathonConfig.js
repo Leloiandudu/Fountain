@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import GeneralPage from './GeneralPage';
 import RulesPage from './RulesPage';
+import TemplatePage from './TemplatePage';
 import WikiButton from '../WikiButton';
 import { withTranslation } from '../../translate';
 
