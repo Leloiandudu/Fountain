@@ -1,0 +1,69 @@
+.EditathonConfig {
+   display: flex;
+   flex-flow: column;
+
+   .Headers {
+      display: flex;
+      flex-flow: row wrap;
+      margin-bottom: .25em;
+
+      .item {
+         padding: .3em;
+         border: solid 1px #ccc;
+         flex: 0 1 5em;
+         text-align: center;
+         cursor: pointer;
+
+         &.selected {
+            background: #eee;
+         }
+
+         & + .item {
+            border-left: none;
+         }
+      }
+   }
+
+   .page {
+      display: flex;
+      flex-flow: column;
+
+      label, .field {
+         display: flex;
+         flex-flow: column;
+
+         &.optional {
+            span.optional {
+               font-size: .8em;
+               color: gray;
+            }
+         }
+      }
+
+      label > span,
+      .field > label {
+         font-weight: 600;
+      }
+
+      > label, > .field {
+         & + label, & + .field {
+            margin-top: 1em;
+         }
+      }
+
+      textarea {
+         line-height: 1.4;
+         resize: vertical;
+      }
+   }
+
+   .buttons {
+      display: flex;
+      justify-content: flex-end;
+      margin: 1em -.25em 0;
+
+      > * {
+         margin: 0 .25em;
+      }
+   }
+}

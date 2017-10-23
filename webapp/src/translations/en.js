@@ -113,4 +113,10 @@ export default {
          },
       },
    },
+
+   EditathonConfig: {
+      newEditathon: 'New Editathon',
+      back: 'Back',
+      next: 'Next',
+   },
 };
