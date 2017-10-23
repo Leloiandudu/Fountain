@@ -10,8 +10,10 @@
       padding: 3.5px 0 7px;
    }
 
-   h2 {
-      margin-top: 0;
+   header {
+      font-size: large;
+      font-weight: 600;
+      margin-bottom: 1em;
    }
 
    #buttons {
@@ -63,35 +65,9 @@
    .info {
       display: flex;
 
-      .stats {
+      .Warnings {
          flex: 1 auto;
          margin: 0 1em;
-
-         .icon(@url) {
-            &::before {
-               margin-right: 0.5ex;
-               margin-bottom: 0.5ex;
-               content: '';
-               background: url(@url) no-repeat;
-               background-size: 100% 100%;
-               width: 16px;
-               height: 16px;
-               display: inline-block;
-               vertical-align: middle;
-            }
-         }
-
-         .stat {
-            .icon('ok.png');
-
-            &.warning {
-               .icon('warning.png');
-            }
-
-            &.error {
-               .icon('error.png');
-            }
-         }
       }
    }
 }

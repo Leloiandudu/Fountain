@@ -1,40 +1,15 @@
 import React from 'react';
-import classNames from 'classnames';
-import moment from 'moment';
 import url from './../url'
-import sortBy from './../sortBy'
 import readRules, { getRulesReqs, RuleFlags } from './../rules';
 import getArticleData from './../getArticleData';
 import Api, { UnauthorizedHttpError } from './../Api';
 import { getMwApi } from './../MwApi';
 import { withTranslation } from './../translate';
+import Warnings from './Warnings';
 import WikiButton from './WikiButton';
 import WikiLink from './WikiLink';
 import ArticleLookup from './ArticleLookup';
 import Loader from './Loader';
-
-const RuleMessages = {
-   submitterRegistered: (tr, rule, ok) => !ok && tr('submitterRegistered', rule.params.after),
-   namespace: (tr, rule, ok) => tr('namespace', ok),
-   submitterIsCreator: (tr, rule, ok, stats, wiki) => [ tr('author'), <WikiLink key='link' to={`User:${stats.creator}`} wiki={wiki} /> ],
-   articleCreated: (tr, rule, ok, stats) => tr('articleCreated', moment(stats.created).utc()),
-   articleSize: (tr, rule, ok, stats) => [
-      rule.params.bytes && tr('bytes', stats.bytes), 
-      rule.params.chars && tr('chars', stats.chars),
-      rule.params.words && tr('words', stats.words),
-   ].filter(x => x).join(tr.translate('delimiter')),
-   addedForCleanupRu: (tr, rule, ok, stats, wiki, title) => {
-      const [ prefix, link, suffix ] = tr('addedForCleanupRu', stats.addedForCleanupRu.date);
-      return [ 
-         prefix,
-         <WikiLink key='link' wiki={wiki}
-                   to={stats.addedForCleanupRu.date ? `?oldid=${stats.addedForCleanupRu.revId}&diff=cur` : `${title}?action=history`}>
-            {link}
-         </WikiLink>,
-         suffix
-      ];
-   },
-};
 
 const AddArticle = React.createClass({
    contextTypes: {
@@ -79,7 +54,7 @@ const AddArticle = React.createClass({
       this.setState({ adding: true });
 
       try {
-         await Api.addArticle(this.props.code, stats.title);
+         await Api.addArticle(this.props.editathon.code, stats.title);
          await this.returnToList();
       } catch(e) {
          this.setState({ adding: false })
@@ -92,7 +67,7 @@ const AddArticle = React.createClass({
    },
    async returnToList() {
       this.context.router.replace({
-         pathname: url(`/editathons/${this.props.code}`),
+         pathname: url(`/editathons/${this.props.editathon.code}`),
       });
       this.props.onReloadEditathon && await this.props.onReloadEditathon();
    },
@@ -115,11 +90,6 @@ const AddArticle = React.createClass({
    tr(...args) {
       return this.props.translation.tr(...args)
    },
-   ruleTr() {
-      const tr = (key, ...args) => this.props.translation.tr('Warnings.' + key, ...args);
-      tr.translate = this.props.translation.translate;
-      return tr;
-   },
    renderPickStage() {
       const { translation: { tr }, editathon: { wiki } } = this.props;
 
@@ -128,21 +98,22 @@ const AddArticle = React.createClass({
          return <div />;
       }
 
-      const errors = [];
       const ctx = {
          user: Global.user,
       };
-      for (const rule of this.getRules().filter(rule => rule.userOnly && !(rule.flags & RuleFlags.optional))) {
-         if (!rule.check(null, ctx)) {
-            errors.push(rule);
-         }
-      }
+      const rules = this.getRules().filter(rule => rule.userOnly);
+      const error = rules
+         .filter(rule => !(rule.flags & RuleFlags.optional))
+         .some(rule => !rule.check(null, ctx));
 
-
-      if (errors.length) {
+      if (error) {
          return (
             <div>
-               {errors.map(error => <div>{RuleMessages[error.type](this.ruleTr(), error, false, null, wiki)}</div>)}
+               <Warnings
+                     ctx={ctx}
+                     rules={this.getRules().filter(rule => rule.userOnly)}
+                     stats={null}
+                     wiki={wiki} />
                <div id='buttons'>
                   <WikiButton onClick={this.returnToList}>{this.tr('back')}</WikiButton>
                </div>
@@ -153,6 +124,11 @@ const AddArticle = React.createClass({
       return (
          <div>
             <label htmlFor='title'>{this.tr('articleTitle')}</label>
+            <Warnings
+                  ctx={ctx}
+                  rules={this.getRules().filter(rule => rule.userOnly)}
+                  stats={null}
+                  wiki={wiki} />
             <ArticleLookup
                wiki={wiki}
                inputProps={{ id: 'title' }}
@@ -174,26 +150,15 @@ const AddArticle = React.createClass({
       const missing = !stats;
       const title = stats && stats.title || this.state.title;
 
-      const header = <h2>
+      const header = <header>
          <WikiLink to={title} wiki={editathon.wiki} red={missing} />
-      </h2>;
+      </header>;
 
       const addedBy = stats && editathon.articles.filter(a => a.name === stats.title)[0];
-
-      const rules = [];
-      let ok = !missing;
-      if (!this.state.updating && stats) {
-         const ctx = {
-            user: Global.user,
-         };
-         for (const rule of this.getRules().filter(rule => !rule.userOnly)) {
-            const result = rule.check(stats, ctx);
-            rules.push([rule, result]);
-            if (!(rule.flags & RuleFlags.optional)) {
-               ok = ok && result;
-            }
-         }
-      }
+      
+      const rules = this.getRules().filter(rule => !rule.userOnly);
+      const ctx = { user: Global.user };
+      const ok = stats && rules.every(rule => (rule.flags & RuleFlags.optional) || rule.check(stats, ctx));
 
       return (
          <div>
@@ -205,19 +170,17 @@ const AddArticle = React.createClass({
                </div> 
                :
                <div className='info'>
-                  <div className='stats'>
+                  <div className='Warnings'>
                      {header}
-                     {addedBy && this.renderStat('addedBy', addedBy.user === Global.user.name ? this.tr('youAlreadyAdded') : this.tr('someoneAlreadyAdded'), false, true)}
-                     {[...rules].sort(sortBy( // sorting by result (error, warning, ok), then by type
-                        ([ rule, result ]) => result, 
-                        ([ rule, result ]) => result || (rule.flags & RuleFlags.optional),
-                        ([ rule, result ]) => rule.type
-                     )).map(([ rule, result ], i) => this.renderStat(
-                        i, 
-                        RuleMessages[rule.type](this.ruleTr(), rule, result, stats, editathon.wiki, title), 
-                        result, 
-                        !(rule.flags & RuleFlags.optional))
-                     )}
+                     {addedBy && <div className='stat error'>
+                        {addedBy.user === Global.user.name ? this.tr('youAlreadyAdded') : this.tr('someoneAlreadyAdded')}
+                     </div>}
+                     <Warnings
+                           ctx={ctx}
+                           rules={rules}
+                           stats={stats}
+                           title={stats.title}
+                           wiki={editathon.wiki} />
                   </div>
                   {this.renderCard()}
                </div>}
@@ -228,9 +191,6 @@ const AddArticle = React.createClass({
             </div>
          </div>
       );
-   },
-   renderStat(key, name, isOk, isCritical) {
-      return <div key={key} className={classNames({ stat: true, error: !isOk && isCritical, warning: !isOk && !isCritical })}>{name}</div>
    },
    renderCard() {
       if (!this.state.stats)
