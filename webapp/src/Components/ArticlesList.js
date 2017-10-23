@@ -113,7 +113,7 @@ const ArticlesList = React.createClass({
 
       const isJury = Global.user && editathon.jury.filter(j => j === Global.user.name)[0];
       let juryButton = isJury && <WikiButton type='progressive' disabled={editathon.articles.length === 0}>
-         <Link to={`/jury/${this.props.code}`}>{this.tr('juryTool')}</Link>
+         <Link to={`/jury/${this.props.editathon.code}`}>{this.tr('juryTool')}</Link>
       </WikiButton>;
 
       if (now.isAfter(editathon.finish, 'day')) {
@@ -126,7 +126,7 @@ const ArticlesList = React.createClass({
             {this.tr('editathonWillEndIn', editathon.finish)}
             {juryButton}
             <WikiButton type={isJury ? '' : 'progressive'} className='addArticle'>
-               <Link to={`/editathons/${this.props.code}/add`} onClick={this.onAdd}>{this.tr('addArticle')}</Link>
+               <Link to={`/editathons/${this.props.editathon.code}/add`} onClick={this.onAdd}>{this.tr('addArticle')}</Link>
             </WikiButton>
          </div>
       }

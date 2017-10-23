@@ -38,7 +38,6 @@ export default React.createClass({
             {React.cloneElement(this.props.children, {
                editathon: this.state.editathon,
                onReloadEditathon: this.reload,
-               code: this.getCode()
             })}
          </div>
       );
