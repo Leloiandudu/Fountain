@@ -1,34 +1,46 @@
 import React from 'react';
 import classNames from 'classnames';
+import { createBinder, setDefault } from '../utils';
 import UserLookup from '../UserLookup';
 import WikiButton from '../WikiButton';
 import { getMwApi } from '../../MwApi';
 import { withTranslation } from '../../translate';
 
+function getDefaultData() {
+   return {
+      jury: [ Global.user.name ],
+      sendInvites: false,
+   };
+}
+
 class JuryPage extends React.Component {
    constructor(props) {
       super(props);
       this._argId = 0;
-      this.state = {
-         jury: [ Global.user.name ],
-         sendInvites: false,
-      };
+      this.bind = createBinder('data');
+      setDefault(props, getDefaultData, 'data');
+   }
+
+   componentWillReceiveProps(props) {
+      setDefault(props, getDefaultData, 'data');
    }
 
    add() {
-      const { jury } = this.state;
+      const { data, onChange } = this.props;
+      const { jury } = data;
       jury.push('');
-      this.setState({ jury });
+      onChange({ jury });
    }
 
    replace(index, value) {
-      const { jury } = this.state;
+      const { data, onChange } = this.props;
+      const { jury } = data;
       if (value === undefined) {
          jury.splice(index, 1);
       } else {
          jury.splice(index, 1, value);
       }
-      this.setState({ jury });
+      onChange({ jury });
    }
 
    renderItem(jury, index) {
@@ -45,17 +57,15 @@ class JuryPage extends React.Component {
    }
 
    render() {
-      const { translation: { tr } } = this.props;
+      const { translation: { tr }, data: { jury = [] } } = this.props;
+
       return <div className='page JuryPage'>
-         {this.state.jury.map((j, i) => this.renderItem(j, i))}
+         {jury.map((j, i) => this.renderItem(j, i))}
          <WikiButton className='add' onClick={() => this.add()}>
             {tr('add')}
          </WikiButton>
          <label>
-            <input
-                  type='checkbox'
-                  checked={this.state.sendInvites}
-                  onChange={e => this.setState({ sendInvites: e.target.checked })} />
+            {this.bind('sendInvites', <input type='checkbox' />)}
             <span>{tr('sendInvites')}</span>
          </label>
       </div>;

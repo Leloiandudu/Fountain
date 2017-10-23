@@ -118,6 +118,10 @@ export default {
       newEditathon: 'New Editathon',
       back: 'Back',
       next: 'Next',
+      general: 'General',
+      rules: 'Rules',
+      template: 'Template',
+      jury: 'Jury',
       GeneralPage: {
          title: 'Title',
          code: 'Code',

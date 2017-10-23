@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
-import GeneralPage from './GeneralPage';
+import { setDefault } from '../utils';
 import DatePicker from '../DatePicker';
 import DropDown from '../DropDown';
 import DropDownButton from '../DropDownButton';
@@ -416,24 +416,35 @@ class RulesDemo extends React.Component {
 
 RulesDemo = withTranslation(RulesDemo, 'EditathonConfig.RulesPage.RulesDemo');
 
-class RulesPage extends React.Component {
-   constructor(props) {
-      super(props);
-      this.state = { rules: [{
+function getDefaultData() {
+   return {
+      rules: [{
          type: 'namespace',
          params: {},
          flags: 0,
-      }] };
+      }],
+   };
+}
+
+class RulesPage extends React.Component {
+   constructor(props) {
+      super(props);
+      setDefault(props, getDefaultData, 'data');
+   }
+
+   componentWillReceiveProps(props) {
+      setDefault(props, getDefaultData, 'data');
    }
 
    addRule(type) {
-      const { rules } = this.state;
+      const { data, onChange } = this.props;
+      const rules = [ ...data.rules ];
       rules.push({
          type,
          params: {},
          flags: Editors[type].noJury ? 0 : RuleFlags.informational,
       });
-      this.setState({ rules });
+      onChange({ rules });
    }
 
    deleteRule(rule) {
@@ -452,7 +463,8 @@ class RulesPage extends React.Component {
    }
 
    replaceRule(rule, newRule) {
-      const rules = [ ...this.state.rules ];
+      const { data, onChange } = this.props;
+      const rules = [ ...data.rules ];
       const index = rules.indexOf(rule);
       if (index !== -1) {
          if (newRule === undefined) {
@@ -461,13 +473,12 @@ class RulesPage extends React.Component {
             rules.splice(index, 1, newRule);
          }
       }
-      this.setState({ rules });
-
+      onChange({ rules });
    }
 
    render() {
       const { translation: { tr } } = this.props;
-      const { rules } = this.state;
+      const { rules = [] } = this.props.data;
       const available = Object.keys(Editors)
          .filter(t => Editors[t].allowMulti || rules.every(r => r.type !== t));
 

@@ -1,43 +1,55 @@
 import React from 'react';
 import classNames from 'classnames';
+import { createBinder, setDefault } from '../utils';
 import PageLookup from '../PageLookup';
 import WikiButton from '../WikiButton';
 import { withTranslation } from '../../translate';
+
+function getDefaultData() {
+   return {
+      enabled: false,
+      name: '',
+      talkPage: false,
+      args: [],
+   };
+}
 
 class TemplatePage extends React.Component {
    constructor(props) {
       super(props);
       this._argId = 0;
-      this.state = {
-         enabled: false,
-         name: '',
-         talkPage: false,
-         args: [],
-      };
+      setDefault(props, getDefaultData, 'data');
+      this.bind = createBinder('data');
+   }
+
+   componentWillReceiveProps(props) {
+      setDefault(props, getDefaultData, 'data');
    }
 
    addArg() {
-      const { args } = this.state;
-      args.push({ id: this._argId++ });
-      this.setState({ args });
+      const { data, onChange } = this.props;
+      data.args.push({ id: this._argId++ });
+      onChange({ ...data });
    }
 
    deleteArg(arg) {
-      const { args } = this.state;
-      const index = args.indexOf(arg);
+      const { data, onChange } = this.props;
+      const index = data.args.indexOf(arg);
       if (index !== -1) {
-         args.splice(index, 1);
+         data.args.splice(index, 1);
       }
-      this.setState({ args });
+      onChange({ ...data });
    }
 
    render() {
-      const { translation: { tr } } = this.props;
-      const { enabled } = this.state;
+      const { 
+         translation: { tr },
+         data: { enabled },
+      } = this.props;
 
       return <div className='page TemplatePage'>
          <label id='add'>
-            <input type='checkbox' checked={enabled} onChange={e => this.setState({ enabled: e.target.checked })} />
+            {this.bind('enabled', <input type='checkbox' /> )}
             <span>{tr('autoAdd')}</span>
          </label>
          {enabled && this.renderRest()}
@@ -46,8 +58,9 @@ class TemplatePage extends React.Component {
 
    renderArg(arg) {
       const onChange = (e, p) => {
+         const { data, onChange } = this.props;
          arg[p] = e.target.value;
-         this.setState({ args: this.state.args });
+         onChange({ ...data });
       }
 
       return <div className='arg' key={arg.id}>
@@ -59,26 +72,26 @@ class TemplatePage extends React.Component {
    }
 
    renderRest() {
-      const { translation: { tr } } = this.props;
-      const { name, talkPage, args } = this.state;
+      const { 
+         translation: { tr },
+         data: { name, args },
+      } = this.props;
       return (<div>
          <div className='field' id='template'>            
             <label htmlFor='name'>{tr('name')}</label>
-            <PageLookup
+            {this.bind('name', <PageLookup
                inputProps={{ id: 'name' }}
                ns={10}
-               wiki={'ru'}
-               value={name}
-               onChange={name => this.setState({ name })} />
+               wiki={'ru'} />)}
          </div>
          <div id='placement' className='field'>
             <header>{tr('placement')}</header>
             <label>
-               <input type='radio' name='talkPage' checked={!talkPage} onChange={e => this.setState({ talkPage: false })} />
+               {this.bind('talkPage', <input type='radio' name='talkPage' value={false} />)}
                <span>{tr('inArticle')}</span>
             </label>
             <label>
-               <input type='radio' name='talkPage' checked={talkPage} onChange={e => this.setState({ talkPage: true })} />
+               {this.bind('talkPage', <input type='radio' name='talkPage' value={true} />)}
                <span>{tr('onTalkPage')}</span>
             </label>
          </div>
