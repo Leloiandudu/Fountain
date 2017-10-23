@@ -8,7 +8,8 @@
       font-weight: 600;
       align-items: center;
 
-      .WikiButton {
+      > .RequiresLogin,
+      > .WikiButton {
          margin-left: 1ex;
 
          &:first-child {
@@ -217,27 +218,6 @@
                border-left: solid 2px lightgrey;
                padding-left: 3px;
             }
-         }
-      }
-   }
-
-   .needLogin {
-      border-radius: 3px;
-      padding: 20px;
-      max-width: 30%;
-      align-self: center; // fix for IE11 flex+max-width issue
-
-      .message {
-         margin-bottom: 2em;
-         font-size: 1.1em;
-      }
-
-      .buttons {
-         display: flex;
-         justify-content: flex-end;
-
-         > * {
-            margin-left: 10px;
          }
       }
    }

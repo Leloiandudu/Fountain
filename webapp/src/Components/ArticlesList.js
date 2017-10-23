@@ -4,14 +4,13 @@ import moment from 'moment';
 import stable from 'stable';
 import sortBy from './../sortBy';
 import Api from './../Api';
-import url from './../url';
 import { EditathonFlags } from './../jury';
 import { findMarkOf, calcMark, calcTotalMark } from './../jury';
 import { withTranslation } from './../translate';
 import Link from './Link';
+import RequiresLogin from './RequiresLogin';
 import WikiLink from './WikiLink';
 import WikiButton from './WikiButton';
-import ModalDialog from './ModalDialog';
 import Loader from './Loader';
 import Dashboard from './Dashboard';
 
@@ -53,7 +52,6 @@ const ArticlesList = React.createClass({
    },
    getInitialState() {
       return {
-         needLogin: false,
          sortBy: 'total',
          sortAsc: false,
          data: [],
@@ -67,12 +65,6 @@ const ArticlesList = React.createClass({
          this.setState({ 
             data: sort(this.getData(editathon.articles, editathon), this.state.sortBy, this.state.sortAsc),
          });
-      }
-   },
-   onAdd(e) {
-      if (!Global.user) {
-         this.setState({ needLogin: true });
-         e.preventDefault();
       }
    },
    getData(articles, { jury, marks: marksConfig, flags }) {
@@ -125,9 +117,13 @@ const ArticlesList = React.createClass({
          return <div className='header'>
             {this.tr('editathonWillEndIn', editathon.finish)}
             {juryButton}
-            <WikiButton type={isJury ? '' : 'progressive'} className='addArticle'>
-               <Link to={`/editathons/${this.props.editathon.code}/add`} onClick={this.onAdd}>{this.tr('addArticle')}</Link>
-            </WikiButton>
+            <RequiresLogin redirectTo={`/editathons/${this.props.editathon.code}/add`}>
+               <WikiButton type={isJury ? '' : 'progressive'} className='addArticle'>
+                  <Link to={`/editathons/${this.props.editathon.code}/add`}>
+                     {this.tr('addArticle')}
+                  </Link>
+               </WikiButton>
+            </RequiresLogin>
          </div>
       }
    },
@@ -142,15 +138,6 @@ const ArticlesList = React.createClass({
          <div className='ArticlesList'>
             {this.renderHeader(editathon)}
             <Dashboard editathon={editathon} />
-            <ModalDialog isOpen={this.state.needLogin} className='needLogin'>
-               <div className='message'>{this.props.translation.translate('SignInWarning.title')}</div>
-               <div className='buttons'>
-                  <a href={url(`/login?redirectTo=${window.location.pathname}/add`)}>
-                     <WikiButton type='progressive'>{this.props.translation.translate('SignInWarning.ok')}</WikiButton>
-                  </a>
-                  <WikiButton onClick={() => this.setState({ needLogin: false })}>{this.props.translation.translate('SignInWarning.cancel')}</WikiButton>
-               </div>
-            </ModalDialog>
 
             <div className='jury'>
                {this.tr('jury') + ' '}{editathon.jury.slice().sort().map(j => 
