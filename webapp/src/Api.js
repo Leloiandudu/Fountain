@@ -7,9 +7,13 @@ async function query(method, url, params) {
    const init = {
       method,
       credentials: 'same-origin',
+      headers: new Headers(),
    };
 
-   if (params) {
+   if (method === 'POST' && params) {
+      init.headers.append('Content-Type', 'application/json'),
+      init.body = JSON.stringify(params);
+   } else if (params) {
       if (method === 'GET') {
          url += '?' + getParams(params, true).toString();
       } else {
@@ -82,6 +86,9 @@ export default {
          comment: comment || '',
          marks: JSON.stringify(marks),
       });
+   },
+   createEditathon(editathon) {
+      return post(`editathons/new`, editathon);
    },
 };
 

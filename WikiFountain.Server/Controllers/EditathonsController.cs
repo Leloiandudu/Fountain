@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -238,6 +239,93 @@ namespace WikiFountain.Server.Controllers
             mark.Comment = body.Comment;
 
             return Ok();
+        }
+
+        [HttpPost]
+        public HttpResponseMessage Create(EditathonData e)
+        {
+            _auditContext.Operation = OperationType.CreateEditathon;
+
+            var user = _identity.GetUserInfo();
+            if (user == null)
+                return Unauthorized();
+
+            var exist = Session.Query<Editathon>()
+                .Any(i => i.Code == e.General.Code || i.Name == e.General.Title);
+
+            if (exist)
+                return Forbidden();
+
+            var editathon = new Editathon
+            {
+                Name = e.General.Title,
+                Code = e.General.Code,
+                Description = e.General.Description,
+                Wiki = e.General.Wiki,
+                Start = e.General.StartDate,
+                Finish = e.General.FinishDate.AddDays(1).AddSeconds(-1),
+                Flags = e.General.Flags,
+
+                Jury = new HashSet<string>(e.Jury.Jury),
+                Rules = new HashSet<Rule>(e.Rules.Rules),
+            };
+
+            if (e.Template.Enabled)
+            {
+                editathon.Template = JObject.FromObject(new
+                {
+                    name = e.Template.Name,
+                    talkPage = e.Template.TalkPage,
+                    args = e.Template.Args,
+                });
+            }
+
+            Session.Save(editathon);
+
+            if (e.Jury.SendInvites)
+            {
+                // ...
+            }
+
+            return Ok();
+        }
+
+        public class EditathonData
+        {
+            public GeneralPage General { get; set; }
+            public RulesPage Rules { get; set; }
+            public TemplatePage Template { get; set; }
+            public JuryPage Jury { get; set; }
+
+            public class GeneralPage
+            {
+                public string Title { get; set; }
+                public string Code { get; set; }
+                public string Description { get; set; }
+                public string Wiki { get; set; }
+                public DateTime StartDate { get; set; }
+                public DateTime FinishDate { get; set; }
+                public EditathonFlags Flags { get; set; }
+            }
+
+            public class RulesPage
+            {
+                public Rule[] Rules { get; set; }
+            }
+
+            public class TemplatePage
+            {
+                public bool Enabled { get; set; }
+                public string Name { get; set; }
+                public bool TalkPage { get; set; }
+                public Template.Argument[] Args { get; set; }
+            }
+
+            public class JuryPage
+            {
+                public string[] Jury { get; set; }
+                public bool SendInvites { get; set; }
+            }
         }
     }
 }

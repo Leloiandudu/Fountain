@@ -18,11 +18,10 @@ class JuryPage extends React.Component {
       super(props);
       this._argId = 0;
       this.bind = createBinder('data');
-      setDefault(props, getDefaultData, 'data');
    }
 
-   componentWillReceiveProps(props) {
-      setDefault(props, getDefaultData, 'data');
+   componentWillMount() {
+      setDefault(this.props, getDefaultData, 'data');
    }
 
    add() {
@@ -46,7 +45,7 @@ class JuryPage extends React.Component {
    renderItem(jury, index) {
       return <div className='item' key={index}>
          <UserLookup
-               wiki='ru'
+               wiki={this.props.allData.general.wiki}
                value={jury}
                onChange={text => this.replace(index, text)} />
          <WikiButton className='delete' onClick={e => {

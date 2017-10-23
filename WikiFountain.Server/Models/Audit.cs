@@ -24,6 +24,7 @@ namespace WikiFountain.Server.Models
     {
         AddArticle,
         SetMark,
+        CreateEditathon,
     }
 
     [Persistent]

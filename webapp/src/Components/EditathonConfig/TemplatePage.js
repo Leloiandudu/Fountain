@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import { Validation } from './validation';
 import { createBinder, setDefault } from '../utils';
 import PageLookup from '../PageLookup';
 import WikiButton from '../WikiButton';
@@ -18,12 +19,11 @@ class TemplatePage extends React.Component {
    constructor(props) {
       super(props);
       this._argId = 0;
-      setDefault(props, getDefaultData, 'data');
       this.bind = createBinder('data');
    }
 
-   componentWillReceiveProps(props) {
-      setDefault(props, getDefaultData, 'data');
+   componentWillMount() {
+      setDefault(this.props, getDefaultData, 'data');
    }
 
    addArg() {
@@ -66,7 +66,9 @@ class TemplatePage extends React.Component {
       return <div className='arg' key={arg.id}>
          <input id={`${arg.id}-name`} value={arg.name || ''} onChange={e => onChange(e, 'name')} />
          <span>=</span>
-         <input id={`${arg.id}-value`} value={arg.value || ''} onChange={e => onChange(e, 'value')} />
+         <Validation isEmpty={() => !arg.value}>
+            <input id={`${arg.id}-value`} value={arg.value || ''} onChange={e => onChange(e, 'value')} />
+         </Validation>
          <WikiButton className='delete' onClick={() => this.deleteArg(arg)} />
       </div>;
    }
@@ -75,14 +77,17 @@ class TemplatePage extends React.Component {
       const { 
          translation: { tr },
          data: { name, args },
+         allData: { general: { wiki } }
       } = this.props;
       return (<div>
          <div className='field' id='template'>            
             <label htmlFor='name'>{tr('name')}</label>
-            {this.bind('name', <PageLookup
-               inputProps={{ id: 'name' }}
-               ns={10}
-               wiki={'ru'} />)}
+            <Validation isEmpty={() => !name}>
+               {this.bind('name', <PageLookup
+                  inputProps={{ id: 'name' }}
+                  ns={10}
+                  wiki={wiki} />)}
+            </Validation>
          </div>
          <div id='placement' className='field'>
             <header>{tr('placement')}</header>

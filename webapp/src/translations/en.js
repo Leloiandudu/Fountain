@@ -119,6 +119,7 @@ export default {
       newEditathon: 'New Editathon',
       back: 'Back',
       next: 'Next',
+      create: 'Create',
       general: 'General',
       rules: 'Rules',
       template: 'Template',
@@ -128,9 +129,13 @@ export default {
          code: 'Code',
          project: 'Project',
          description: 'Description',
-         optional: '(optional)',
+         optional: ' (optional)',
          startDate: 'Start Date',
          finishDate: 'Finish Date',
+         tooShort: 'should be at least 3 characters',
+         negativeDates: 'Finish Date should not be less than Start Date',
+         consensualVote: 'Consensual vote',
+         hiddenMarks: 'Hidden marks',
       },
       RulesPage: {
          add: 'Add rule',
@@ -186,5 +191,9 @@ export default {
          add: 'add',
          sendInvites: 'send invites to the jury members',
       },
+   },
+
+   Validation: {
+      required: 'required',
    },
 };

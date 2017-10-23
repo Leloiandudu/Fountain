@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http.Formatting;
 using System.Web.Http;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace WikiFountain.Server
@@ -9,6 +10,12 @@ namespace WikiFountain.Server
     {
         public static void Register(HttpConfiguration config)
         {
+            config.Routes.MapHttpRoute(
+                name: "editathons-new",
+                routeTemplate: "api/editathons/new",
+                defaults: new { controller = "Editathons", action = "create" }
+            );
+
             config.Routes.MapHttpRoute(
                 name: "editathons",
                 routeTemplate: "api/editathons/{code}",
@@ -32,7 +39,10 @@ namespace WikiFountain.Server
 
             config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             config.Formatters.JsonFormatter.UseDataContractJsonSerializer = false;
-
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            };
         }
     }
 }

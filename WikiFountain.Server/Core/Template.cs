@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace WikiFountain.Server.Core
 {
-    class Template
+    public class Template
     {
         private static readonly Regex TokenRegex = new Regex(@"({{|\||}}|\[\[|\]\])"); // TODO: template args
         private static readonly Regex ArgRegex = new Regex(@"^([\s\w]+)=(.*)$", RegexOptions.Singleline);

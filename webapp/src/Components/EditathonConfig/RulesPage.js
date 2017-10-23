@@ -427,13 +427,8 @@ function getDefaultData() {
 }
 
 class RulesPage extends React.Component {
-   constructor(props) {
-      super(props);
-      setDefault(props, getDefaultData, 'data');
-   }
-
-   componentWillReceiveProps(props) {
-      setDefault(props, getDefaultData, 'data');
+   componentWillMount() {
+      setDefault(this.props, getDefaultData, 'data');
    }
 
    addRule(type) {
@@ -513,7 +508,7 @@ class RulesPage extends React.Component {
                          onClick={t => this.addRule(t)}>
             {tr('add')}
          </DropDownButton>
-         <RulesDemo wiki={'ru'} rules={rules} />
+         <RulesDemo wiki={this.props.allData.general.wiki} rules={rules} />
       </div>;
    }
 }

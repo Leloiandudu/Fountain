@@ -45,6 +45,7 @@ namespace WikiFountain.Server.Models
     [Flags]
     public enum EditathonFlags
     {
+        None = 0,
         ConsensualVote = 1,
         HiddenMarks = 2,
     }
@@ -54,6 +55,8 @@ namespace WikiFountain.Server.Models
         public EditathonMapping()
         {
             Set(_ => _.Jury, c => { }, er => er.Element(e => e.Column("Name")));
+            Property(_ => _.Name, p => p.UniqueKey("EditathonName"));
+            Property(_ => _.Code, p => p.UniqueKey("EditathonCode"));
         }
     }
 }
