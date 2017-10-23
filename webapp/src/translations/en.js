@@ -23,6 +23,7 @@ export default {
 
    EditathonList: {
       title: 'Editathons',
+      create: 'Create new',
    },
 
    ArticlesList: {

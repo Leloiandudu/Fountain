@@ -1,9 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
-import Api from './../Api';
-import WikiButton from './WikiButton';
 import Link from './Link';
+import RequiresLogin from './RequiresLogin';
+import WikiButton from './WikiButton';
+import Api from './../Api';
 import { withTranslation } from '../translate';
 
 const EditathonList = React.createClass({
@@ -13,13 +14,23 @@ const EditathonList = React.createClass({
    async componentWillMount() {
       this.setState({ list: await Api.getEditathons() });
    },
-   translate(...args) {
-      return this.props.translation.translate(...args);
+   onCreate(e) {
+      if (!Global.user) {
+         e.preventDefault();
+      }
    },
    render() {
+      const { translation: { tr } } = this.props;
       return (
          <div className='EditathonList mainContentPane'>
-            <h1>{this.translate('EditathonList.title')}</h1>
+            <h1>{tr('title')}</h1>
+            <RequiresLogin className='create' redirectTo='/editathons/new/config'>
+               <WikiButton type='progressive'>
+                  <Link to='/editathons/new/config' onClick={this.onCreate}>
+                     {tr('create')}
+                  </Link>
+               </WikiButton>
+            </RequiresLogin>
             <ul>
                {this.state.list && this.state.list.map(this.renderItem)}
             </ul>
@@ -46,6 +57,8 @@ const EditathonList = React.createClass({
       );
    },
    renderDates({ start, finish }) {
+      const { translation: { translate } } = this.props;
+
       start = moment(start).utc();
       finish = moment(finish).utc();
       
@@ -62,10 +75,10 @@ const EditathonList = React.createClass({
          startFormat = format;
 
       if (!startFormat)
-         return this.translate('formatDate', finish, format);
+         return translate('formatDate', finish, format);
 
-      return `${this.translate('formatDate', start, startFormat)} — ${this.translate('formatDate', finish, format)}`;
+      return `${translate('formatDate', start, startFormat)} — ${translate('formatDate', finish, format)}`;
    },
 });
 
-export default withTranslation(EditathonList);
+export default withTranslation(EditathonList, 'EditathonList');

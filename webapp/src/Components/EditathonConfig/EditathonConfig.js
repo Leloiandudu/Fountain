@@ -6,6 +6,7 @@ import TemplatePage from './TemplatePage';
 import JuryPage from './JuryPage';
 import WikiButton from '../WikiButton';
 import { withTranslation } from '../../translate';
+import url from '../../url';
 
 function Headers(props) {
    return <div className='Headers'>
@@ -26,6 +27,12 @@ const Pages = {
 };
 
 class EditathonConfig extends React.Component {
+   static get contextTypes() {
+      return {
+         router: React.PropTypes.object.isRequired
+      };
+   }
+
    constructor(props) {
       super(props);
       this.state = {
@@ -75,6 +82,13 @@ class EditathonConfig extends React.Component {
    render() {
       const { translation: { tr } } = this.props;
       const { data, selected } = this.state;
+
+      if (!Global.user) {
+         this.context.router.replace({
+            pathname: url('/editathons/'),
+         });
+         return;
+      }
 
       return <div className='EditathonConfig mainContentPane'>
          <h1>{tr('newEditathon')}</h1>
