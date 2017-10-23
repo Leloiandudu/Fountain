@@ -63,6 +63,21 @@ export default function MwApi(url) {
       return response[1];
    }
 
+   this.lookupUser = async function lookupUser(text) {
+      const {
+         query: {
+            allusers
+         }
+      } = await exec({
+         action: 'query',
+         list: 'allusers',
+         auprefix: text.slice(0, 1).toUpperCase() + text.slice(1),
+         auwitheditsonly: true,
+      });
+
+      return allusers.map(u => u.name);
+   }
+
    this.getPageHtml = async function getPageHtml(title) {
       const response = await exec({
          action: 'parse',
