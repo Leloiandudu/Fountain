@@ -1,0 +1,147 @@
+.RulesPage {
+   .DropDown {
+      .popup {
+         font-size: medium;
+      }
+   }
+
+   .add {
+      margin: .25em 0;
+      margin-right: auto;
+      min-width: auto;
+   }
+
+   .rule {
+      border: solid 1px #ccc;
+      border-radius: 2px;
+      margin: .25em 0;
+
+      > header {
+         background-color: #eee;
+         border-bottom: solid 1px #ccc;
+
+         display: flex;
+         flex-flow: row wrap;
+
+         > span {
+            font-weight: 600;
+            margin: .2em .5em;
+            margin-right: auto;
+         }
+
+         > label {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            margin-right: .5em;
+
+            input {
+               margin: 0 .5em;
+            }
+         }
+
+         .delete {
+            margin: .2em;
+            padding: 0;
+            padding: .625em 0;
+            min-width: 1.5em;
+            background-size: auto 75%;
+         }
+      }
+   }
+
+   .rule-block() {
+      display: flex;
+      flex-flow: column;
+      margin: .25em 0;
+
+      > .item {
+         display: flex;
+         flex-flow: row wrap;
+         margin: .125em .25em;
+
+         > * {
+            margin: .125em .25em;
+            flex: 0 0 auto;
+         }
+
+         > label {
+            min-width: 6em;
+            align-self: center;
+         }
+      }
+   }
+
+   .SimpleRule {
+      padding: .5em;
+   }
+
+   .ArticleSizeRule {
+      .rule-block();
+
+      > .item {
+         > .value {
+            width: 4em;
+         }
+      }
+
+      .or {
+         margin: .25em .5em;
+      }
+
+      .add {
+         margin-left: .5em;
+      }
+
+      .delete {
+         padding: 1em .1em;
+         min-width: 2.5em;
+         background-size: auto 50%;
+      }
+   }
+
+   .ArticleCreatedRule {
+      .rule-block();
+   }
+
+   .SubmitterRegisteredRule {
+      .rule-block();
+   }
+
+   .RulesDemo {
+      display: flex;
+      flex-flow: column;
+      align-items: flex-start;
+
+      header {
+         font-size: large;
+         font-weight: 600;
+         margin: .5em 0 .25em;
+      }
+
+      .lookup {
+         td + td {
+            flex: 1 1 auto;
+            padding: .125em .5em;
+         }
+      }
+
+      .show {
+         padding-top: .3em;
+         padding-bottom: .3em;
+         margin: .125em 0 .5em;
+      }
+
+      .Jury {
+         height: auto;
+         border-left: solid 1px #ddd;
+         border-right: solid 1px #ddd;
+         margin-right: auto;
+         margin-top: .5em;
+
+         .Warnings {
+            justify-content: flex-start;
+         }
+      }
+   }
+}

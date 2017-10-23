@@ -58,6 +58,7 @@
    }
 
    @import 'GeneralPage.less';
+   @import 'RulesPage.less';
 
    .buttons {
       display: flex;
@@ -66,6 +67,18 @@
 
       > * {
          margin: 0 .25em;
+      }
+   }
+
+   .delete {
+      background-image: url('cross.png');
+      background-repeat: no-repeat;
+      background-position: center;
+
+      &:hover,
+      &:focus {
+         background-color: #d11d13;
+         border-color: #d11d13;
       }
    }
 }

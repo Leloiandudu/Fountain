@@ -127,5 +127,45 @@ export default {
          startDate: 'Start Date',
          finishDate: 'Finish Date',
       },
+      RulesPage: {
+         add: 'Add rule',
+         optional: 'optional',
+         informational: 'show in jury tool',
+         RulesDemo: {
+            preview: 'Preview',
+            user: 'User',
+            article: 'Article',
+            show: 'Show',
+            forUser: 'the user sees:',
+            forJury: 'the jury see:',
+         },
+         articleSize: {
+            title: 'Article size',
+            atLeast: 'at least',
+            atMost: 'at most',
+            chars: 'symbols',
+            bytes: 'bytes',
+            words: 'words',
+            or: '- or -',
+            add: '+ or...',
+         },
+         submitterIsCreator: {
+            title: 'Created by submitter',
+            description: 'Only the creator can submit the article',
+         },
+         articleCreated: {
+            title: 'Article creation date',
+            notBefore: 'not before',
+            notAfter: 'not after',
+         },
+         submitterRegistered: {
+            title: 'Submitter registration date',
+            notBefore: 'not before',
+         },
+         namespace: {
+            title: 'Article namespace',
+            description: 'Article must belong to the main namespace',
+         },
+      },
    },
 };

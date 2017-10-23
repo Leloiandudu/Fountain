@@ -82,5 +82,6 @@ export default function readRules(rules) {
 }
 
 export function getRulesReqs(rules) {
-   return rules.map(rule => rule.check.reqs || []).reduce((a, b) => [ ...a, ...b ], []);
+   const reqs = rules.map(rule => rule.check.reqs || []).reduce((a, b) => [ ...a, ...b ], []);
+   return [ ...new Set(reqs) ];
 }

@@ -52,11 +52,11 @@ export default function MwApi(url) {
 
    this.exec = exec;
 
-   this.lookup = async function lookup(title) {
+   this.lookup = async function lookup(title, ns = 0) {
       const response = await exec({
          action: 'opensearch',
          search: title,
-         namespace: 0,
+         namespace: ns,
          limit: 10,
          redirects: 'resolve',
       });
@@ -103,6 +103,23 @@ export default function MwApi(url) {
       });
 
       return gender;
+   }
+
+   this.getUserRegDate = async function getUserRegDate(name) {
+      const {
+         query: {
+            users: [{
+               registration
+            }]
+         }
+      } = await exec({
+         action: 'query',
+         list: 'users',
+         ususers: name,
+         usprop: 'registration',
+      });
+
+      return registration;
    }
 
    this.getNamespaces = async function getNamespaces() {
