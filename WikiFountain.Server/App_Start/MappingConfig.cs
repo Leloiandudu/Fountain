@@ -74,13 +74,12 @@ namespace WikiFountain.Server
             mapper.BeforeMapSet += (model, member, set) =>
             {
                 set.Key(k => k.Column(member.GetContainerEntity(model).Name + "Id"));
-                set.Cascade(Cascade.All);
+                set.Cascade(Cascade.All | Cascade.DeleteOrphans);
             };
 
             mapper.BeforeMapManyToOne += (model, member, mto) =>
             {
                 mto.Column(member.LocalMember.Name + "Id");
-                mto.Cascade(Cascade.All);
             };
 
             mapper.BeforeMapClass += (model, type, cls) =>

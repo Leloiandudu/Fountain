@@ -67,7 +67,10 @@ namespace WikiFountain.Server
 
             var col = collection as IPersistentCollection;
             if (col == null) return;
-            Audit(col);
+
+            var ce = _sessionImpl.PersistenceContext.GetCollectionEntry(col);
+            foreach (var entity in col.Entries(ce.LoadedPersister))
+                _audit.Collections.Add(AuditCollection(col, entity, false));
         }
 
         public override void OnCollectionUpdate(object collection, object key)
@@ -140,7 +143,7 @@ namespace WikiFountain.Server
             var entry = GetEntry(entity);
             var oldState = entry.LoadedState;
 
-            var indices = oldState == null
+            var indices = oldState == null || newState == null
                 ? Enumerable.Range(0, propertyNames.Length)
                 : FindDirty(entity, newState, oldState);
 
