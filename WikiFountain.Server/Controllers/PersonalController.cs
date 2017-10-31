@@ -71,5 +71,32 @@ namespace WikiFountain.Server.Controllers
             var rank = rows.Single(x => x.Name == user.Username).Rank;
             return rows.SkipWhile(u => u.Rank < rank - 1).TakeWhile(u => u.Rank <= rank + 1).ToArray();
         }
+
+        [ActionName("jury-editathons")]
+        public HttpResponseMessage GetJuryEditathons()
+        {
+            var user = _identity.GetUserInfo();
+            if (user == null)
+                return Unauthorized();
+
+            //var now = DateTime.UtcNow;
+
+            return Ok((
+                from ed in Session.Query<Editathon>()
+                //where ed.Start <= now && now < ed.Finish
+                where ed.Jury.Contains(user.Username)
+                orderby ed.Finish descending
+                select new
+                {
+                    ed.Name,
+                    ed.Code,
+                    ed.Description,
+                    ed.Wiki,
+                    ed.Start,
+                    ed.Finish,
+                    missing = ed.Articles.Count(a => a.Marks.All(m => m.User != user.Username)),
+                }
+            ).ToArray());
+        }
     }
 }

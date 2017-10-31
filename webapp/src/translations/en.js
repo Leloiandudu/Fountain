@@ -200,12 +200,19 @@ export default {
    Personal: {
       title: 'Personal Cabinet',
       editathons: 'Participation',
+      jury: 'Evaluation',
 
       Editathons: {
          title: 'Editathons You Participate in',
          hasEnded: date => `has ended ${formatDateIn(date)}`,
          willEndIn: date => `will end in ${formatDateIn(date)}`,
          noMarks: 'you don\'t have marks yet',
+      },
+
+      Jury: {
+         title: 'Editathons You Are in Jury',
+         hasEnded: date => `has ended ${formatDateIn(date)}`,
+         willEndIn: date => `will end in ${formatDateIn(date)}`,
       },
    },
 };

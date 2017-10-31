@@ -92,7 +92,10 @@ export default {
    },
    getMyCurrentEditathons() {
       return get('personal/current-editathons');
-   }
+   },
+   getJuryEditathons() {
+      return get('personal/jury-editathons');
+   },
 };
 
 export function UnauthorizedHttpError() {

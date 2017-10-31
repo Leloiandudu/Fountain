@@ -209,12 +209,19 @@ export default {
    Personal: {
       title: 'Личный кабинет',
       editathons: 'Участие',
+      jury: 'Оценка',
 
       Editathons: {
          title: 'Марафоны, в которых вы принимаете участие',
          hasEnded: date => `закончился ${formatDateIn(date)}`,
          willEndIn: date => `заканчивается ${formatDateIn(date)}`,
          noMarks: 'у вас пока нет оценок',
+      },
+
+      Jury: {
+         title: 'Марафоны, в которых вы в жюри',
+         hasEnded: date => `закончился ${formatDateIn(date)}`,
+         willEndIn: date => `заканчивается ${formatDateIn(date)}`,
       },
    },
 };

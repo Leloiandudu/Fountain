@@ -6,9 +6,11 @@ import { withTranslation } from '../../translate';
 import url, { unUrl } from '../../url';
 import Link from '../Link';
 import Editathons from './Editathons';
+import Jury from './Jury';
 
 const Tabs = {
    'editathons': Editathons,
+   'jury': Jury,
 };
 
 class Personal extends React.Component {

@@ -1,0 +1,76 @@
+.Jury {
+   display: flex;
+   flex-flow: column;
+   padding: 0 .3em;
+
+   .list {
+      margin-top: .5em;
+      display: flex;
+      flex-flow: column;
+
+      .row {
+         display: flex;
+         flex-flow: row;
+
+         max-width: 25em;
+         text-decoration: none;
+         color: inherit;
+      }
+
+      .row + .row {
+         margin-top: 1em;
+      }
+
+      .details {
+         min-width: 0;
+         flex: 1 1 auto;
+         display: flex;
+         flex-flow: column;
+      }
+
+      .marks {
+         flex: 0 0 2.6em;
+         border-radius: .5rem;
+         text-align: center;
+         align-self: center;
+
+         .color(@color) {
+            background-color: lighten(@color, 40%);
+            color: shade(@color, 40%);
+         }
+
+         .color(#f81111);
+
+         &.marks-zero {
+            .color(#11f811);
+         }
+
+         span {
+            margin: 0 .5em;
+         }
+      }
+
+      .name, .finish {
+         overflow-x: hidden;
+         text-overflow: ellipsis;
+         white-space: nowrap;
+         position: relative;
+
+         &:after {
+            content: '';
+            width: 3em;
+            height: 100%;
+            position: absolute;
+            right: 0;
+            background: linear-gradient(90deg, transparent, white);
+            pointer-events: none;
+         }
+      }
+
+      .finish {
+         font-size: .7em;
+         cursor: help;
+         color: #444;
+      }
+   }
+}
