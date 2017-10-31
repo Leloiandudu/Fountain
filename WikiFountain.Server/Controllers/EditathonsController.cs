@@ -290,6 +290,7 @@ namespace WikiFountain.Server.Controllers
         [HttpPost]
         public HttpResponseMessage Create(EditathonData e)
         {
+            return Unauthorized();
             _auditContext.Operation = OperationType.CreateEditathon;
 
             var user = _identity.GetUserInfo();
