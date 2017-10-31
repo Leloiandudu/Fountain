@@ -28,7 +28,7 @@ class RequiresLogin extends React.Component {
             </div>
             <div className='buttons'>
                <WikiButton type='progressive'>
-                  <a href={url(`/login?redirectTo=${redirectTo || window.location.pathname}`)}>
+                  <a href={url(`/login?redirectTo=${url(redirectTo) || window.location.pathname}`)}>
                      {tr('ok')}
                   </a>
                </WikiButton>
