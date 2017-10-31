@@ -90,6 +90,9 @@ export default {
    createEditathon(editathon) {
       return post(`editathons/new`, editathon);
    },
+   getMyCurrentEditathons() {
+      return get('personal/current-editathons');
+   }
 };
 
 export function UnauthorizedHttpError() {

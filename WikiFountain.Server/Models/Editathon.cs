@@ -40,6 +40,38 @@ namespace WikiFountain.Server.Models
 
             return a.Marks.Select(m => m.User == currentUser.Username ? m : new Mark { User = m.User });
         }
+
+        public MarkConfig ReadMarksConfig()
+        {
+            return MarkConfig.ReadFrom(Marks);
+        }
+
+        public decimal? CalculateMark(Article a)
+        {
+            var all = Jury.Select(j => a.Marks.Where(m => m.User == j).SingleOrDefault())
+                .Where(m => m != null)
+                .Select(m => m.Marks)
+                .ToArray();
+
+            if (all.Length == 0) return null;
+            var config = ReadMarksConfig();
+
+            decimal result;
+            var parts = all.Select(m => config.GetValues(m)).ToArray();
+
+            if (Flags.HasFlag(EditathonFlags.ConsensualVote))
+            {
+                var p = parts.Aggregate((p1, p2) => p1 != null && p1.SequenceEqual(p2) ? p1 : null);
+                if (p == null) return null;
+                result = p.Values.Sum(v => v.Value);
+            }
+            else
+            {
+                result = parts.Average(p => p.Values.Sum(v => v.Value));
+            }
+
+            return Math.Round(result, 2);
+        }
     }
 
     [Flags]

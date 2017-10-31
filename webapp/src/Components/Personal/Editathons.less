@@ -1,0 +1,136 @@
+.Editathons {
+   display: flex;
+   flex-flow: column;
+   padding: 0 .3em;
+
+   .list {
+      margin-top: .5em;
+      display: flex;
+      flex-flow: column;
+
+      .row {
+         display: flex;
+         position: relative;
+         flex-flow: column;
+
+         > span {
+            padding: 0 .3em;
+         }
+      }
+
+      > .row + .row {
+         margin-top: 2em;
+
+         &:before {
+            content: '';
+            display: block;
+            left: .2em; right: .2em;
+            top: -.75em;
+            position: absolute;
+            height: 1px;
+
+            background: #ccc;
+            // background: linear-gradient(90deg, transparent, #ccc 1%, #ccc 99%, transparent);
+         }
+      }
+
+      > .name {
+         overflow-x: hidden;
+         text-overflow: ellipsis;
+         white-space: nowrap;
+         position: relative;
+
+         &:after {
+            content: '';
+            width: 3em;
+            height: 100%;
+            position: absolute;
+            right: 0;
+            background: linear-gradient(90deg, transparent, white);
+            pointer-events: none;
+         }
+      }
+
+      .finish {
+         font-size: .7em;
+         cursor: help;
+         color: #444;
+      }
+
+      .details {
+         display: flex;
+         flex-flow: column;
+         font-size: small;
+
+         text-decoration: none;
+         color: inherit;
+
+         > .row {
+            flex-flow: row;
+            margin: 0;
+            max-width: 20em;
+            padding-right: .25em;
+
+            &.me {
+               background-color: #eee;
+               font-weight: 600;
+               border-radius: 3px;
+            }
+         }
+
+         .header {
+            margin-top: 1em;
+
+            span {
+               height: 16px;
+               background-repeat: no-repeat;
+            }
+
+            .rank {
+               background-image: url("rank.png");
+               background-position: right;
+               background-position: ~"calc(100% - 1px)";
+            }
+
+            .name {
+               background-image: url("user.png");
+               background-position: 2px;
+            }
+
+            .total {
+               background-image: url("total.png");
+               background-position: right;
+               background-position: ~"calc(100% - 1px)";
+            }
+         }
+
+         .rank {
+            flex: 0 0 2em;
+            text-align: right;
+         }
+
+         .name {
+            flex: 1 1 auto;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+         }
+
+         .total {
+            flex: 0 0 3em;
+            text-align: right;
+         }
+
+         .no-marks {
+            flex: 1 0 auto;
+            color: #999;
+         }
+      }
+   }
+
+   .WikiButton {
+      align-self: flex-start;
+      margin-top: 1rem;
+      padding: 0.25em .5em;
+   }
+}

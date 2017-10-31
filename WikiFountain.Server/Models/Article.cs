@@ -18,7 +18,7 @@ namespace WikiFountain.Server.Models
         public DateTime DateAdded { get; set; }
         public ISet<Mark> Marks { get; set; }
 
-        private Editathon Editathon { get; set; }
+        public Editathon Editathon { get; set; }
     }
 
     public class ArticleMapping : ClassMapping<Article>

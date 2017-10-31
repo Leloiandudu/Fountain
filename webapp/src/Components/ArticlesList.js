@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import moment from 'moment';
 import stable from 'stable';
 import sortBy from './../sortBy';
-import Api from './../Api';
 import { EditathonFlags } from './../jury';
 import { findMarkOf, calcMark, calcTotalMark } from './../jury';
 import { withTranslation } from './../translate';

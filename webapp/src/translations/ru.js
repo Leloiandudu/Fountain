@@ -205,4 +205,16 @@ export default {
    Validation: {
       required: 'обязательное поле',
    },
+
+   Personal: {
+      title: 'Личный кабинет',
+      editathons: 'Участие',
+
+      Editathons: {
+         title: 'Марафоны, в которых вы принимаете участие',
+         hasEnded: date => `закончился ${formatDateIn(date)}`,
+         willEndIn: date => `заканчивается ${formatDateIn(date)}`,
+         noMarks: 'у вас пока нет оценок',
+      },
+   },
 };

@@ -34,6 +34,12 @@ namespace WikiFountain.Server
                 defaults: new { controller = "Editathons", action = "SetMark" }
             );
 
+            config.Routes.MapHttpRoute(
+                name: "personal",
+                routeTemplate: "api/personal/{action}",
+                defaults: new { controller = "Personal" }
+            );
+
             config.Formatters.JsonFormatter.MediaTypeMappings.Add(
                 new RequestHeaderMapping("Accept", "text/html", StringComparison.OrdinalIgnoreCase, true, "application/json"));
 

@@ -2,6 +2,10 @@ import React from 'react';
 import { Route, IndexRedirect, Redirect } from 'react-router';
 
 export function getRoutes(root, component, children) {
+   if (!children.length || !React.isValidElement(children[0])) {
+      children = getTabRoutes(children);
+   }
+
    return [
       <Route key='root' path={`${root}/`} component={component}>
          {children}
@@ -16,6 +20,6 @@ export function getTabRoutes(tabs) {
    
    return [
       <IndexRedirect key='' to={paths[0]} />,
-      ...paths.map(path => <Route key={path} path={path} component={tabs[path].component} />),
+      ...paths.map(path => <Route key={path} path={path} component={tabs[path]} />),
    ];
 }
