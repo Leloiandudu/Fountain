@@ -39,6 +39,13 @@ button {
    }
 }
 
+.removeAnchorStyling() {
+   &, a {
+      text-decoration: none;
+      color: inherit;
+   }
+}
+
 .mainContentPane {
    max-width: 800px;
    margin: 0 auto;
@@ -153,6 +160,7 @@ input[type=checkbox] {
 @import 'Components/LangSwitcher.less';
 @import 'Components/Loader.less';
 @import 'Components/LookupWithThrottle.less';
+@import 'Components/ManageArticles.less';
 @import 'Components/ModalDialog.less';
 @import 'Components/Personal/Personal.less';
 @import 'Components/Tooltip.less';

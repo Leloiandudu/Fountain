@@ -5,15 +5,43 @@
    .header {
       display: flex;
       margin-bottom: 2ex;
-      font-weight: 600;
       align-items: center;
+
+      > span {
+         font-weight: 600;
+      }
 
       > .RequiresLogin,
       > .WikiButton {
          margin-left: 1ex;
 
-         &:first-child {
+         &:nth-child(2) {
             margin-left: auto;
+         }
+      }
+
+      > .RequiresLogin {
+         display: flex;
+         flex-wrap: nowrap;
+
+         .addArticle.combine {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+         }
+
+         .manageArticles {
+            .removeAnchorStyling();
+            
+            > button {
+               border-left: none;
+               border-top-left-radius: 0;
+               border-bottom-left-radius: 0;
+            }
+
+            .popup {
+               right: 0;
+               font-size: medium;               
+            }
          }
       }
    }

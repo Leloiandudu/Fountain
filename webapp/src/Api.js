@@ -81,6 +81,9 @@ export default {
          user,
       });
    },
+   removeArticles(code, ids) {
+      return post(`editathons/${enc(code)}/removeArticles`, ids);
+   },
    setMark(code, { title, marks, comment }) {
       return post(`editathons/${enc(code)}/mark`, {
          title,

@@ -179,7 +179,7 @@ export default class DropDown extends React.Component {
    }
 
    render() {
-      return <div className={classNames('DropDown', this.props.className)}>
+      return <div className={classNames('DropDown', this.props.collapse && 'collapse', this.props.className)}>
          {this.renderButton()}
          {this.renderPopup()}
       </div>;

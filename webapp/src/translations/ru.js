@@ -49,6 +49,11 @@ export default {
       addedOn: 'Добавлено',
       score: 'Баллов',
       dateAdded: date => formatDate(date, 'D MMM LT'),
+      manageArticles: 'Управление статьями',
+   },
+
+   ManageArticles: {
+      removeSelected: 'Удалить отмеченные',
    },
 
    Dashboard: {

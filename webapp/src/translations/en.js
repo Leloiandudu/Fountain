@@ -40,6 +40,11 @@ export default {
       addedOn: 'Added on',
       score: 'Points',
       dateAdded: date => formatDate(date, 'D MMM LT'),
+      manageArticles: 'Manage Articles',
+   },
+
+   ManageArticles: {
+      removeSelected: 'Remove Selected',
    },
 
    Dashboard: {

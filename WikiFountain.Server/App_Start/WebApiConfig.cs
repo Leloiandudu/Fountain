@@ -35,6 +35,12 @@ namespace WikiFountain.Server
             );
 
             config.Routes.MapHttpRoute(
+                name: "editathons-default",
+                routeTemplate: "api/editathons/{code}/{action}",
+                defaults: new { controller = "Editathons" }
+            );
+
+            config.Routes.MapHttpRoute(
                 name: "personal",
                 routeTemplate: "api/personal/{action}",
                 defaults: new { controller = "Personal" }

@@ -6,12 +6,13 @@ import sortBy from './../sortBy';
 import { EditathonFlags } from './../jury';
 import { findMarkOf, calcMark, calcTotalMark } from './../jury';
 import { withTranslation } from './../translate';
+import Dashboard from './Dashboard';
+import DropDownButton from './DropDownButton'
+import Loader from './Loader';
 import Link from './Link';
 import RequiresLogin from './RequiresLogin';
 import WikiLink from './WikiLink';
 import WikiButton from './WikiButton';
-import Loader from './Loader';
-import Dashboard from './Dashboard';
 
 function getTotalMark(jury, marks, marksConfig, consensualVote) {
    const mark = calcTotalMark(jury, marks, marksConfig);
@@ -109,19 +110,22 @@ const ArticlesList = React.createClass({
 
       if (now.isAfter(editathon.finish, 'day')) {
          return <div className='header'>
-            {this.tr('editathonIsOver')}
+            <span>{this.tr('editathonIsOver')}</span>
             {juryButton}
          </div>;
       } else {
          return <div className='header'>
-            {this.tr('editathonWillEndIn', editathon.finish)}
+            <span>{this.tr('editathonWillEndIn', editathon.finish)}</span>
             {juryButton}
             <RequiresLogin redirectTo={`/editathons/${this.props.editathon.code}/add`}>
-               <WikiButton type={isJury ? '' : 'progressive'} className='addArticle'>
+               <WikiButton type={isJury ? '' : 'progressive'} className={classNames('addArticle', isJury && 'combine')}>
                   <Link to={`/editathons/${this.props.editathon.code}/add`}>
                      {this.tr('addArticle')}
                   </Link>
                </WikiButton>
+               {isJury && <DropDownButton className='manageArticles' collapse items={[
+                  <Link to={`/editathons/${this.props.editathon.code}/manage`}>{this.tr('manageArticles')}</Link>
+               ]} />}
             </RequiresLogin>
          </div>
       }

@@ -1,0 +1,48 @@
+.ManageArticles {
+   display: flex;
+   flex-flow: column;
+
+   table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th {
+         text-align: left;
+      }
+
+      td, th {
+         padding: 0.25em 0;
+      }
+
+      td {
+         cursor: pointer;
+      }
+
+      tr:hover td {
+         background: #eee;
+      }
+
+      thead > tr:last-child th {
+         border-bottom: solid 1px black;
+      }
+
+      .check {
+         width: 2em;
+
+         &.checked {
+            background-image: url('check.png');
+            background-position: center;
+            background-repeat: no-repeat;
+         }
+      }
+
+      .date {
+         text-align: right;
+      }
+   }
+
+   .buttons {
+      margin-left: auto;
+      margin-bottom: 1em;
+   }
+}

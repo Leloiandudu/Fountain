@@ -207,6 +207,37 @@ namespace WikiFountain.Server.Controllers
             await wiki.EditPage(title, page, "Automatically adding template");
         }
 
+        [HttpPost]
+        public async Task<HttpResponseMessage> RemoveArticles(string code, [FromBody] long[] ids)
+        {
+            _auditContext.Operation = OperationType.RemoveArticle;
+
+            var user = _identity.GetUserInfo();
+            if (user == null)
+                return Unauthorized();
+
+            var e = Session.Query<Editathon>()
+                .Fetch(_ => _.Articles)
+                .SingleOrDefault(i => i.Code == code);
+
+            if (e == null)
+                return NotFound();
+
+            if (!e.Jury.Contains(user.Username))
+                return Forbidden();
+
+
+            foreach (var id in ids)
+            {
+                var article = e.Articles.SingleOrDefault(a => a.Id == id);
+                if (article == null) return NotFound();
+
+                e.Articles.Remove(article);
+            }
+
+            return Ok();
+        }
+
         public class MarkPostData
         {
             public string Title { get; set; }
