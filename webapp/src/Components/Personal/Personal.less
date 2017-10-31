@@ -1,0 +1,51 @@
+.Personal {
+   @border: solid 1px #ccc;
+
+   > .content {
+      display: flex;
+      flex-flow: row;
+      border: @border;
+
+      > .content {
+         flex: 1 0 auto;
+      }
+   }
+
+   .tabs {
+      flex: 0 0 auto;
+      display: flex;
+      flex-flow: column;
+
+      .tab {
+         border-bottom: @border;
+         border-right: @border;
+         background-color: #f5f5f5;
+         .hide-selection();
+
+         &:last-child {
+            border-bottom: none;
+            padding-bottom: 1px;
+         }
+
+         &.active {
+            border-right-color: transparent;
+            border-left: solid 4px #347bff;
+            margin-left: 0;
+            font-weight: 600;
+            background-color: inherit;
+
+            a {
+               margin-left: -4px;
+               cursor: default;
+            }
+         }
+
+         a {
+            padding: .5em 1em;
+            text-decoration: none;
+            display: block;
+            color: inherit;
+         }
+      }
+   }
+}

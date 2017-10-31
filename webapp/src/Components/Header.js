@@ -1,5 +1,4 @@
 import React from 'react';
-import WikiLink from './WikiLink';
 import Link from './Link';
 import LangSwitcher from './LangSwitcher';
 import url from '../url';
@@ -11,7 +10,7 @@ const Header = ({ children, translation: { tr } }) => (
          <Link to='/'><img className='logo' src={url('/Content/logo.png')} /></Link>
          <LangSwitcher />
          {Global.user && <div className='login'>
-            <span className='userName'><WikiLink to={`User:${Global.user.name}`} /></span>
+            <span className='userName'><Link className='WikiLink' to='/personal'>{Global.user.name}</Link></span>
             <a className='action' href={url(`/logout?redirectTo=${window.location.pathname}`)}>{tr('signOut')}</a>
          </div> || <div className='login'>
             <a className='action' href={url(`/login?redirectTo=${window.location.pathname}`)}>{tr('signIn')}</a>

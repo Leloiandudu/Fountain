@@ -7,6 +7,7 @@ import ArticlesList from './Components/ArticlesList';
 import EditathonList from './Components/EditathonList';
 import EditathonPage from './Components/EditathonPage';
 import EditathonConfig from './Components/EditathonConfig/EditathonConfig';
+import { routes as personalRoutes } from './Components/Personal/Personal';
 import Jury from './Components/Jury/Jury';
 
 export default (
@@ -14,6 +15,7 @@ export default (
       <Route path={url('/jury')}>
          <Route path=':id' component={Jury} />
       </Route>
+
       <Route path={url('/')} component={App}>
          <IndexRedirect to='editathons/' />
          <Route path='editathons/'>
@@ -25,6 +27,8 @@ export default (
             <Route path=':id/config' component={EditathonConfig} />
          </Route>
          <Redirect from='editathons' to='editathons/' />
+
+         {personalRoutes}
       </Route>
    </Router>
 );
