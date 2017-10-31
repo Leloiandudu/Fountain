@@ -9,6 +9,7 @@ import Warnings from './Warnings';
 import WikiButton from './WikiButton';
 import WikiLink from './WikiLink';
 import PageLookup from './PageLookup';
+import UserLookup from './UserLookup';
 import Loader from './Loader';
 
 const AddArticle = React.createClass({
@@ -18,11 +19,22 @@ const AddArticle = React.createClass({
    getInitialState() {
       return {
          title: '',
+         user: Global.user && Global.user.name,
+         regDate: Global.user && Global.user.registered,
          updating: false,
-         stage: 'pick',
+         stage: null,
          card: null,
          adding: false,
+         error: false,
       };
+   },
+   componentWillMount() {
+      if (!Global.user) {
+         return this.returnToList();
+      }
+
+      const isJury = this.props.editathon.jury.filter(j => j === Global.user.name)[0];
+      this.setState({ isJury, stage: isJury ? 'user' : 'pick' })
    },
    async update() {
       let { title, stats } = this.state;
@@ -47,15 +59,15 @@ const AddArticle = React.createClass({
       });
    },
    async add() {
-      const stats = this.state.stats;
+      const { stats, user } = this.state;
       if (!stats || !stats.title)
          return;
 
       this.setState({ adding: true });
 
       try {
-         await Api.addArticle(this.props.editathon.code, stats.title);
-         await this.returnToList();
+         await Api.addArticle(this.props.editathon.code, stats.title, user);
+         await this.returnToList(true);
       } catch(e) {
          this.setState({ adding: false })
          if (e instanceof UnauthorizedHttpError) {
@@ -65,11 +77,14 @@ const AddArticle = React.createClass({
          }
       }
    },
-   async returnToList() {
+   async returnToList(reload = false) {
       this.context.router.replace({
          pathname: url(`/editathons/${this.props.editathon.code}`),
       });
-      this.props.onReloadEditathon && await this.props.onReloadEditathon();
+
+      if (reload && this.props.onReloadEditathon) {
+         await this.props.onReloadEditathon();
+      }
    },
    getRules() {
       return readRules(this.props.editathon.rules);
@@ -82,25 +97,87 @@ const AddArticle = React.createClass({
       );
    },
    renderStage() {
-      return {
+      const renderer = {
+         user: this.renderUserStage,
          pick: this.renderPickStage,
          approve: this.renderApproveStage,
-      }[this.state.stage]().props.children;
+      }[this.state.stage];
+      
+      return renderer ? renderer().props.children : null;
    },
    tr(...args) {
       return this.props.translation.tr(...args)
    },
-   renderPickStage() {
-      const { translation: { tr }, editathon: { wiki } } = this.props;
+   backButton() {
+      const { isJury, stage } = this.state;
+      let name, action;
 
-      if (!Global.user) {
-         this.returnToList();
-         return <div />;
+      if (stage === 'user') {
+         name = 'cancel';
+         action = () => this.returnToList();
+      } else if (stage === 'pick') {
+         if (isJury) {
+            name = 'back';
+            action = () => this.setState({ stage: 'user' });
+         } else {
+            name = 'cancel';
+            action = () => this.returnToList();
+         }
+      } else if (stage === 'approve') {
+         name = 'back';
+         action = () => this.setState({ stage: 'pick' });
       }
 
-      const ctx = {
-         user: Global.user,
+      return <WikiButton onClick={action}>{this.tr(name)}</WikiButton>;
+   },
+   async pickUser() {
+      this.setState({ updating: true, error: false });
+
+      const { user } = this.state;
+      let regDate;
+      try {
+         const mwApi = getMwApi(this.props.editathon.wiki);
+         regDate = await mwApi.getUserRegDate(user);
+      } catch (e) {
+         console.error(e);
+      }
+
+      const error = regDate === undefined ? user : false;
+      const stage = regDate === undefined ? 'user' : 'pick';
+      this.setState({ stage, updating: false, regDate, error });
+   },
+   renderUserStage() {
+      const { translation: { tr }, editathon: { wiki } } = this.props;
+      const { user, updating, error } = this.state;
+
+      return <div>
+         <label htmlFor='user'>{this.tr('user')}</label>
+         <UserLookup wiki={wiki} inputProps={{ id: 'user' }} autoFocus
+            value={user} onChange={user => this.setState({ user })} />
+
+         {error && <div className='Warnings'>
+            <div className='stat error'>{this.tr('userNotFound', error)}</div>
+         </div>}
+
+         <div id='buttons'>
+            {this.backButton()}
+            <WikiButton loading={updating} disabled={!user.trim()} type='progressive' submit onClick={this.pickUser}>
+               {this.tr('next')}
+            </WikiButton>
+         </div>
+      </div>;
+   },
+   getCtx() {
+      return {
+         user: {
+            name: this.state.user,
+            registered: this.state.regDate,
+         }
       };
+   },
+   renderPickStage() {
+      const { translation: { tr }, editathon: { wiki } } = this.props;
+      const ctx = this.getCtx();
       const rules = this.getRules().filter(rule => rule.userOnly);
       const error = rules
          .filter(rule => !(rule.flags & RuleFlags.optional))
@@ -111,11 +188,11 @@ const AddArticle = React.createClass({
             <div>
                <Warnings
                      ctx={ctx}
-                     rules={this.getRules().filter(rule => rule.userOnly)}
+                     rules={rules}
                      stats={null}
                      wiki={wiki} />
                <div id='buttons'>
-                  <WikiButton onClick={this.returnToList}>{this.tr('back')}</WikiButton>
+                  {this.backButton()}
                </div>
             </div>
          );
@@ -126,16 +203,17 @@ const AddArticle = React.createClass({
             <label htmlFor='title'>{this.tr('articleTitle')}</label>
             <Warnings
                   ctx={ctx}
-                  rules={this.getRules().filter(rule => rule.userOnly)}
+                  rules={rules}
                   stats={null}
                   wiki={wiki} />
             <PageLookup
                wiki={wiki}
+               autoFocus
                inputProps={{ id: 'title' }}
                value={this.state.title}
                onChange={title => this.setState({ title })} />
             <div id='buttons'>
-               <WikiButton onClick={this.returnToList}>{this.tr('cancel')}</WikiButton>
+               {this.backButton()}
                <WikiButton disabled={!this.state.title.trim()} type='progressive' submit={true} onClick={() => {
                   this.setState({ stage: 'approve', updating: true });
                   this.update();
@@ -155,25 +233,25 @@ const AddArticle = React.createClass({
       </header>;
 
       const addedBy = stats && editathon.articles.filter(a => a.name === stats.title)[0];
-      
+
       const rules = this.getRules().filter(rule => !rule.userOnly);
-      const ctx = { user: Global.user };
+      const ctx = this.getCtx();
       const ok = stats && rules.every(rule => (rule.flags & RuleFlags.optional) || rule.check(stats, ctx));
 
       return (
          <div>
             {this.state.updating ? <Loader /> : (<div>
-               {missing ? 
+               {missing ?
                <div>
                   {header}
                   <div>{this.tr('notFound')}</div>
-               </div> 
+               </div>
                :
                <div className='info'>
                   <div className='Warnings'>
                      {header}
                      {addedBy && <div className='stat error'>
-                        {addedBy.user === Global.user.name ? this.tr('youAlreadyAdded') : this.tr('someoneAlreadyAdded')}
+                        {addedBy.user === ctx.user.name ? this.tr('youAlreadyAdded') : this.tr('someoneAlreadyAdded')}
                      </div>}
                      <Warnings
                            ctx={ctx}
@@ -186,7 +264,7 @@ const AddArticle = React.createClass({
                </div>}
             </div>).props.children}
             <div id='buttons'>
-               <WikiButton onClick={() => this.setState({ stage: 'pick' })}>{this.tr('back')}</WikiButton>
+               {this.backButton()}
                <WikiButton loading={this.state.adding} disabled={this.state.updating || !ok || addedBy} type='constructive' submit={true} onClick={this.add}>{this.tr('add')}</WikiButton>
             </div>
          </div>

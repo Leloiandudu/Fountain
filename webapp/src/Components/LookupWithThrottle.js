@@ -22,6 +22,12 @@ export default class LookupWithThrottle extends React.Component {
       }, 500);
    }
 
+   componentDidMount() {
+      if (this._autocomplete && this.props.autoFocus) {
+         this._autocomplete.refs.input.select();
+      }
+   }
+
    componentWillUnmount() {
       this.callLookup && this.callLookup.cancel();
    }
@@ -35,6 +41,7 @@ export default class LookupWithThrottle extends React.Component {
       const { inputProps, className, value } = this.props;
 
       return <Autocomplete
+         ref={x => this._autocomplete = x}
          inputProps={inputProps}
          wrapperProps={{ className: classNames([ 'LookupWithThrottle', className ]) }}
          wrapperStyle={{}}
@@ -70,11 +77,10 @@ export default class LookupWithThrottle extends React.Component {
 }
 
 export function createLookup(baseClassName, lookup) {
-   return function Lookup({ value, onChange, className, ...props }) {
+   return function Lookup({ className, ...props }) {
       return <LookupWithThrottle
          className={classNames([ baseClassName, className ])}
          lookup={v => lookup(v, props)}
-         value={value}
-         onChange={onChange} />
+         {...props} />
    }
 }

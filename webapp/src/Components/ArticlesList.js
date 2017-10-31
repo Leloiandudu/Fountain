@@ -103,7 +103,7 @@ const ArticlesList = React.createClass({
       }
 
       const isJury = Global.user && editathon.jury.filter(j => j === Global.user.name)[0];
-      let juryButton = isJury && <WikiButton type='progressive' disabled={editathon.articles.length === 0}>
+      const juryButton = isJury && <WikiButton type='progressive' disabled={editathon.articles.length === 0}>
          <Link to={`/jury/${this.props.editathon.code}`}>{this.tr('juryTool')}</Link>
       </WikiButton>;
 

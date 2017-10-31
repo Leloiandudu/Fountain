@@ -75,9 +75,10 @@ export default {
    getEditathon(code) {
       return get(`editathons/${enc(code)}`);
    },
-   addArticle(code, title) {
+   addArticle(code, title, user) {
       return post(`editathons/${enc(code)}/article`, {
-         title,
+         title, 
+         user,
       });
    },
    setMark(code, { title, marks, comment }) {

@@ -68,6 +68,8 @@ export default {
       cancel: 'Cancel',
       next: 'Next',
       add: 'Add',
+      user: 'Add on behalf of:',
+      userNotFound: user => `User '${user}' not found`,
       articleTitle: 'Article\'s title:',
       youAlreadyAdded: 'You have already added this article to the editathon',
       someoneAlreadyAdded: 'Another user has already added this article to the editathon',

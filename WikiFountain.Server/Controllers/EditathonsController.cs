@@ -85,6 +85,7 @@ namespace WikiFountain.Server.Controllers
         public class ArticlePostData
         {
             public string Title { get; set; }
+            public string User { get; set; }
         }
 
         [HttpPost]
@@ -115,6 +116,20 @@ namespace WikiFountain.Server.Controllers
                 return Forbidden();
 
             var wiki = MediaWikis.Create(e.Wiki, _identity);
+
+            if (user.Username != body.User)
+            {
+                if (!e.Jury.Contains(user.Username))
+                {
+                    return Forbidden();
+                }
+                else
+                {
+                    user = await wiki.GetUser(body.User);
+                    if (user == null)
+                        return Forbidden();
+                }
+            }
 
             var page = await wiki.GetPage(body.Title);
             if (page == null)

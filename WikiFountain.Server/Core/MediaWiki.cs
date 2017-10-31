@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using WikiFountain.Server.Models;
 
 namespace WikiFountain.Server.Core
 {
@@ -34,6 +35,27 @@ namespace WikiFountain.Server.Core
                 return null;
 
             return revs[0].Value<string>("content");
+        }
+
+        public async Task<UserInfo> GetUser(string name)
+        {
+            var result = await Exec(new JObject
+            {
+                { "action", "query" },
+                { "list", "users" },
+                { "ususers", name },
+                { "usprop", "registration" },
+            });
+
+            var regDate = result["query"]["users"][0]["registration"];
+            if (regDate == null)
+                return null;
+
+            return new UserInfo
+            {
+                Username = name,
+                Registered = regDate.Value<DateTime?>(),
+            };
         }
 
         private async Task<string> GetCsrfToken()

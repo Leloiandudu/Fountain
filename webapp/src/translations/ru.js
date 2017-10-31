@@ -77,6 +77,8 @@ export default {
       cancel: 'Отмена',
       next: 'Далее',
       add: 'Добавить',
+      user: 'Добавить от лица:',
+      userNotFound: user => `Участник '${user}' не найден`,
       articleTitle: 'Название статьи:',
       youAlreadyAdded: 'Вы уже добавили эту статью в марафон',
       someoneAlreadyAdded: 'Другой участник уже добавил эту статью в марафон',

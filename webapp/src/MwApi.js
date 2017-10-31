@@ -105,6 +105,8 @@ export default function MwApi(url) {
       return gender;
    }
 
+   // returns undefined if user is not found
+   // returns null if reg date is unknown
    this.getUserRegDate = async function getUserRegDate(name) {
       const {
          query: {
