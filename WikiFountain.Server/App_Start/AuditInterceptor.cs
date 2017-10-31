@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Reflection;
+using System.Web;
 using NHibernate;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -15,13 +16,15 @@ namespace WikiFountain.Server
     public class AuditInterceptor : EmptyInterceptor
     {
         private readonly AuditContext _auditContext;
+        private readonly HttpContextBase _httpContext;
         private ISession _session;
         private ISessionImplementor _sessionImpl;
         private AuditLog _audit = new AuditLog();
 
-        public AuditInterceptor(AuditContext auditContext)
+        public AuditInterceptor(AuditContext auditContext, HttpContextBase httpContext)
         {
             _auditContext = auditContext;
+            _httpContext = httpContext;
         }
 
         public override void SetSession(ISession session)
@@ -84,6 +87,10 @@ namespace WikiFountain.Server
             using (var session = _session.SessionFactory.OpenSession())
             using (var tx = session.BeginTransaction())
             {
+                var user = new Identity(_httpContext, null, session).GetUserInfo();
+                if (user != null)
+                    _audit.User = user.Username;
+
                 _audit.Timestamp = DateTime.UtcNow;
                 _audit.Type = _auditContext.Operation.Value;
                 session.Save(_audit);

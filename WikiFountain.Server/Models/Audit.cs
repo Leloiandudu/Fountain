@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace WikiFountain.Server.Models
 {
     [Persistent]
+    [DebuggerDisplay("{User} {Type} {Timestamp}")]
     public class AuditLog
     {
         public long Id { get; set; }
+        public string User { get; set; }
         public OperationType Type { get; set; }
         public DateTime Timestamp { get; set; }
         public ISet<AuditRecord> Records { get; set; }
@@ -28,6 +31,7 @@ namespace WikiFountain.Server.Models
     }
 
     [Persistent]
+    [DebuggerDisplay("{Entity} #{Key} {Property}: {OldValue} -> {NewValue}")]
     public class AuditRecord
     {
         public long Id { get; set; }
@@ -39,6 +43,7 @@ namespace WikiFountain.Server.Models
     }
 
     [Persistent]
+    [DebuggerDisplay("{ParentEntity} #{ParentKey} {Collection} -> {Entity} #{Key}: {Added}")]
     public class AuditCollection
     {
         public long Id { get; set; }

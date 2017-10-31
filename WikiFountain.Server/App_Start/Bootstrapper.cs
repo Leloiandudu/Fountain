@@ -17,7 +17,7 @@ namespace WikiFountain.Server
                 .RegisterInstance(MappingConfig.CreateSessionFactory())
                 .RegisterType<SessionHolder>(perRequestLifetime(), new InjectionFactory(c =>
                 {
-                    var session = c.Resolve<NHibernate.ISessionFactory>().OpenSession(new AuditInterceptor(c.Resolve<AuditContext>()));
+                    var session = c.Resolve<NHibernate.ISessionFactory>().OpenSession(c.Resolve<AuditInterceptor>());
                     session.BeginTransaction();
                     DbSessionModule.Register(session);
                     return new SessionHolder { Session = session };
