@@ -48,7 +48,7 @@ export default {
       juryTool: 'বিচার করুন',
       jury: 'বিচারকমণ্ডলী:',
       user: 'ব্যবহারকারী',
-      acticlesCount: 'নিবন্ধসমূহ',
+      acticlesCount: 'নিবন্ধ',
       totalScore: 'পয়েন্ট',
       acticle: 'নিবন্ধ',
       addedOn: 'যোগ করা হয়',
@@ -58,13 +58,13 @@ export default {
 
    AddArticle: {
       Warnings: {
-         submitterRegistered: date => `${formatDate(date, 'L')} - এর পরে নিবন্ধিত ব্যবহারকারীরাই শুধুমাত্র এই এডিটাথনে অংশগ্রহণ করতে পারবেন`,
+         submitterRegistered: date => `${formatDate(date, 'L')} এর পরে নিবন্ধিত ব্যবহারকারীরাই শুধুমাত্র এই এডিটাথনে অংশগ্রহণ করতে পারবেন`,
          namespace: isIn => `প্রধান ${isIn ? 'নামস্থানে রয়েছে' : 'নামস্থান নয়'}`,
          author: 'তৈরি করেছেন: ',
          articleCreated: date => `নিবন্ধটি ${formatDate(date, 'L LT')} তারিখে তৈরি করা হয়েছে`,
-         chars: n => `${formatNumber(n)} চিহ্ন')}`,
+         chars: n => `${formatNumber(n)}টি চিহ্ন')}`,
          bytes: n => `${formatNumber(n)} বাইট`,
-         words: n => `${formatNumber(n)} শব্দ`,
+         words: n => `${formatNumber(n)}টি শব্দ`,
       },
 
       unauthorized: 'আপনি অনুমোদিত নন',
@@ -93,9 +93,9 @@ export default {
 
    Jury: {
       Warnings: {
-         chars: n => `${formatNumber(n)} চিহ্ন')}`,
+         chars: n => `${formatNumber(n)}টি চিহ্ন')}`,
          bytes: n => `${formatNumber(n)} বাইট`,
-         words: n => `${formatNumber(n)} শব্দ`,
+         words: n => `${formatNumber(n)}টি শব্দ`,
          author: 'তৈরি করেছেন',
          createdOn: 'তৈরি করা হয়',
          createdDate: date => formatDate(date, 'L LT'),
@@ -115,7 +115,7 @@ export default {
 
          Comment: {
             save: 'সংরক্ষণ করুন',
-            cancel: 'বাতিল করুন',
+            cancel: 'পরিত্যাগ করুন',
          },
       },
    },
