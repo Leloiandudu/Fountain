@@ -46,7 +46,7 @@ export default {
    AddArticle: {
       Warnings: {
          submitterRegistered: date => `Лише користувачі, що зареєструвалися після ${formatDate(date, 'L')}, можуть брати участь у цьому вікімарафоні`,
-         namespace: isIn => `${isIn ? 'В' : 'Не в'} в основному просторі`,
+         namespace: isIn => `${isIn ? 'В' : 'Не в'} основному просторі`,
          author: 'Створено: ',
          articleCreated: date => `Статтю створено ${formatDate(date, 'L LT')}`,
          chars: n => `${formatNumber(n)} ${plural(n, 'символ', 'символи', 'символів')}`,
