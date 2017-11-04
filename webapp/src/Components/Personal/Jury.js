@@ -11,7 +11,7 @@ const Jury = ({ translation: { translate, tr } }) => <Remote getData={Api.getJur
       <h2>{tr('title')}</h2>
       <div className='list'>
          {data.map(ed =>
-            <Link className='row' key={ed.code} to={`jury/${ed.code}`}>
+            <Link className='row' key={ed.code} to={`/jury/${ed.code}`}>
                <div className='details'>
                   <div className='name' title={ed.name}>{ed.name}</div>
                   <div className='finish' title={translate('formatDate', ed.finish, 'LL LT')}>
