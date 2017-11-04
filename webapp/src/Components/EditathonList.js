@@ -69,26 +69,28 @@ class EditathonFilter extends React.PureComponent {
    }
 
    render() {
+      const { translation: { tr } } = this.props;
       return <div className='EditathonFilter'>
-         {this.bind('text', <input type='text' placeholder='Search...' />)}
+         {this.bind('text', <input type='text' placeholder={tr('search')} />)}
          {this.bind('type', <DropDown 
-            placeholder='type'
             items={[{
-               name: '(All)',
+               name: tr('all'),
                value: null,
             }, ...Object.keys(ProjectTypes).map(x => ({
                name: x,
                value: ProjectTypes[x],
             })) ]}
-            getValue={x => x.value} renderItem={x => x.name} renderButton={this.renderButton.bind(this, 'project...')} />)}
+            getValue={x => x.value} renderItem={x => x.name} renderButton={this.renderButton.bind(this, tr('project'))} />)}
          {this.bind('lang', <DropDown
             showInput={true} filter={true}
             matchItem={(item, value) => this.matchItem(item, value)}
-            placeholder='language' items={this.state.matrix}
+            placeholder={tr('language')} items={this.state.matrix}
             renderItem={x => `${x.code}: ${x.name}`} getValue={x => x.code} />, lg => this.onLangChanged(lg))}
       </div>;
    }
 }
+
+EditathonFilter = withTranslation(EditathonFilter, 'EditathonFilter');
 
 const EditathonList = React.createClass({
    getInitialState() {

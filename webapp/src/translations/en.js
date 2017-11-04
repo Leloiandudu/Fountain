@@ -26,6 +26,13 @@ export default {
       create: 'Create new',
    },
 
+   EditathonFilter: {
+      search: 'search...',
+      all: '(All)',
+      project: 'project...',
+      language: 'language...',
+   },
+
    ArticlesList: {
       editathonWillStartIn: date => `The editathon will start ${formatDateIn(date)}`,
       editathonIsOver: 'The editathon has finished',

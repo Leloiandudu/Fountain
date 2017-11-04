@@ -33,6 +33,14 @@ export default {
 
    EditathonList: {
       title: 'Марафоны',
+      create: 'Создать',
+   },
+   
+   EditathonFilter: {
+      search: 'поиск...',
+      all: '(все)',
+      project: 'проект...',
+      language: 'язык...',
    },
 
    ArticlesList: {
