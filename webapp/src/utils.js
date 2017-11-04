@@ -24,3 +24,8 @@ export function* matchAll(regex, input) {
 export function escapeRegExp(regex) {
    return regex.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+export function checkTokenMatch(token, text) {
+   const regexes = token.split(/\s+/).filter(t => t).map(t => new RegExp('([\\s,\\-]|^)' + escapeRegExp(t), 'i'));
+   return regexes.every(r => r.test(text));
+}

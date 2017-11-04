@@ -7,7 +7,7 @@ import DropDown from './DropDown';
 import EditathonCalendar from './EditathonCalendar';
 import WikiButton from './WikiButton';
 import { createBinder, setDefault, createSetter } from './utils';
-import { getNavitagorLang } from './../utils';
+import { getNavitagorLang, checkTokenMatch } from './../utils';
 import Api from './../Api';
 import { getSiteMatrix } from './../MwApi';
 import { withTranslation } from '../translate';
@@ -86,7 +86,7 @@ class EditathonFilter extends React.PureComponent {
       if (lang === 'null') {
          return null;
       }
-      
+
       return lang || getNavitagorLang();
    }
 
@@ -144,7 +144,7 @@ const EditathonList = React.createClass({
       const { filter = {} } = this.state;
       return (filter.type ? filter.type === type : true)
           && (filter.lang ? filter.lang === lang : true)
-          && (filter.text ? e.name.startsWith(filter.text) : true);
+          && (filter.text ? checkTokenMatch(filter.text, e.name) : true);
    },
    render() {
       const { translation: { tr } } = this.props;
