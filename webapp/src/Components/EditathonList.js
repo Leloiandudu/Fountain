@@ -6,7 +6,7 @@ import RequiresLogin from './RequiresLogin';
 import DropDown from './DropDown';
 import EditathonCalendar from './EditathonCalendar';
 import WikiButton from './WikiButton';
-import { createBinder, setDefault } from './utils';
+import { createBinder, setDefault, createSetter } from './utils';
 import { getNavitagorLang } from './../utils';
 import Api from './../Api';
 import { getSiteMatrix } from './../MwApi';
@@ -30,6 +30,7 @@ class EditathonFilter extends React.PureComponent {
          matrix: [],
       };
       this.bind = createBinder();
+      this.setLang = createSetter().bind(this, 'lang');
    }
 
    async componentWillMount() {
@@ -54,18 +55,44 @@ class EditathonFilter extends React.PureComponent {
       }
    }
 
+   renderLangButton(placeholder) {
+      const { lang } = this.props.value;
+      const name = this.state.matrix.filter(m => m.code === lang).map(m => m.name)[0];
+      return this.renderButton(placeholder, lang, this.renderLang(lang, name));
+   }
+
+   renderLang(code, name) {
+      if (name === undefined) {
+         return code;
+      } else if (code === null) {
+         return name;
+      } else {
+         return `${code}: ${name}`;
+      }
+   }
+
    matchItem(item, value) {
+      if (value === null) {
+         return item.code === null;
+      }
+
       value = value.toLowerCase();
-      return item.code.toLowerCase().startsWith(value) ||
+      return (item.code || '').startsWith(value) ||
              item.name.toLowerCase().startsWith(value);
    }
 
    getDefaultLang() {
-      return localStorage.getItem('fountainFilterLang') || getNavitagorLang();
+      const lang = localStorage.getItem('fountainFilterLang');
+      if (lang === 'null') {
+         return null;
+      }
+      
+      return lang || getNavitagorLang();
    }
 
-   onLangChanged(lg) {
-      localStorage.setItem('fountainFilterLang', lg);
+   onLangChanged(lang) {
+      this.setLang(lang);
+      localStorage.setItem('fountainFilterLang', lang);
    }
 
    render() {
@@ -79,13 +106,19 @@ class EditathonFilter extends React.PureComponent {
             }, ...Object.keys(ProjectTypes).map(x => ({
                name: x,
                value: ProjectTypes[x],
-            })) ]}
-            getValue={x => x.value} renderItem={x => x.name} renderButton={this.renderButton.bind(this, tr('project'))} />)}
-         {this.bind('lang', <DropDown
+            }))]}
+            getValue={x => x.value} renderItem={x => x.name}
+            renderButton={this.renderButton.bind(this, tr('project'))} />)}
+         <DropDown
             showInput={true} filter={true}
             matchItem={(item, value) => this.matchItem(item, value)}
-            placeholder={tr('language')} items={this.state.matrix}
-            renderItem={x => `${x.code}: ${x.name}`} getValue={x => x.code} />, lg => this.onLangChanged(lg))}
+            items={[{
+               code: null,
+               name: tr('all'),
+            }, ...this.state.matrix]} getValue={x => x.code}
+            renderButton={() => this.renderLangButton(tr('language'))}
+            renderItem={x => this.renderLang(x.code, x.name)}
+            onChange={lg => this.onLangChanged(lg)} />
       </div>;
    }
 }
@@ -122,7 +155,7 @@ const EditathonList = React.createClass({
          <div className='EditathonList mainContentPane'>
             <h1>{tr('title')}</h1>
             <EditathonFilter value={filter} onChange={filter => this.setState({ filter })} />
-            <EditathonCalendar editathons={editathons} />
+            {filter.lang && <EditathonCalendar editathons={editathons} />}
             {false && <RequiresLogin className='create' redirectTo='/editathons/new/config'>
                <WikiButton type='progressive'>
                   <Link to='/editathons/new/config' onClick={this.onCreate}>
