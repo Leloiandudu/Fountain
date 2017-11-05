@@ -35,7 +35,9 @@ const Editathons = ({ translation: { translate, tr } }) => <Remote getData={Api.
                      <span className='name'>{r.name}</span>
                      <span className='total'>{translate('formatNumber', r.total, { places: 2 })}</span>
                   </div>)}
-                  {!ed.hasRows && <span className='no-marks'>{tr('noMarks')}</span>}
+                  {!ed.hasRows && <span className='no-marks'>
+                     {ed.hiddenMarks ? tr('hiddenMarks') : tr('noMarks')}
+                  </span>}
                </Link>
                {!ed.finished && <WikiButton>
                   <Link to={`/editathons/${ed.code}/add`}>

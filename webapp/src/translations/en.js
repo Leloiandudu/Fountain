@@ -221,6 +221,7 @@ export default {
          hasEnded: date => `has ended ${formatDateIn(date)}`,
          willEndIn: date => `will end in ${formatDateIn(date)}`,
          noMarks: 'you don\'t have marks yet',
+         hiddenMarks: 'marks are hidden',
       },
 
       Jury: {

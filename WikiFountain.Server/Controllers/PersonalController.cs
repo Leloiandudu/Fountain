@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
@@ -38,11 +39,12 @@ namespace WikiFountain.Server.Controllers
                 ed.Name, ed.Code,
                 ed.Description, ed.Wiki,
                 ed.Start, ed.Finish,
-                Rows = GetRows(ed, user) ?? new object[0],
+                HiddenMarks = ed.Flags.HasFlag(EditathonFlags.HiddenMarks),
+                Rows = GetRows(ed, user) ?? Enumerable.Empty<Editathon.ResultRow>(),
             }));
         }
 
-        private static object GetRows(Editathon ed, UserInfo user)
+        private static IEnumerable<Editathon.ResultRow> GetRows(Editathon ed, UserInfo user)
         {
             if (ed.Flags.HasFlag(EditathonFlags.HiddenMarks))
                 return null;
@@ -50,24 +52,7 @@ namespace WikiFountain.Server.Controllers
             if (!ed.Articles.Where(a => a.User == user.Username).Any(a => a.Marks.Any()))
                 return null;
 
-            var rows = ed.Articles.GroupBy(a => a.User).Select(u => new {
-                Name = u.Key,
-                Total = u.Sum(a => ed.CalculateMark(a)),
-                Rank = 1,
-            }).OrderByDescending(u => u.Total).ToArray();
-
-            for(var i = 1; i < rows.Length; i++)
-            {
-                var cur = rows[i];
-                var prev = rows[i - 1];
-                rows[i] = new
-                {
-                    cur.Name,
-                    cur.Total,
-                    Rank = prev.Rank + (prev.Total == cur.Total ? 0 : 1)
-                };
-            }
-
+            var rows = ed.GetResults();
             var rank = rows.Single(x => x.Name == user.Username).Rank;
             return rows.SkipWhile(u => u.Rank < rank - 1).TakeWhile(u => u.Rank <= rank + 1).ToArray();
         }

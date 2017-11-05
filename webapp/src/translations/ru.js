@@ -231,6 +231,7 @@ export default {
          hasEnded: date => `закончился ${formatDateIn(date)}`,
          willEndIn: date => `заканчивается ${formatDateIn(date)}`,
          noMarks: 'у вас пока нет оценок',
+         hiddenMarks: 'оценки скрыты',
       },
 
       Jury: {

@@ -72,6 +72,35 @@ namespace WikiFountain.Server.Models
 
             return Math.Round(result, 2);
         }
+
+        public IReadOnlyList<ResultRow> GetResults()
+        {
+            if (Flags.HasFlag(EditathonFlags.HiddenMarks))
+                return new ResultRow[0];
+
+            var rows = Articles.GroupBy(a => a.User).Select(u => new ResultRow
+            {
+                Name = u.Key,
+                Total = u.Sum(a => CalculateMark(a)),
+                Rank = 1,
+            }).OrderByDescending(u => u.Total).ToArray();
+
+            for (var i = 1; i < rows.Length; i++)
+            {
+                var cur = rows[i];
+                var prev = rows[i - 1];
+                rows[i].Rank = prev.Rank + (prev.Total == cur.Total ? 0 : 1);
+            }
+
+            return rows;
+        }
+
+        public struct ResultRow
+        {
+            public string Name { get; set; }
+            public decimal? Total { get; set; }
+            public int Rank { get; set; }
+        }
     }
 
     [Flags]
