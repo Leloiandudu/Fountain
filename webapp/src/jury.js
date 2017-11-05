@@ -100,6 +100,12 @@ export function calcTotalMark(jury, marks, marksConfig) {
    }
 }
 
+export function getTotalMark({ jury, marks: marksConfig, flags }, marks) {
+   const consensualVote = !!(flags & EditathonFlags.consensualVote);
+   const mark = calcTotalMark(jury, marks, marksConfig);
+   return mark && (consensualVote ? mark.consensual : mark.average);
+}
+
 export function isConflict(editathon, article) {
    const { jury, marks, flags } = editathon;
    if (flags & EditathonFlags.hiddenMarks) return false;

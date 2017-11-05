@@ -4,7 +4,7 @@ import moment from 'moment';
 import stable from 'stable';
 import sortBy from './../sortBy';
 import { EditathonFlags } from './../jury';
-import { findMarkOf, calcMark, calcTotalMark } from './../jury';
+import { findMarkOf, calcMark, getTotalMark } from './../jury';
 import { withTranslation } from './../translate';
 import Dashboard from './Dashboard';
 import DropDownButton from './DropDownButton'
@@ -13,11 +13,6 @@ import Link from './Link';
 import RequiresLogin from './RequiresLogin';
 import WikiLink from './WikiLink';
 import WikiButton from './WikiButton';
-
-function getTotalMark(jury, marks, marksConfig, consensualVote) {
-   const mark = calcTotalMark(jury, marks, marksConfig);
-   return mark && (consensualVote ? mark.consensual : mark.average);
-}
 
 function sort(items, by, asc) {
    if (by === null) {
@@ -67,15 +62,14 @@ const ArticlesList = React.createClass({
          });
       }
    },
-   getData(articles, { jury, marks: marksConfig, flags }) {
-      const consensualVote = !!(flags & EditathonFlags.consensualVote);
+   getData(articles, editathon) {
       let getTotal = (articles) => {
-         const marks = articles.map(article => getTotalMark(jury, article.marks, marksConfig, consensualVote)).filter(x => x !== null);
+         const marks = articles.map(article => getTotalMark(editathon, article.marks)).filter(x => x !== null);
          if (!marks.length) return null;
          return marks.reduce((s, m) => s + m, 0);
       }
 
-      if (flags & EditathonFlags.hiddenMarks)
+      if (editathon.flags & EditathonFlags.hiddenMarks)
          getTotal = () => null;
 
       return [...groupBy(articles, a => a.user)].map(([k, v]) => ({
@@ -171,8 +165,8 @@ const ArticlesList = React.createClass({
          </div>
       );
    },
-   renderArticles({ wiki, jury, marks: marksConfig, flags }, user) {
-      const consensualVote = !!(flags & EditathonFlags.consensualVote);
+   renderArticles(editathon, user) {
+      const { wiki, jury, marks: marksConfig } = editathon;
       return (
          <table className='articles'>
             <thead>
@@ -187,7 +181,7 @@ const ArticlesList = React.createClass({
                   <tr className='summary'>
                      <td className='article'><WikiLink to={a.name} wiki={wiki} /></td>
                      <td className='dateAdded'>{this.tr('dateAdded', moment(a.dateAdded).utc())}</td>
-                     {this.showMarks() && <td className='mark'>{this.formatMark(getTotalMark(jury, a.marks, marksConfig, consensualVote))}</td>}
+                     {this.showMarks() && <td className='mark'>{this.formatMark(getTotalMark(editathon, a.marks))}</td>}
                   </tr>,
                   this.showMarks() && <tr className='details'>
                      <td colSpan={3}>
