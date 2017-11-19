@@ -4,7 +4,7 @@ import { plural, numberFormatter, dateFormatter, gender } from '../translate';
 
 moment.updateLocale('ru', {
     monthsShort : [
-        'янв', 'фев', 'мар', 'апр', 'май', 'июн', 
+        'янв', 'фев', 'мар', 'апр', 'май', 'июн',
         'июл', 'авг', 'сен', 'окт', 'ноя', 'дек',
     ]
 });
@@ -35,7 +35,7 @@ export default {
       title: 'Марафоны',
       create: 'Создать',
    },
-   
+
    EditathonFilter: {
       search: 'поиск...',
       all: '(все)',
@@ -58,6 +58,7 @@ export default {
       score: 'Баллов',
       dateAdded: date => formatDate(date, 'D MMM LT'),
       manageArticles: 'Управление статьями',
+      award: 'Наградить',
    },
 
    ManageArticles: {
@@ -95,6 +96,14 @@ export default {
       articleTitle: 'Название статьи:',
       youAlreadyAdded: 'Вы уже добавили эту статью в марафон',
       someoneAlreadyAdded: 'Другой участник уже добавил эту статью в марафон',
+   },
+
+   EditathonAward: {
+      title: 'Награждение',
+      rank: r => `#${r}`,
+      noSignature: x => [ 'Подпись не найдена. Нажмите ', x, ', чтобы подписаться.' ],
+      award: 'Наградить',
+      cancel: 'Отмена',
    },
 
    SignInWarning: {

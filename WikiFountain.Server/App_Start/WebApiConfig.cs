@@ -19,7 +19,7 @@ namespace WikiFountain.Server
             config.Routes.MapHttpRoute(
                 name: "editathons",
                 routeTemplate: "api/editathons/{code}",
-                defaults: new { controller = "Editathons", code = RouteParameter.Optional }
+                defaults: new { controller = "Editathons", code = RouteParameter.Optional, action = "get" }
             );
 
             config.Routes.MapHttpRoute(
@@ -41,9 +41,8 @@ namespace WikiFountain.Server
             );
 
             config.Routes.MapHttpRoute(
-                name: "personal",
-                routeTemplate: "api/personal/{action}",
-                defaults: new { controller = "Personal" }
+                name: "api-default",
+                routeTemplate: "api/{controller}/{action}"
             );
 
             config.Formatters.JsonFormatter.MediaTypeMappings.Add(

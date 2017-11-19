@@ -48,6 +48,7 @@ export default {
       score: 'Points',
       dateAdded: date => formatDate(date, 'D MMM LT'),
       manageArticles: 'Manage Articles',
+      award: 'Award',
    },
 
    ManageArticles: {
@@ -85,6 +86,14 @@ export default {
       articleTitle: 'Article\'s title:',
       youAlreadyAdded: 'You have already added this article to the editathon',
       someoneAlreadyAdded: 'Another user has already added this article to the editathon',
+   },
+
+   EditathonAward: {
+      title: 'Awarding',
+      rank: r => `#${r}`,
+      noSignature: x => [ 'No signature found. Click ', x, ' to add.' ],
+      award: 'Award',
+      cancel: 'Cancel',
    },
 
    SignInWarning: {

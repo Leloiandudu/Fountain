@@ -69,38 +69,42 @@ function post(url, params) {
 const enc = encodeURIComponent;
 
 export default {
-   getEditathons() {
-      return get('editathons');
-   },
-   getEditathon(code) {
-      return get(`editathons/${enc(code)}`);
-   },
-   addArticle(code, title, user) {
-      return post(`editathons/${enc(code)}/article`, {
-         title, 
-         user,
-      });
-   },
-   removeArticles(code, ids) {
-      return post(`editathons/${enc(code)}/removeArticles`, ids);
-   },
-   setMark(code, { title, marks, comment }) {
-      return post(`editathons/${enc(code)}/mark`, {
+   getEditathons: () =>
+      get('editathons'),
+
+   getEditathon: (code) =>
+      get(`editathons/${enc(code)}`),
+
+   addArticle: (code, title, user) =>
+      post(`editathons/${enc(code)}/article`, { title, user }),
+
+   removeArticles: (code, ids) =>
+      post(`editathons/${enc(code)}/removeArticles`, ids),
+
+   setMark: (code, { title, marks, comment }) =>
+      post(`editathons/${enc(code)}/mark`, {
          title,
          comment: comment || '',
          marks: JSON.stringify(marks),
-      });
-   },
-   createEditathon(editathon) {
-      return post(`editathons/new`, editathon);
-   },
-   getMyCurrentEditathons() {
-      return get('personal/current-editathons');
-   },
-   getJuryEditathons() {
-      return get('personal/jury-editathons');
-   },
+      }),
+
+   createEditathon: (editathon) =>
+      post(`editathons/new`, editathon),
+
+   getResults: (code, limit) =>
+      get(`editathons/${enc(code)}/results`, { limit }),
+
+   getMyCurrentEditathons: () =>
+      get('personal/current-editathons'),
+
+   getJuryEditathons: () =>
+      get('personal/jury-editathons'),
+
+   parse: (wiki, text, title = null) =>
+      post('wiki/parse', { wiki, text, title }),
+
+   award: (code, awards) =>
+      post(`editathons/${enc(code)}/award`, awards),
 };
 
-export function UnauthorizedHttpError() {
-}
+export function UnauthorizedHttpError() { }

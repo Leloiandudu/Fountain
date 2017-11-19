@@ -36,7 +36,7 @@ namespace WikiFountain.Server.Core
             foreach (var wiki in Wikis)
             {
                 if (wiki.Item1(code))
-                    return new MediaWiki("https://" + wiki.Item2(code) + "/w/api.php", identity);
+                    return new MediaWiki(code, "https://" + wiki.Item2(code) + "/w/api.php", identity);
             }
             throw new Exception(string.Format("Unknown wiki '{0}'.", code));
         }

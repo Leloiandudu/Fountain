@@ -162,6 +162,9 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\PersonalController.cs" />
+    <Compile Include="Core\EnumerableExtensions.cs" />
+    <Compile Include="Core\UserTalk.cs" />
+    <Compile Include="Controllers\WikiController.cs" />
     <Compile Include="Core\ApiControllerBase.cs" />
     <Compile Include="Core\ApiControllerWithDb.cs" />
     <Compile Include="App_Start\AuditInterceptor.cs" />

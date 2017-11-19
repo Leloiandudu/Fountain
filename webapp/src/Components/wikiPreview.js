@@ -1,6 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 import { getArticleUrl, getWikiHost } from '../MwApi'
+import Api from '../Api';
+import throttle from '../throttle';
 import { withTranslation } from '../translate';
 
 const BrowserSupportsSrcDoc = document && !!("srcdoc" in document.createElement("iframe"));
@@ -149,3 +151,58 @@ function WikiHtml({ html, wiki, title, className, translation, padding = true, a
 
 WikiHtml = withTranslation(WikiHtml);
 export { WikiHtml };
+
+export class WikiText extends React.Component {
+   constructor(props) {
+      super(props);
+      this.preview = throttle(this.preview.bind(this), 1000);
+      this.state = {
+         html: '',
+         loading: false,
+      };
+      this._seq = 0;
+   }
+
+   componentWillReceiveProps({ text }) {
+      if (text !== this.props.text) {
+         this.update();
+      }
+   }
+
+   componentWillMount() {
+      this.update();
+   }
+
+   componentWillUnmount() {
+      this.preview.cancel();
+   }
+
+   update() {
+      this.setState({ loading: true })
+      this.preview();
+   }
+
+   async preview() {
+      const { wiki, text, title } = this.props;
+      if (!wiki || !text) {
+         this.setState({ html: '', loading: false });
+         return;
+      }
+
+      const id = ++this._seq;
+      const html = await Api.parse(wiki, text, title);
+
+      if (id === this._seq) {
+         this.setState({ html, loading: false });
+      }
+   }
+
+   render() {
+      const { className, text, ...props } = this.props;
+      const { loading, html } = this.state;
+
+      return <div className={classNames('WikiText', loading && 'loading', className)}>
+         {html && <WikiHtml html={html} {...props} />}
+      </div>
+   }
+}

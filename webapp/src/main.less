@@ -22,10 +22,16 @@ h2 {
    margin: 0;
 }
 
+h3 {
+   font-size: normal;
+   font-weight: 600;
+   margin: .5em 0 0;
+}
+
 button {
    background: none;
    border: none;
-   
+
    text-align: inherit;
    font-family: inherit;
    font-size: inherit;
@@ -33,7 +39,7 @@ button {
    padding: 0;
    margin: 0;
    font-weight: inherit;
-  
+
    &::-moz-focus-inner {
       border: 0;
    }
@@ -74,7 +80,7 @@ button {
    transition: background .1s ease-in-out, color .1s ease-in-out, box-shadow .1s ease-in-out;
 
    &:hover, &:focus {
-      box-shadow: 0 1px rgba(0, 0, 0, .1), 
+      box-shadow: 0 1px rgba(0, 0, 0, .1),
            inset 0 -2px rgba(0, 0, 0, .2);
       outline: 0;
    }
@@ -150,6 +156,7 @@ input[type=checkbox] {
 @import 'Components/Dashboard.less';
 @import 'Components/DatePicker.less';
 @import 'Components/DropDown.less';
+@import 'Components/EditathonAward.less';
 @import 'Components/EditathonCalendar.less';
 @import 'Components/EditathonConfig/EditathonConfig.less';
 @import 'Components/EditathonList.less';

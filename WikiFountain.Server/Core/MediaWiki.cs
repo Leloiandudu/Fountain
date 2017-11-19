@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -13,11 +15,14 @@ namespace WikiFountain.Server.Core
         private readonly Identity _identity;
         private string _csrfToken;
 
-        public MediaWiki(string url, Identity identity)
+        public MediaWiki(string code, string url, Identity identity)
         {
+            Code = code;
             _url = url;
             _identity = identity;
         }
+
+        public string Code { get; private set; }
 
         public async Task<string> GetPage(string title)
         {
@@ -58,6 +63,23 @@ namespace WikiFountain.Server.Core
             };
         }
 
+        public async Task<string> Parse(string text, string title = null)
+        {
+            var args = new JObject
+            {
+                { "action", "parse" },
+                { "text", text },
+                { "contentmodel", "wikitext" },
+                { "prop", "text" },
+                { "pst", true },
+            };
+
+            if (title != null)
+                args.Add("title", title);
+
+            return (await Exec(args))["parse"].Value<string>("text");
+        }
+
         private async Task<string> GetCsrfToken()
         {
             if (_csrfToken == null)
@@ -71,7 +93,7 @@ namespace WikiFountain.Server.Core
             return _csrfToken;
         }
 
-        public async Task EditPage(string title, string text, string summary)
+        public async Task EditPage(string title, string text, string summary, bool? append = null)
         {
             var token = await GetCsrfToken();
 
@@ -79,9 +101,11 @@ namespace WikiFountain.Server.Core
             {
                 { "action", "edit" },
                 { "title", title },
-                { "text", text },
+                { !append.HasValue ? "text" : append.Value ? "appendtext" : "prependtext", text },
                 { "summary", summary },
                 { "token", token },
+                { "redirect", true },
+                { "watchlist", "nochange" },
             });
 
             var code = result["edit"].Value<string>("result");
@@ -89,6 +113,47 @@ namespace WikiFountain.Server.Core
                 throw new MediaWikiException("Invalid response: " + result);
             if (code != "Success")
                 throw new MediaWikiException(code);
+        }
+
+        public async Task<IDictionary<string, string[]>> GetCategories(IEnumerable<string> titles, params string[] categories)
+        {
+            titles = titles.ToArray();
+
+            var args = new JObject
+            {
+                { "action", "query" },
+                { "prop", "categories" },
+                { "titles", Join(titles) },
+                { "redirects", true },
+            };
+
+            if (categories.Length > 0)
+                args.Add("clcategories", Join(categories.Select(c => "Category:" + c)));
+
+            var result = await Exec(args);
+            var map = GetOriginalTitleMapping(result, titles);
+
+            return result["query"].Value<JArray>("pages").ToDictionary(
+                p => map[p.Value<string>("title")], 
+                p => p.Value<JArray>("categories")
+                    .EmptyIfNull()
+                    .Select(c => c.Value<string>("title")).ToArray());
+        }
+
+        private static IDictionary<string, string> GetOriginalTitleMapping(JObject result, IEnumerable<string> titles)
+        {
+            var dic = titles.ToDictionary(x => x);
+
+            foreach (var prop in new[] { "normalized", "redirects" })
+                foreach (var item in result["query"].Value<JArray>(prop).EmptyIfNull())
+                    dic.ReplaceKey(item.Value<string>("from"), item.Value<string>("to"));
+
+            return dic;
+        }
+
+        private static string Join(IEnumerable<string> titles)
+        {
+            return string.Join("|", titles);
         }
 
         public async Task<JObject> Exec(JObject args)

@@ -208,7 +208,7 @@ namespace WikiFountain.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<HttpResponseMessage> RemoveArticles(string code, [FromBody] long[] ids)
+        public HttpResponseMessage RemoveArticles(string code, [FromBody] long[] ids)
         {
             _auditContext.Operation = OperationType.RemoveArticle;
 
@@ -225,7 +225,6 @@ namespace WikiFountain.Server.Controllers
 
             if (!e.Jury.Contains(user.Username))
                 return Forbidden();
-
 
             foreach (var id in ids)
             {
@@ -373,6 +372,54 @@ namespace WikiFountain.Server.Controllers
                 public string[] Jury { get; set; }
                 public bool SendInvites { get; set; }
             }
+        }
+
+        [HttpGet]
+        public HttpResponseMessage Results(string code, int limit)
+        {
+            var user = _identity.GetUserInfo();
+            if (user == null)
+                return Unauthorized();
+
+            var e = Session.Query<Editathon>()
+                .Fetch(_ => _.Jury)
+                .SingleOrDefault(i => i.Code == code);
+
+            if (e == null)
+                return NotFound();
+
+            if (!e.Jury.Contains(user.Username))
+                return Forbidden();
+
+            return Ok(e.GetResults().Where(r => r.Rank <= limit));
+        }
+
+        [HttpPost]
+        public async Task<HttpResponseMessage> Award(string code, [FromBody] IDictionary<string, string> awards)
+        {
+            if (awards == null || awards.Count == 0)
+                return Request.CreateResponse(System.Net.HttpStatusCode.BadRequest);
+
+            var user = _identity.GetUserInfo();
+            if (user == null)
+                return Unauthorized();
+
+            var e = Session.Query<Editathon>()
+                .Fetch(_ => _.Jury)
+                .SingleOrDefault(i => i.Code == code);
+
+            if (e == null)
+                return NotFound();
+
+            if (!e.Jury.Contains(user.Username))
+                return Forbidden();
+
+            var wiki = MediaWikis.Create(e.Wiki, _identity);
+
+            foreach (var userTalk in await UserTalk.GetAsync(wiki, awards.Select(r => r.Key)))
+                await userTalk.WriteAsync(awards[userTalk.UserName], "Automated awarding");
+
+            return Ok();
         }
     }
 }

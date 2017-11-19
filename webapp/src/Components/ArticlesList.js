@@ -3,8 +3,8 @@ import classNames from 'classnames';
 import moment from 'moment';
 import stable from 'stable';
 import sortBy from './../sortBy';
-import { EditathonFlags } from './../jury';
-import { findMarkOf, calcMark, getTotalMark } from './../jury';
+import { groupBy } from './../utils'
+import { EditathonFlags, findMarkOf, calcMark, getTotalMark } from './../jury';
 import { withTranslation } from './../translate';
 import Dashboard from './Dashboard';
 import DropDownButton from './DropDownButton'
@@ -27,20 +27,6 @@ function sort(items, by, asc) {
    return stable(items, sort);
 }
 
-function groupBy(items, fnKey, fnValue = x => x) {
-   const groups = new Map();
-   for (const item of items) {
-      const key = fnKey(item);
-      let group = groups.get(key);
-      if (group === undefined) {
-         group = [];
-         groups.set(key, group);
-      }
-      group.push(fnValue(item));
-   }
-   return groups;
-}
-
 const ArticlesList = React.createClass({
    propTypes: {
       editathon: React.PropTypes.object,
@@ -57,7 +43,7 @@ const ArticlesList = React.createClass({
    },
    componentWillReceiveProps({ editathon }) {
       if (editathon && editathon.articles && editathon.jury) {
-         this.setState({ 
+         this.setState({
             data: sort(this.getData(editathon.articles, editathon), this.state.sortBy, this.state.sortAsc),
          });
       }
@@ -98,19 +84,27 @@ const ArticlesList = React.createClass({
       }
 
       const isJury = Global.user && editathon.jury.filter(j => j === Global.user.name)[0];
-      const juryButton = isJury && <WikiButton type='progressive' disabled={editathon.articles.length === 0}>
+      const juryButton = def => isJury && <WikiButton type={def ? 'progressive' : ''} disabled={editathon.articles.length === 0}>
          <Link to={`/jury/${this.props.editathon.code}`}>{this.tr('juryTool')}</Link>
       </WikiButton>;
 
       if (now.isAfter(editathon.finish, 'day')) {
+         const showAward = isJury && this.showMarks() &&
+            editathon.articles.filter(a => getTotalMark(editathon, a.marks) === null).length === 0;
+
          return <div className='header'>
             <span>{this.tr('editathonIsOver')}</span>
-            {juryButton}
+            {juryButton(!showAward)}
+            {showAward && <WikiButton className='award' type='progressive'>
+               <Link to={`/editathons/${this.props.editathon.code}/award`}>
+                  {this.tr('award')}
+               </Link>
+            </WikiButton>}
          </div>;
       } else {
          return <div className='header'>
             <span>{this.tr('editathonWillEndIn', editathon.finish)}</span>
-            {juryButton}
+            {juryButton(true)}
             <RequiresLogin redirectTo={`/editathons/${this.props.editathon.code}/add`}>
                <WikiButton type={isJury ? '' : 'progressive'} className={classNames('addArticle', isJury && 'combine')}>
                   <Link to={`/editathons/${this.props.editathon.code}/add`}>
@@ -128,7 +122,7 @@ const ArticlesList = React.createClass({
       const { editathon } = this.props;
       if (!editathon || !editathon.jury || !editathon.start || !editathon.start.fromNow || !editathon.finish)
          return <Loader />;
-      
+
       const { data } = this.state;
 
       return (
@@ -137,7 +131,7 @@ const ArticlesList = React.createClass({
             <Dashboard editathon={editathon} />
 
             <div className='jury'>
-               {this.tr('jury') + ' '}{editathon.jury.slice().sort().map(j => 
+               {this.tr('jury') + ' '}{editathon.jury.slice().sort().map(j =>
                   <span key={j}>
                      <WikiLink to={'User_talk:' + j} wiki={editathon.wiki} />
                   </span>)}
@@ -154,8 +148,8 @@ const ArticlesList = React.createClass({
                <tbody>
                   <tr className='spacer' />
                </tbody>
-               {data.map(user => 
-                  <ExpandableRow key={user.name} user={user} wiki={editathon.wiki} 
+               {data.map(user =>
+                  <ExpandableRow key={user.name} user={user} wiki={editathon.wiki}
                                  formatMark={this.formatMark} formatNumber={this.formatNumber}
                                  showMarks={this.showMarks()}>
                      {this.renderArticles(editathon, user)}
@@ -212,8 +206,8 @@ const ArticlesList = React.createClass({
    renderSorter(by, title) {
       const { sortBy, sortAsc } = this.state;
 
-      return <button className={classNames({ 
-         sorter: true, 
+      return <button className={classNames({
+         sorter: true,
          asc: sortBy === by && sortAsc,
          desc: sortBy === by && !sortAsc,
       })} onClick={() => this.sortBy(by)}>{title}</button>

@@ -29,3 +29,17 @@ export function checkTokenMatch(token, text) {
    const regexes = token.split(/\s+/).filter(t => t).map(t => new RegExp('([\\s,\\-]|^)' + escapeRegExp(t), 'i'));
    return regexes.every(r => r.test(text));
 }
+
+export function groupBy(items, fnKey, fnValue = x => x) {
+   const groups = new Map();
+   for (const item of items) {
+      const key = fnKey(item);
+      let group = groups.get(key);
+      if (group === undefined) {
+         group = [];
+         groups.set(key, group);
+      }
+      group.push(fnValue(item));
+   }
+   return groups;
+}

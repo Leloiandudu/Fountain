@@ -8,6 +8,7 @@ import EditathonList from './Components/EditathonList';
 import EditathonPage from './Components/EditathonPage';
 import EditathonConfig from './Components/EditathonConfig/EditathonConfig';
 import ManageArticles from './Components/ManageArticles';
+import EditathonAward from './Components/EditathonAward';
 import { routes as personalRoutes } from './Components/Personal/Personal';
 import Jury from './Components/Jury/Jury';
 
@@ -25,6 +26,7 @@ export default (
                <IndexRoute component={ArticlesList} />
                <Route path='add' component={AddArticle} />
                <Route path='manage' component={ManageArticles} />
+               <Route path='award' component={EditathonAward} />
             </Route>
             <Route path=':id/config' component={EditathonConfig} />
          </Route>

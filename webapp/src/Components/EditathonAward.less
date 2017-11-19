@@ -1,0 +1,79 @@
+.EditathonAward {
+   display: flex;
+   flex-flow: column;
+
+   .award {
+      display: flex;
+      flex-flow: column;
+
+      .user {
+         display: flex;
+         flex-flow: row;
+
+         &::before {
+            content: '';
+            display: inline-block;
+            height: 16px;
+            width: 16px;
+            background-image: url('user.png');
+            align-self: center;
+         }
+      }
+
+      textarea {
+         resize: vertical;
+         font-family: monospace;
+         font-size: 13px;
+      }
+
+      .preview {
+         margin: .5em 0;
+
+         .WikiHtml {
+            border-top: dotted 1px #ccc;
+            border-bottom: dotted 1px #ccc;
+         }
+      }
+
+      .warning {
+         font-size: small;
+         margin-top: .25em;
+
+         display: flex;
+         flex-flow: row;
+
+         &::before {
+            content: '';
+            display: inline-block;
+            height: 16px;
+            width: 16px;
+            background-image: url('warning.png');
+            align-self: center;
+            margin-right: .25em;
+         }
+      }
+
+      .sig {
+         display: inline-block;
+         white-space: pre;
+         font-family: monospace;
+         cursor: pointer;
+         border: solid 1px #ccc;
+         padding: 0 2px;
+         border-radius: 3px;
+         background-color: #eee;
+      }
+   }
+
+   .buttons {
+      display: flex;
+      flex-flow: row wrap;
+      margin-left: auto;
+      justify-content: flex-end;
+
+      margin: -.25em;
+      > * {
+         margin: .25em;
+      }
+   }
+}

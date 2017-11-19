@@ -1,4 +1,5 @@
 import React from 'react';
 import classNames from 'classnames';
 
-export default ({ className, ...props }) => <div className={classNames([ 'Loader', className ])} {...props} />
+export default ({ className, loading = true, children, ...props }) => 
+   <div className={classNames([ loading && 'Loader', className ])} children={loading ? null : children} {...props} />
