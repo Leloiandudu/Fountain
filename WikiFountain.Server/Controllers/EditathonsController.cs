@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json.Linq;
+using NHibernate;
 using NHibernate.Linq;
 using WikiFountain.Server.Core;
 using WikiFountain.Server.Models;
@@ -12,20 +13,22 @@ using WikiFountain.Server.Models.Rules;
 
 namespace WikiFountain.Server.Controllers
 {
-    public class EditathonsController : ApiControllerWithDb
+    public class EditathonsController : ApiControllerBase
     {
         private readonly Identity _identity;
         private readonly AuditContext _auditContext;
+        private readonly ISession _session;
 
-        public EditathonsController(Identity identity, AuditContext auditContext)
+        public EditathonsController(Identity identity, AuditContext auditContext, ISession session)
         {
             _identity = identity;
             _auditContext = auditContext;
+            _session = session;
         }
 
         public HttpResponseMessage Get()
         {
-            return Ok(Session.Query<Editathon>().OrderByDescending(e => e.Finish).Select(e => new
+            return Ok(_session.Query<Editathon>().OrderByDescending(e => e.Finish).Select(e => new
             {
                 e.Code,
                 e.Name,
@@ -38,7 +41,7 @@ namespace WikiFountain.Server.Controllers
 
         public HttpResponseMessage Get(string code)
         {
-            var e = Session.Query<Editathon>()
+            var e = _session.Query<Editathon>()
                 .FetchMany(_ => _.Articles).ThenFetch(a => a.Marks)
                 .Fetch(_ => _.Jury)
                 .Fetch(_ => _.Rules)
@@ -100,7 +103,7 @@ namespace WikiFountain.Server.Controllers
             if (user == null)
                 return Unauthorized();
 
-            var e = Session.Query<Editathon>()
+            var e = _session.Query<Editathon>()
                 .Fetch(_ => _.Rules)
                 .Fetch(_ => _.Articles)
                 .SingleOrDefault(i => i.Code == code);
@@ -216,7 +219,7 @@ namespace WikiFountain.Server.Controllers
             if (user == null)
                 return Unauthorized();
 
-            var e = Session.Query<Editathon>()
+            var e = _session.Query<Editathon>()
                 .Fetch(_ => _.Articles)
                 .SingleOrDefault(i => i.Code == code);
 
@@ -253,7 +256,7 @@ namespace WikiFountain.Server.Controllers
             if (user == null)
                 return Unauthorized();
 
-            var e = Session.Query<Editathon>()
+            var e = _session.Query<Editathon>()
                 .FetchMany(_ => _.Articles).ThenFetch(a => a.Marks)
                 .Fetch(_ => _.Jury)
                 .SingleOrDefault(i => i.Code == code);
@@ -296,7 +299,7 @@ namespace WikiFountain.Server.Controllers
             if (user == null)
                 return Unauthorized();
 
-            var exist = Session.Query<Editathon>()
+            var exist = _session.Query<Editathon>()
                 .Any(i => i.Code == e.General.Code || i.Name == e.General.Title);
 
             if (exist)
@@ -326,7 +329,7 @@ namespace WikiFountain.Server.Controllers
                 });
             }
 
-            Session.Save(editathon);
+            _session.Save(editathon);
 
             if (e.Jury.SendInvites)
             {
@@ -381,7 +384,7 @@ namespace WikiFountain.Server.Controllers
             if (user == null)
                 return Unauthorized();
 
-            var e = Session.Query<Editathon>()
+            var e = _session.Query<Editathon>()
                 .Fetch(_ => _.Jury)
                 .SingleOrDefault(i => i.Code == code);
 
@@ -404,7 +407,7 @@ namespace WikiFountain.Server.Controllers
             if (user == null)
                 return Unauthorized();
 
-            var e = Session.Query<Editathon>()
+            var e = _session.Query<Editathon>()
                 .Fetch(_ => _.Jury)
                 .SingleOrDefault(i => i.Code == code);
 

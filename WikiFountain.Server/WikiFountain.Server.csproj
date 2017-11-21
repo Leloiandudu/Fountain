@@ -166,7 +166,6 @@
     <Compile Include="Core\UserTalk.cs" />
     <Compile Include="Controllers\WikiController.cs" />
     <Compile Include="Core\ApiControllerBase.cs" />
-    <Compile Include="Core\ApiControllerWithDb.cs" />
     <Compile Include="App_Start\AuditInterceptor.cs" />
     <Compile Include="Core\AuditContext.cs" />
     <Compile Include="Core\AuthExpiredException.cs" />

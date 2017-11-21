@@ -3,19 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
+using NHibernate;
 using NHibernate.Linq;
 using WikiFountain.Server.Core;
 using WikiFountain.Server.Models;
 
 namespace WikiFountain.Server.Controllers
 {
-    public class PersonalController : ApiControllerWithDb
+    public class PersonalController : ApiControllerBase
     {
         private readonly Identity _identity;
+        private readonly ISession _session;
 
-        public PersonalController(Identity identity)
+        public PersonalController(Identity identity, ISession session)
         {
             _identity = identity;
+            _session = session;
         }
 
         [ActionName("current-editathons")]
@@ -26,7 +29,7 @@ namespace WikiFountain.Server.Controllers
                 return Unauthorized();
 
             var list = (
-                from ed in Session.Query<Editathon>()
+                from ed in _session.Query<Editathon>()
                 where ed.Articles.Any(a => a.User == user.Username)
                 select ed
             ).FetchMany(_ => _.Articles)
@@ -67,7 +70,7 @@ namespace WikiFountain.Server.Controllers
             //var now = DateTime.UtcNow;
 
             return Ok((
-                from ed in Session.Query<Editathon>()
+                from ed in _session.Query<Editathon>()
                 //where ed.Start <= now && now < ed.Finish
                 where ed.Jury.Contains(user.Username)
                 orderby ed.Finish descending
