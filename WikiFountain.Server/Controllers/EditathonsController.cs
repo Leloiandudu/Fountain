@@ -19,6 +19,22 @@ namespace WikiFountain.Server.Controllers
         private readonly AuditContext _auditContext;
         private readonly ISession _session;
 
+        private Editathon GetEditathon(string code, Func<IQueryable<Editathon>, IQueryable<Editathon>> with)
+        {
+            var editathon = with(_session.Query<Editathon>()).SingleOrDefault(e => e.Code == code);
+            if (editathon == null)
+                throw new HttpResponseException(System.Net.HttpStatusCode.NotFound);
+            return editathon;
+        }
+
+        private UserInfo EnsureJuryMember(Editathon editathon)
+        {
+            var user = _identity.GetUserInfo();
+            if (user == null || !editathon.Jury.Contains(user.Username))
+                throw new HttpResponseException(System.Net.HttpStatusCode.Forbidden);
+            return user;
+        }
+
         public EditathonsController(Identity identity, AuditContext auditContext, ISession session)
         {
             _identity = identity;
@@ -41,14 +57,10 @@ namespace WikiFountain.Server.Controllers
 
         public HttpResponseMessage Get(string code)
         {
-            var e = _session.Query<Editathon>()
+            var e = GetEditathon(code, q => q
                 .FetchMany(_ => _.Articles).ThenFetch(a => a.Marks)
                 .Fetch(_ => _.Jury)
-                .Fetch(_ => _.Rules)
-                .SingleOrDefault(i => i.Code == code);
-
-            if (e == null)
-                return NotFound();
+                .Fetch(_ => _.Rules));
 
             var user = _identity.GetUserInfo();
 
@@ -103,13 +115,9 @@ namespace WikiFountain.Server.Controllers
             if (user == null)
                 return Unauthorized();
 
-            var e = _session.Query<Editathon>()
+            var e = GetEditathon(code, q => q
                 .Fetch(_ => _.Rules)
-                .Fetch(_ => _.Articles)
-                .SingleOrDefault(i => i.Code == code);
-
-            if (e == null)
-                return NotFound();
+                .Fetch(_ => _.Articles));
 
             var now = DateTime.UtcNow;
             if (now < e.Start || now.Date > e.Finish)
@@ -215,19 +223,10 @@ namespace WikiFountain.Server.Controllers
         {
             _auditContext.Operation = OperationType.RemoveArticle;
 
-            var user = _identity.GetUserInfo();
-            if (user == null)
-                return Unauthorized();
-
-            var e = _session.Query<Editathon>()
+            var e = GetEditathon(code, q => q
                 .Fetch(_ => _.Articles)
-                .SingleOrDefault(i => i.Code == code);
-
-            if (e == null)
-                return NotFound();
-
-            if (!e.Jury.Contains(user.Username))
-                return Forbidden();
+                .Fetch(_ => _.Jury));
+            EnsureJuryMember(e);
 
             foreach (var id in ids)
             {
@@ -252,20 +251,11 @@ namespace WikiFountain.Server.Controllers
         {
             _auditContext.Operation = OperationType.SetMark;
 
-            var user = _identity.GetUserInfo();
-            if (user == null)
-                return Unauthorized();
-
-            var e = _session.Query<Editathon>()
+            var e = GetEditathon(code, q => q
                 .FetchMany(_ => _.Articles).ThenFetch(a => a.Marks)
-                .Fetch(_ => _.Jury)
-                .SingleOrDefault(i => i.Code == code);
+                .Fetch(_ => _.Jury));
 
-            if (e == null)
-                return NotFound();
-
-            if (!e.Jury.Contains(user.Username))
-                return Forbidden();
+            var user = EnsureJuryMember(e);
 
             var article = e.Articles.SingleOrDefault(a => a.Name == body.Title);
             if (article == null)
@@ -380,19 +370,8 @@ namespace WikiFountain.Server.Controllers
         [HttpGet]
         public HttpResponseMessage Results(string code, int limit)
         {
-            var user = _identity.GetUserInfo();
-            if (user == null)
-                return Unauthorized();
-
-            var e = _session.Query<Editathon>()
-                .Fetch(_ => _.Jury)
-                .SingleOrDefault(i => i.Code == code);
-
-            if (e == null)
-                return NotFound();
-
-            if (!e.Jury.Contains(user.Username))
-                return Forbidden();
+            var e = GetEditathon(code, q => q.Fetch(_ => _.Jury));
+            EnsureJuryMember(e);
 
             return Ok(e.GetResults().Where(r => r.Rank <= limit));
         }
@@ -403,19 +382,8 @@ namespace WikiFountain.Server.Controllers
             if (awards == null || awards.Count == 0)
                 return Request.CreateResponse(System.Net.HttpStatusCode.BadRequest);
 
-            var user = _identity.GetUserInfo();
-            if (user == null)
-                return Unauthorized();
-
-            var e = _session.Query<Editathon>()
-                .Fetch(_ => _.Jury)
-                .SingleOrDefault(i => i.Code == code);
-
-            if (e == null)
-                return NotFound();
-
-            if (!e.Jury.Contains(user.Username))
-                return Forbidden();
+            var e = GetEditathon(code, q => q.Fetch(_ => _.Jury));
+            EnsureJuryMember(e);
 
             var wiki = MediaWikis.Create(e.Wiki, _identity);
 
