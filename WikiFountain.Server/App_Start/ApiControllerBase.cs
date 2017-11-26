@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 
-namespace WikiFountain.Server.Core
+namespace WikiFountain.Server
 {
     public class ApiControllerBase : ApiController
     {
@@ -21,33 +21,28 @@ namespace WikiFountain.Server.Core
             }
             catch (UnauthorizedAccessException)
             {
-                return Unauthorized();
+                throw Unauthorized();
             }
         }
-
-        protected HttpResponseMessage Ok()
+        
+        protected static HttpResponseException NotFound()
         {
-            return Request.CreateResponse();
+            return new HttpResponseException(HttpStatusCode.NotFound);
         }
 
-        protected HttpResponseMessage Ok<T>(T value)
+        protected static HttpResponseException Unauthorized()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, value);
+            return new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
-        protected HttpResponseMessage NotFound()
+        protected static HttpResponseException Forbidden()
         {
-            return Request.CreateResponse(HttpStatusCode.NotFound);
+            return new HttpResponseException(HttpStatusCode.Forbidden);
         }
 
-        protected HttpResponseMessage Unauthorized()
+        protected static HttpResponseException BadRequest()
         {
-            return Request.CreateResponse(HttpStatusCode.Unauthorized);
-        }
-
-        protected HttpResponseMessage Forbidden()
-        {
-            return Request.CreateResponse(HttpStatusCode.Forbidden);
+            return new HttpResponseException(HttpStatusCode.BadRequest);
         }
     }
 }

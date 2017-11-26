@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Web.Http;
 using NHibernate;
 using NHibernate.Linq;
@@ -19,14 +17,15 @@ namespace WikiFountain.Server.Controllers
         {
             _identity = identity;
             _session = session;
+
+            if (_identity.GetUserInfo() == null)
+                throw Unauthorized();
         }
 
         [ActionName("current-editathons")]
-        public HttpResponseMessage GetCurrentEditathons()
+        public IEnumerable<object> GetCurrentEditathons()
         {
             var user = _identity.GetUserInfo();
-            if (user == null)
-                return Unauthorized();
 
             var list = (
                 from ed in _session.Query<Editathon>()
@@ -38,13 +37,13 @@ namespace WikiFountain.Server.Controllers
              .OrderByDescending(_ => _.Finish)
              .ToArray();
 
-            return Ok(list.Select(ed => new {
+            return list.Select(ed => new {
                 ed.Name, ed.Code,
                 ed.Description, ed.Wiki,
                 ed.Start, ed.Finish,
                 HiddenMarks = ed.Flags.HasFlag(EditathonFlags.HiddenMarks),
                 Rows = GetRows(ed, user) ?? Enumerable.Empty<Editathon.ResultRow>(),
-            }));
+            });
         }
 
         private static IEnumerable<Editathon.ResultRow> GetRows(Editathon ed, UserInfo user)
@@ -61,17 +60,12 @@ namespace WikiFountain.Server.Controllers
         }
 
         [ActionName("jury-editathons")]
-        public HttpResponseMessage GetJuryEditathons()
+        public IEnumerable<object> GetJuryEditathons()
         {
             var user = _identity.GetUserInfo();
-            if (user == null)
-                return Unauthorized();
 
-            //var now = DateTime.UtcNow;
-
-            return Ok((
+            return
                 from ed in _session.Query<Editathon>()
-                //where ed.Start <= now && now < ed.Finish
                 where ed.Jury.Contains(user.Username)
                 orderby ed.Finish descending
                 select new
@@ -83,8 +77,7 @@ namespace WikiFountain.Server.Controllers
                     ed.Start,
                     ed.Finish,
                     missing = ed.Articles.Count(a => a.Marks.All(m => m.User != user.Username)),
-                }
-            ).ToArray());
+                };
         }
     }
 }

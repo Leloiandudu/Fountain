@@ -1,11 +1,12 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
+using Microsoft.Practices.Unity;
 
 namespace WikiFountain.Server
 {
-    public class RouteConfig
+    public class MvcConfig
     {
-        public static void RegisterRoutes(RouteCollection routes)
+        private static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.IgnoreRoute("api/{*pathInfo}");
@@ -33,6 +34,12 @@ namespace WikiFountain.Server
                 url: "{*path}",
                 defaults: new { controller = "Home", action = "Index", path = UrlParameter.Optional }
             );
+        }
+
+        public static void Register()
+        {
+            RegisterRoutes(RouteTable.Routes);
+            DependencyResolver.SetResolver(new UnityResolver(Bootstrapper.Init(() => new PerResolveLifetimeManager())));
         }
     }
 }

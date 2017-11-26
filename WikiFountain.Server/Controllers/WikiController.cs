@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using WikiFountain.Server.Core;
 
@@ -12,6 +11,8 @@ namespace WikiFountain.Server.Controllers
         public WikiController(Identity identity)
         {
             _identity = identity;
+            if (_identity.GetUserInfo() == null)
+                throw Unauthorized();
         }
 
         public class ParseData
@@ -22,13 +23,9 @@ namespace WikiFountain.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<HttpResponseMessage> Parse([FromBody] ParseData data)
+        public Task<string> Parse([FromBody] ParseData data)
         {
-            var user = _identity.GetUserInfo();
-            if (user == null)
-                return Unauthorized();
-
-            return Ok(await MediaWikis.Create(data.Wiki, _identity).Parse(data.Text, data.Title));
+            return MediaWikis.Create(data.Wiki, _identity).Parse(data.Text, data.Title);
         }
     }
 }

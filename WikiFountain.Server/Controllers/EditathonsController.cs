@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
+using System.Web.Http.ModelBinding;
 using Newtonsoft.Json.Linq;
 using NHibernate;
 using NHibernate.Linq;
@@ -16,35 +18,17 @@ namespace WikiFountain.Server.Controllers
     public class EditathonsController : ApiControllerBase
     {
         private readonly Identity _identity;
-        private readonly AuditContext _auditContext;
         private readonly ISession _session;
 
-        private Editathon GetEditathon(string code, Func<IQueryable<Editathon>, IQueryable<Editathon>> with)
-        {
-            var editathon = with(_session.Query<Editathon>()).SingleOrDefault(e => e.Code == code);
-            if (editathon == null)
-                throw new HttpResponseException(System.Net.HttpStatusCode.NotFound);
-            return editathon;
-        }
-
-        private UserInfo EnsureJuryMember(Editathon editathon)
-        {
-            var user = _identity.GetUserInfo();
-            if (user == null || !editathon.Jury.Contains(user.Username))
-                throw new HttpResponseException(System.Net.HttpStatusCode.Forbidden);
-            return user;
-        }
-
-        public EditathonsController(Identity identity, AuditContext auditContext, ISession session)
+        public EditathonsController(Identity identity, ISession session)
         {
             _identity = identity;
-            _auditContext = auditContext;
             _session = session;
         }
-
-        public HttpResponseMessage Get()
+        
+        public IEnumerable<object> GetAll()
         {
-            return Ok(_session.Query<Editathon>().OrderByDescending(e => e.Finish).Select(e => new
+            return _session.Query<Editathon>().OrderByDescending(e => e.Finish).Select(e => new
             {
                 e.Code,
                 e.Name,
@@ -52,19 +36,19 @@ namespace WikiFountain.Server.Controllers
                 e.Start,
                 e.Finish,
                 e.Wiki,
-            }).ToList());
+            });
         }
 
-        public HttpResponseMessage Get(string code)
+        public object Get(EditathonCode code)
         {
-            var e = GetEditathon(code, q => q
+            var e = code.Get(q => q
                 .FetchMany(_ => _.Articles).ThenFetch(a => a.Marks)
                 .Fetch(_ => _.Jury)
                 .Fetch(_ => _.Rules));
 
             var user = _identity.GetUserInfo();
 
-            return Ok(new
+            return new
             {
                 e.Code,
                 e.Name,
@@ -94,7 +78,7 @@ namespace WikiFountain.Server.Controllers
                         m.Comment,
                     }),
                 }),
-            });
+            };
         }
 
         public class ArticlePostData
@@ -104,27 +88,26 @@ namespace WikiFountain.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<HttpResponseMessage> AddArticle(string code, [FromBody] ArticlePostData body)
+        [ActionName("article")]
+        [AuditOperation(OperationType.AddArticle)]
+        public async void AddArticle(EditathonCode code, [FromBody] ArticlePostData body)
         {
-            _auditContext.Operation = OperationType.AddArticle;
-
             if (body == null || string.IsNullOrWhiteSpace(body.Title))
-                return Request.CreateResponse(System.Net.HttpStatusCode.BadRequest);
+                throw BadRequest();
 
             var user = _identity.GetUserInfo();
-            if (user == null)
-                return Unauthorized();
 
-            var e = GetEditathon(code, q => q
+            var e = code.Get(q => q
+                .Fetch(_ => _.Jury)
                 .Fetch(_ => _.Rules)
                 .Fetch(_ => _.Articles));
 
             var now = DateTime.UtcNow;
             if (now < e.Start || now.Date > e.Finish)
-                return Forbidden();
+                throw Forbidden();
 
             if (e.Articles.Any(a => a.Name == body.Title))
-                return Forbidden();
+                throw Forbidden();
 
             var wiki = MediaWikis.Create(e.Wiki, _identity);
 
@@ -132,19 +115,19 @@ namespace WikiFountain.Server.Controllers
             {
                 if (!e.Jury.Contains(user.Username))
                 {
-                    return Forbidden();
+                    throw Forbidden();
                 }
                 else
                 {
                     user = await wiki.GetUser(body.User);
                     if (user == null)
-                        return Forbidden();
+                        throw Forbidden();
                 }
             }
 
             var page = await wiki.GetPage(body.Title);
             if (page == null)
-                return Forbidden();
+                throw Forbidden();
 
             var rules = e.Rules
                 .Where(r => !r.Flags.HasFlag(RuleFlags.Optional))
@@ -160,7 +143,7 @@ namespace WikiFountain.Server.Controllers
                 foreach (var rule in rules)
                 {
                     if (!rule.Check(data, ctx))
-                        return Forbidden();
+                        throw Forbidden();
                 }
             }
 
@@ -173,8 +156,6 @@ namespace WikiFountain.Server.Controllers
                 User = user.Username,
                 DateAdded = now,
             });
-
-            return Ok();
         }
 
         private static async Task UpdateTemplate(MediaWiki wiki, UserInfo user, string title, string page, JObject settings)
@@ -219,24 +200,20 @@ namespace WikiFountain.Server.Controllers
         }
 
         [HttpPost]
-        public HttpResponseMessage RemoveArticles(string code, [FromBody] long[] ids)
+        [JuryOnly]
+        [AuditOperation(OperationType.RemoveArticle)]
+        public void RemoveArticles(EditathonCode code, [FromBody] long[] ids)
         {
-            _auditContext.Operation = OperationType.RemoveArticle;
-
-            var e = GetEditathon(code, q => q
-                .Fetch(_ => _.Articles)
-                .Fetch(_ => _.Jury));
-            EnsureJuryMember(e);
+            var e = code.Get(q => q.Fetch(_ => _.Articles));
 
             foreach (var id in ids)
             {
                 var article = e.Articles.SingleOrDefault(a => a.Id == id);
-                if (article == null) return NotFound();
+                if (article == null)
+                    throw NotFound();
 
                 e.Articles.Remove(article);
             }
-
-            return Ok();
         }
 
         public class MarkPostData
@@ -247,19 +224,17 @@ namespace WikiFountain.Server.Controllers
         }
 
         [HttpPost]
-        public HttpResponseMessage SetMark(string code, [FromBody] MarkPostData body)
+        [ActionName("mark")]
+        [JuryOnly]
+        [AuditOperation(OperationType.SetMark)]
+        public void SetMark(EditathonCode code, [FromBody] MarkPostData body)
         {
-            _auditContext.Operation = OperationType.SetMark;
-
-            var e = GetEditathon(code, q => q
-                .FetchMany(_ => _.Articles).ThenFetch(a => a.Marks)
-                .Fetch(_ => _.Jury));
-
-            var user = EnsureJuryMember(e);
+            var e = code.Get(q => q.FetchMany(_ => _.Articles).ThenFetch(a => a.Marks));
+            var user = _identity.GetUserInfo();
 
             var article = e.Articles.SingleOrDefault(a => a.Name == body.Title);
             if (article == null)
-                return NotFound();
+                throw NotFound();
 
             var mark = article.Marks.SingleOrDefault(m => m.User == user.Username);
 
@@ -275,25 +250,20 @@ namespace WikiFountain.Server.Controllers
 
             mark.Marks = JObject.Parse(body.Marks);
             mark.Comment = body.Comment;
-
-            return Ok();
         }
 
         [HttpPost]
-        public HttpResponseMessage Create(EditathonData e)
+        [AuditOperation(OperationType.CreateEditathon)]
+        public void Create(EditathonData e)
         {
-            return Unauthorized();
-            _auditContext.Operation = OperationType.CreateEditathon;
+            throw Unauthorized();
 
             var user = _identity.GetUserInfo();
-            if (user == null)
-                return Unauthorized();
-
             var exist = _session.Query<Editathon>()
                 .Any(i => i.Code == e.General.Code || i.Name == e.General.Title);
 
             if (exist)
-                return Forbidden();
+                throw Forbidden();
 
             var editathon = new Editathon
             {
@@ -325,8 +295,6 @@ namespace WikiFountain.Server.Controllers
             {
                 // ...
             }
-
-            return Ok();
         }
 
         public class EditathonData
@@ -368,29 +336,125 @@ namespace WikiFountain.Server.Controllers
         }
 
         [HttpGet]
-        public HttpResponseMessage Results(string code, int limit)
+        [JuryOnly]
+        public IEnumerable<Editathon.ResultRow> Results(EditathonCode code, int limit)
         {
-            var e = GetEditathon(code, q => q.Fetch(_ => _.Jury));
-            EnsureJuryMember(e);
-
-            return Ok(e.GetResults().Where(r => r.Rank <= limit));
+            return code.Get().GetResults().Where(r => r.Rank <= limit);
         }
 
         [HttpPost]
-        public async Task<HttpResponseMessage> Award(string code, [FromBody] IDictionary<string, string> awards)
+        [JuryOnly]
+        public async void Award(EditathonCode code, [FromBody] IDictionary<string, string> awards)
         {
             if (awards == null || awards.Count == 0)
-                return Request.CreateResponse(System.Net.HttpStatusCode.BadRequest);
+                throw BadRequest();
 
-            var e = GetEditathon(code, q => q.Fetch(_ => _.Jury));
-            EnsureJuryMember(e);
-
+            var e = code.Get();
             var wiki = MediaWikis.Create(e.Wiki, _identity);
 
             foreach (var userTalk in await UserTalk.GetAsync(wiki, awards.Select(r => r.Key)))
                 await userTalk.WriteAsync(awards[userTalk.UserName], "Automated awarding");
+        }
 
-            return Ok();
+        [ModelBinder]
+        [UnityModelBinder(typeof(EditathonCodeBinder))]
+        public class EditathonCode
+        {
+            private readonly ISession _session;
+            private readonly string _code;
+
+            public EditathonCode(ISession session, string code)
+            {
+                _session = session;
+                _code = code;
+
+                QueryModifiers = new List<Func<IQueryable<Editathon>, IQueryable<Editathon>>>();
+                Validators = new List<Action<Editathon>>();
+            }
+
+            public List<Func<IQueryable<Editathon>, IQueryable<Editathon>>> QueryModifiers { get; private set; }
+            public List<Action<Editathon>> Validators { get; private set; }
+
+            public Editathon Get(Func<IQueryable<Editathon>, IQueryable<Editathon>> with = null)
+            {
+                var query = _session.Query<Editathon>();
+                if (with != null)
+                    query = with(query);
+                foreach (var mod in QueryModifiers)
+                    query = mod(query);
+
+                var editathon = query.SingleOrDefault(e => e.Code == _code);
+                if (editathon == null)
+                    throw new HttpResponseException(System.Net.HttpStatusCode.NotFound);
+
+                foreach (var validator in Validators)
+                    validator(editathon);
+
+                return editathon;
+            }
+
+            class EditathonCodeBinder : TypedModelBinder<string, EditathonCode>
+            {
+                private readonly ISession _session;
+
+                public EditathonCodeBinder(ISession session)
+                {
+                    _session = session;
+                }
+
+                protected override EditathonCode BindModel(string value, HttpActionContext actionContext, ModelBindingContext bindingContext)
+                {
+                    return new EditathonCode(_session, value);
+                }
+            }
+        }
+
+        class JuryOnlyAttribute : UnityActionFilterAttribute
+        {
+            public JuryOnlyAttribute() : base(typeof(JuryOnlyFilter))
+            {
+            }
+
+            class JuryOnlyFilter : UnityActionFilter
+            {
+                private readonly Identity _identity;
+                private bool _executed;
+
+                public JuryOnlyFilter(Identity identity)
+                {
+                    _identity = identity;
+                }
+
+                public override void OnActionExecuting(HttpActionContext actionContext, UnityActionFilterAttribute attribute)
+                {
+                    var code = actionContext.ActionArguments.Values.OfType<EditathonCode>().SingleOrDefault();
+                    if (code == null)
+                        throw new Exception("Action should have EditathonCode in its arguments.");
+
+                    var user = _identity.GetUserInfo();
+                    if (user == null)
+                        throw new HttpResponseException(System.Net.HttpStatusCode.Unauthorized);
+
+                    code.QueryModifiers.Add(q => q.Fetch(_ => _.Jury));
+                    code.Validators.Add(e =>
+                    {
+                        _executed = true;
+                        if (!e.Jury.Contains(user.Username))
+                            throw new HttpResponseException(System.Net.HttpStatusCode.Forbidden);
+                    });
+                }
+
+                public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext, UnityActionFilterAttribute attribute)
+                {
+                    if (!_executed && IsSuccess(actionExecutedContext.Response.StatusCode))
+                        throw new Exception("Action should call EditathonCode.Get()");
+                }
+
+                private static bool IsSuccess(System.Net.HttpStatusCode statusCode)
+                {
+                    return System.Net.HttpStatusCode.OK <= statusCode && (int)statusCode <= 399;
+                }
+            }
         }
     }
 }

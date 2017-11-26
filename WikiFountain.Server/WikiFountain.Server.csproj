@@ -156,6 +156,9 @@
     <Compile Include="App_Start\DbSessionModule.cs" />
     <Compile Include="App_Start\MappingConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\TypedModelBinder.cs" />
+    <Compile Include="App_Start\UnityActionFilterProvider.cs" />
+    <Compile Include="App_Start\UnityModelBinderProvider.cs" />
     <Compile Include="App_Start\UnityResolver.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\EditathonsController.cs" />
@@ -165,7 +168,7 @@
     <Compile Include="Core\EnumerableExtensions.cs" />
     <Compile Include="Core\UserTalk.cs" />
     <Compile Include="Controllers\WikiController.cs" />
-    <Compile Include="Core\ApiControllerBase.cs" />
+    <Compile Include="App_Start\ApiControllerBase.cs" />
     <Compile Include="App_Start\AuditInterceptor.cs" />
     <Compile Include="Core\AuditContext.cs" />
     <Compile Include="Core\AuthExpiredException.cs" />

@@ -12,6 +12,7 @@ namespace WikiFountain.Server
         {
             return new UnityContainer()
                 .RegisterType<AuditContext>(perRequestLifetime())
+                .RegisterType<Identity>(perRequestLifetime())
                 .RegisterInstance(new OAuthConsumer(ReadToken()))
                 .RegisterType<HttpContextBase>(perRequestLifetime(), new InjectionFactory(c => new HttpContextWrapper(HttpContext.Current)))
                 .RegisterInstance(MappingConfig.CreateSessionFactory())

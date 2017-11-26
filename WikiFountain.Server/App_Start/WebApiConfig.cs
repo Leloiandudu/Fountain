@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Net.Http.Formatting;
 using System.Web.Http;
+using System.Web.Http.Filters;
+using System.Web.Http.ModelBinding;
+using Microsoft.Practices.Unity;
+using Microsoft.Practices.Unity.WebApi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -17,27 +21,15 @@ namespace WikiFountain.Server
             );
 
             config.Routes.MapHttpRoute(
+                name: "editathons-all",
+                routeTemplate: "api/editathons",
+                defaults: new { controller = "Editathons", action = "GetAll" }
+            );
+
+            config.Routes.MapHttpRoute(
                 name: "editathons",
-                routeTemplate: "api/editathons/{code}",
-                defaults: new { controller = "Editathons", code = RouteParameter.Optional, action = "get" }
-            );
-
-            config.Routes.MapHttpRoute(
-                name: "editathons-addarticle",
-                routeTemplate: "api/editathons/{code}/article",
-                defaults: new { controller = "Editathons", action = "AddArticle" }
-            );
-
-            config.Routes.MapHttpRoute(
-                name: "editathons-setmark",
-                routeTemplate: "api/editathons/{code}/mark",
-                defaults: new { controller = "Editathons", action = "SetMark" }
-            );
-
-            config.Routes.MapHttpRoute(
-                name: "editathons-default",
                 routeTemplate: "api/editathons/{code}/{action}",
-                defaults: new { controller = "Editathons" }
+                defaults: new { controller = "Editathons", action = "Get" }
             );
 
             config.Routes.MapHttpRoute(
@@ -54,6 +46,10 @@ namespace WikiFountain.Server
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
             };
+
+            GlobalConfiguration.Configuration.DependencyResolver = new UnityHierarchicalDependencyResolver(Bootstrapper.Init(() => new HierarchicalLifetimeManager()));
+            GlobalConfiguration.Configuration.Services.Insert(typeof(ModelBinderProvider), 0, new UnityModelBinderProvider());
+            GlobalConfiguration.Configuration.Services.Add(typeof(IFilterProvider), new UnityActionFilterProvider());
         }
     }
 }

@@ -2,9 +2,6 @@
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
-using System.Web.Routing;
-using Microsoft.Practices.Unity;
-using Microsoft.Practices.Unity.WebApi;
 
 [assembly: PreApplicationStartMethod(typeof(WikiFountain.Server.Global), "BeforeStart")]
 
@@ -27,10 +24,7 @@ namespace WikiFountain.Server
         {
             AreaRegistration.RegisterAllAreas();
             WebApiConfig.Register(GlobalConfiguration.Configuration);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
-
-            DependencyResolver.SetResolver(new UnityResolver(Bootstrapper.Init(() => new PerResolveLifetimeManager())));
-            GlobalConfiguration.Configuration.DependencyResolver = new UnityHierarchicalDependencyResolver(Bootstrapper.Init(() => new HierarchicalLifetimeManager()));
+            MvcConfig.Register();
         }
     }
 }
