@@ -104,9 +104,12 @@ namespace WikiFountain.Server.Core
                 { !append.HasValue ? "text" : append.Value ? "appendtext" : "prependtext", text },
                 { "summary", summary },
                 { "token", token },
-                { "redirect", true },
+                { "redirect", append.HasValue },
                 { "watchlist", "nochange" },
             });
+
+            if (result["edit"] == null)
+                throw new MediaWikiException("Invalid response: " + result);
 
             var code = result["edit"].Value<string>("result");
             if (code == null)
@@ -171,7 +174,12 @@ namespace WikiFountain.Server.Core
             using (var req = new HttpRequestMessage(HttpMethod.Post, _url) { Content = body })
             {
                 foreach (var prop in data.Properties())
-                    body.Add(new StringContent(prop.Value.Value<string>()), prop.Name);
+                {
+                    var value = prop.Value;
+                    if (value.Type == JTokenType.Boolean && !value.Value<bool>())
+                        continue;
+                    body.Add(new StringContent(value.Value<string>()), prop.Name);
+                }
 
                 req.Headers.UserAgent.Add(new ProductInfoHeaderValue("Fountain", GetVersion().ToString(2)));
                 req.Headers.UserAgent.Add(new ProductInfoHeaderValue("(https://github.com/leloiandudu/fountain; kf8.wikipedia@gmail.com)"));
