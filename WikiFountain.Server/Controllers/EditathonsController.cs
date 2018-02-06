@@ -25,7 +25,7 @@ namespace WikiFountain.Server.Controllers
             _identity = identity;
             _session = session;
         }
-        
+
         public IEnumerable<object> GetAll()
         {
             return _session.Query<Editathon>().OrderByDescending(e => e.Finish).Select(e => new
@@ -148,7 +148,7 @@ namespace WikiFountain.Server.Controllers
             }
 
             if (e.Template != null)
-                await UpdateTemplate(wiki, user, body.Title, page, (JObject)e.Template.DeepClone());
+                await UpdateTemplate(wiki, user, body.Title, page, e.Template);
 
             e.Articles.Add(new Article
             {
@@ -158,28 +158,27 @@ namespace WikiFountain.Server.Controllers
             });
         }
 
-        private static async Task UpdateTemplate(MediaWiki wiki, UserInfo user, string title, string page, JObject settings)
+        private static async Task UpdateTemplate(MediaWiki wiki, UserInfo user, string title, string page, TemplateConfig settings)
         {
-            var template = new Template { Name = settings.Value<string>("name") };
+            var template = new Template { Name = settings.Name };
 
-            var args = settings.Value<JArray>("args");
-            foreach (var arg in args.Values<JObject>())
+            foreach (var arg in settings.Args)
             {
-                foreach (var prop in arg.Properties())
+
+                template.Args.Add(new Template.Argument
                 {
-                    prop.Value = prop.Value.Value<string>().Replace("%user.name%", user.Username);
-                }
-                template.Args.Add(arg.ToObject<Template.Argument>());
+                    Name = arg.Name,
+                    Value = arg.Value.Replace("%user.name%", user.Username),
+                });
             }
 
-            var templateString = template + "\n";
-
-            if (settings.Value<bool>("talkPage"))
+            if (settings.TalkPage)
             {
                 title = "Talk:" + title;
                 page = await wiki.GetPage(title) ?? "";
             }
 
+            var templateString = template + "\n";
             var existing = ParserUtils.FindTemplates(page, template.Name);
             if (existing.Count == 0)
             {
@@ -260,79 +259,42 @@ namespace WikiFountain.Server.Controllers
 
             var user = _identity.GetUserInfo();
             var exist = _session.Query<Editathon>()
-                .Any(i => i.Code == e.General.Code || i.Name == e.General.Title);
+                .Any(i => i.Code == e.Code || i.Name == e.Name);
 
             if (exist)
                 throw Forbidden();
 
             var editathon = new Editathon
             {
-                Name = e.General.Title,
-                Code = e.General.Code,
-                Description = e.General.Description,
-                Wiki = e.General.Wiki,
-                Start = e.General.StartDate,
-                Finish = e.General.FinishDate.AddDays(1).AddSeconds(-1),
-                Flags = e.General.Flags,
+                Name = e.Name,
+                Code = e.Code,
+                Description = e.Description,
+                Wiki = e.Wiki,
+                Start = e.StartDate,
+                Finish = e.FinishDate.AddDays(1).AddSeconds(-1),
+                Flags = e.Flags,
 
-                Jury = new HashSet<string>(e.Jury.Jury),
-                Rules = new HashSet<Rule>(e.Rules.Rules),
+                Template = e.Template,
+                Jury = new HashSet<string>(e.Jury),
+                Rules = new HashSet<Rule>(e.Rules),
             };
 
-            if (e.Template.Enabled)
-            {
-                editathon.Template = JObject.FromObject(new
-                {
-                    name = e.Template.Name,
-                    talkPage = e.Template.TalkPage,
-                    args = e.Template.Args,
-                });
-            }
-
             _session.Save(editathon);
-
-            if (e.Jury.SendInvites)
-            {
-                // ...
-            }
         }
 
         public class EditathonData
         {
-            public GeneralPage General { get; set; }
-            public RulesPage Rules { get; set; }
-            public TemplatePage Template { get; set; }
-            public JuryPage Jury { get; set; }
+            public string Name { get; set; }
+            public string Code { get; set; }
+            public string Description { get; set; }
+            public string Wiki { get; set; }
+            public DateTime StartDate { get; set; }
+            public DateTime FinishDate { get; set; }
+            public EditathonFlags Flags { get; set; }
 
-            public class GeneralPage
-            {
-                public string Title { get; set; }
-                public string Code { get; set; }
-                public string Description { get; set; }
-                public string Wiki { get; set; }
-                public DateTime StartDate { get; set; }
-                public DateTime FinishDate { get; set; }
-                public EditathonFlags Flags { get; set; }
-            }
-
-            public class RulesPage
-            {
-                public Rule[] Rules { get; set; }
-            }
-
-            public class TemplatePage
-            {
-                public bool Enabled { get; set; }
-                public string Name { get; set; }
-                public bool TalkPage { get; set; }
-                public Template.Argument[] Args { get; set; }
-            }
-
-            public class JuryPage
-            {
-                public string[] Jury { get; set; }
-                public bool SendInvites { get; set; }
-            }
+            public Rule[] Rules { get; set; }
+            public TemplateConfig Template { get; set; }
+            public string[] Jury { get; set; }
         }
 
         [HttpGet]

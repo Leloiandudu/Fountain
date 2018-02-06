@@ -80,7 +80,7 @@ class ArticleSizeRule extends React.Component {
       const op = Object.keys(param)[0];
       return <div className='item' key={type}>
          <DropDown
-               items={[ 'atLeast', 'atMost' ]}
+               items={[ 'atLeast'/* , 'atMost' */ ]}
                renderItem={i => tr(i)}
                value={op}
                getValue={x => x}
@@ -95,7 +95,7 @@ class ArticleSizeRule extends React.Component {
                value={type}
                getValue={x => x}
                onChange={t => this.changeType(type, t)} />
-         {Object.keys(params).length > 1 && 
+         {Object.keys(params).length > 1 &&
             <WikiButton className='delete' onClick={() => this.remove(type)} />}
       </div>;
    }
@@ -111,7 +111,7 @@ class ArticleSizeRule extends React.Component {
             i === 0 ? null : <span className='or'>{tr('or')}</span>,
             this.renderParam(params, type),
          ])}
-         {available.length > 0 && 
+         {available.length > 0 &&
             <DropDownButton className='add'
                             items={available}
                             renderItem={t => tr(t)}
@@ -417,29 +417,28 @@ class RulesDemo extends React.Component {
 RulesDemo = withTranslation(RulesDemo, 'EditathonConfig.RulesPage.RulesDemo');
 
 function getDefaultData() {
-   return {
-      rules: [{
-         type: 'namespace',
-         params: {},
-         flags: 0,
-      }],
-   };
+   return [{
+      type: 'namespace',
+      params: {},
+      flags: 0,
+   }];
 }
 
 class RulesPage extends React.Component {
    componentWillMount() {
-      setDefault(this.props, getDefaultData, 'data');
+      setDefault(this.props, 'rules', getDefaultData);
    }
 
    addRule(type) {
-      const { data, onChange } = this.props;
-      const rules = [ ...data.rules ];
+      const { value, onChange } = this.props;
+      const rules = [ ...value.rules ];
       rules.push({
          type,
          params: {},
          flags: Editors[type].noJury ? 0 : RuleFlags.informational,
       });
-      onChange({ rules });
+      value.rules = rules;
+      onChange(value);
    }
 
    deleteRule(rule) {
@@ -458,8 +457,8 @@ class RulesPage extends React.Component {
    }
 
    replaceRule(rule, newRule) {
-      const { data, onChange } = this.props;
-      const rules = [ ...data.rules ];
+      const { value, onChange } = this.props;
+      const rules = [ ...value.rules ];
       const index = rules.indexOf(rule);
       if (index !== -1) {
          if (newRule === undefined) {
@@ -468,12 +467,13 @@ class RulesPage extends React.Component {
             rules.splice(index, 1, newRule);
          }
       }
-      onChange({ rules });
+      value.rules = rules;
+      onChange(value);
    }
 
    render() {
       const { translation: { tr } } = this.props;
-      const { rules = [] } = this.props.data;
+      const { rules = [] } = this.props.value;
       const available = Object.keys(Editors)
          .filter(t => Editors[t].allowMulti || rules.every(r => r.type !== t));
 
@@ -508,7 +508,7 @@ class RulesPage extends React.Component {
                          onClick={t => this.addRule(t)}>
             {tr('add')}
          </DropDownButton>
-         <RulesDemo wiki={this.props.allData.general.wiki} rules={rules} />
+         <RulesDemo wiki={this.props.value.wiki} rules={rules} />
       </div>;
    }
 }

@@ -28,7 +28,7 @@ namespace WikiFountain.Server.Models
         public ISet<Article> Articles { get; set; }
         public ISet<string> Jury { get; set; }
         public ISet<Rule> Rules { get; set; }
-        public JObject Template { get; set; }
+        public TemplateConfig Template { get; set; }
         public JObject Marks { get; set; }
 
         public IEnumerable<Mark> GetArticleMarks(Article a, UserInfo currentUser)
@@ -111,6 +111,13 @@ namespace WikiFountain.Server.Models
         HiddenMarks = 2,
     }
 
+    public class TemplateConfig
+    {
+        public string Name { get; set; }
+        public bool TalkPage { get; set; }
+        public Core.Template.Argument[] Args { get; set; }
+    }
+    
     public class EditathonMapping : ClassMapping<Editathon>
     {
         public EditathonMapping()

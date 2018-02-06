@@ -213,7 +213,6 @@ export default {
       },
       JuryPage: {
          add: 'add',
-         sendInvites: 'send invites to the jury members',
       },
    },
 

@@ -7,11 +7,13 @@ using NHibernate.UserTypes;
 
 namespace WikiFountain.Server
 {
-    public class JObjectType : IUserType
+    public class JsonType<T> : IUserType
     {
         public new bool Equals(object x, object y)
         {
-            return new JTokenEqualityComparer().Equals((JToken)x, (JToken)y);
+            if (x == null || y == null)
+                return ReferenceEquals(x, y);
+            return new JTokenEqualityComparer().Equals(JObject.FromObject(x), JObject.FromObject(y));
         }
 
         public int GetHashCode(object x)
@@ -57,14 +59,21 @@ namespace WikiFountain.Server
             return ToString(value);
         }
 
-        private static JObject Parse(object value)
+        private static object Parse(object obj)
         {
-            return JObject.Parse((string)value);
+            var str = obj as string;
+
+            if (string.IsNullOrWhiteSpace(str))
+                return null;
+
+            return JsonConvert.DeserializeObject<T>(str);
         }
 
         private static string ToString(object value)
         {
-            return ((JToken)value).ToString(Formatting.None);
+            if (value == null)
+                return null;
+            return JsonConvert.SerializeObject(value, Formatting.None);
         }
 
         public SqlType[] SqlTypes
@@ -72,7 +81,7 @@ namespace WikiFountain.Server
             get { return new SqlType[] { SqlTypeFactory.GetString(int.MaxValue) }; }
         }
 
-        public Type ReturnedType { get { return typeof(JObject); } }
+        public Type ReturnedType { get { return typeof(T); } }
         public bool IsMutable { get { return true; } }
     }
 }

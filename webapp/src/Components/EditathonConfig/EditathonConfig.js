@@ -12,7 +12,7 @@ import url from '../../url';
 
 function Headers({ items, selected, onClick }) {
    return <div className='Headers'>
-      {items.map((item, i) => 
+      {items.map((item, i) =>
          <button key={i} className={classNames({
             item: true,
             selected: i === selected
@@ -40,20 +40,18 @@ class EditathonConfig extends React.Component {
       this.state = {
          selected: 'general',
          sending: false,
-
-         data: {
-            general: {},
-            rules: {},
-            template: {},
-            jury: {},
-         }
+         editathon: {},
       };
    }
 
-   set(prop, value) {
-      const { data } = this.state;
-      data[prop] = value;
-      this.setState({ data });
+   getCode() {
+      return this.props.params.id;
+   }
+
+   async componentWillMount() {
+      if (this.getCode() !== 'new') {
+
+      }
    }
 
    moveBack() {
@@ -99,7 +97,7 @@ class EditathonConfig extends React.Component {
 
    render() {
       const { translation: { tr } } = this.props;
-      const { data, selected, sending } = this.state;
+      const { editathon, selected, sending } = this.state;
 
       if (!Global.user) {
          this.context.router.replace({
@@ -117,9 +115,8 @@ class EditathonConfig extends React.Component {
             selected={this.getSelectedIndex()}
             onClick={k => this.moveTo(Object.keys(Pages)[k])} />
          {React.createElement(Pages[selected], {
-            data: data[selected],
-            allData: data,
-            onChange: v => this.set(selected, v),
+            value: editathon,
+            onChange: v => this.setState({ editathon: v }),
          })}
          <div className='buttons'>
             <WikiButton onClick={() => this.moveBack()}>{tr('back')}</WikiButton>

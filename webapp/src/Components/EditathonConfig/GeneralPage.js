@@ -14,48 +14,48 @@ class GeneralPage extends React.Component {
       this.state = {
          code: '',
       };
-      this.set = createSetter('data');
-      this.bind = createBinder('data');
+      this.set = createSetter();
+      this.bind = createBinder();
    }
 
    componentWillMount() {
-      if (!this.state.code && this.props.data.code) {
-         this.setState({ code: this.props.data.code });
+      if (!this.state.code && this.props.value.code) {
+         this.setState({ code: this.props.value.code });
       }
    }
 
    setCode(code) {
       this.setState({ code });
-      this.set('code', code.trim().replace(/ /g, '_').toLowerCase())
+      this.set('code', code.trim().replace(/[ _]/g, '-').toLowerCase())
    }
 
-   changeFlag(flag, value) {
-      const { data } = this.props;
-      const flags = value
-         ? data.flags | flag
-         : data.flags & ~flag;
+   changeFlag(flag, isSet) {
+      const { value } = this.props;
+      const flags = isSet
+         ? value.flags | flag
+         : value.flags & ~flag;
       this.set('flags', flags);
    }
 
    render() {
-      const { data, translation: { tr } } = this.props;
+      const { value, translation: { tr } } = this.props;
       return <div className='page GeneralPage'>
          <label id='name'>
             <span>{tr('title')}</span>
-            <Validation isEmpty={() => !data.title} validate={() => data.title.length < 3 && tr('tooShort')}>
-               {this.bind('title', <input type='text' />)}
+            <Validation isEmpty={() => !value.name} validate={() => value.name.length < 3 && tr('tooShort')}>
+               {this.bind('name', <input type='text' />)}
             </Validation>
          </label>
          <label id='code'>
             <span>{tr('code')}</span>
-            <Validation isEmpty={() => !data.code} validate={() => data.code.length < 3 && tr('tooShort')}>
+            <Validation isEmpty={() => !value.code} validate={() => value.code.length < 3 && tr('tooShort')}>
                <input type='text' value={this.state.code} onChange={e => this.setCode(e.target.value)} />
             </Validation>
-            <span id='url'>{window.location.origin + url('/editathons/') + encodeURIComponent(data.code || '')}</span>
+            <span id='url'>{window.location.origin + url('/editathons/') + encodeURIComponent(value.code || '')}</span>
          </label>
          <div className='field' id='project'>
             <label htmlFor='wiki'>{tr('project')}</label>
-            <Validation isEmpty={() => !data.wiki}>
+            <Validation isEmpty={() => !value.wiki}>
                {this.bind('wiki', <WikiLookup inputProps={{ id: 'wiki' }} />)}
             </Validation>
          </div>
@@ -69,15 +69,15 @@ class GeneralPage extends React.Component {
          <div id='dates' className='field'>
             <div className='field'>
                <label htmlFor='startDate'>{tr('startDate')}</label>
-               <Validation isEmpty={() => !data.startDate}>
-                  {this.bind('startDate', <DatePicker id='startDate' />)}
+               <Validation isEmpty={() => !value.start}>
+                  {this.bind('start', <DatePicker id='startDate' />)}
                </Validation>
             </div>
             <div className='field'>
                <label htmlFor='finishDate'>{tr('finishDate')}</label>
-               <Validation isEmpty={() => !data.finishDate} 
-                           validate={() => data.startDate && data.startDate > data.finishDate && tr('negativeDates')}>
-                  {this.bind('finishDate', <DatePicker id='finishDate' />)}
+               <Validation isEmpty={() => !value.finish}
+                           validate={() => value.start && value.start > value.finish && tr('negativeDates')}>
+                  {this.bind('finish', <DatePicker id='finishDate' />)}
                </Validation>
             </div>
          </div>
@@ -85,14 +85,14 @@ class GeneralPage extends React.Component {
             <label>
                <input
                      type='checkbox'
-                     checked={data.flags & EditathonFlags.consensualVote}
+                     checked={value.flags & EditathonFlags.consensualVote}
                      onChange={e => this.changeFlag(EditathonFlags.consensualVote, e.target.checked)} />
                {tr('consensualVote')}
             </label>
             <label>
                <input
                      type='checkbox'
-                     checked={data.flags & EditathonFlags.hiddenMarks}
+                     checked={value.flags & EditathonFlags.hiddenMarks}
                      onChange={e => this.changeFlag(EditathonFlags.hiddenMarks, e.target.checked)} />
                {tr('hiddenMarks')}
             </label>

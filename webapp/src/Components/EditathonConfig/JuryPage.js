@@ -7,45 +7,39 @@ import { getMwApi } from '../../MwApi';
 import { withTranslation } from '../../translate';
 
 function getDefaultData() {
-   return {
-      jury: [ Global.user.name ],
-      sendInvites: false,
-   };
+   return [ Global.user.name ];
 }
 
 class JuryPage extends React.Component {
    constructor(props) {
       super(props);
-      this._argId = 0;
-      this.bind = createBinder('data');
+      this.bind = createBinder();
    }
 
    componentWillMount() {
-      setDefault(this.props, getDefaultData, 'data');
+      setDefault(this.props, 'jury', getDefaultData);
    }
 
    add() {
-      const { data, onChange } = this.props;
-      const { jury } = data;
-      jury.push('');
-      onChange({ jury });
+      const { value, onChange } = this.props;
+      value.jury.push('');
+      onChange(value);
    }
 
-   replace(index, value) {
-      const { data, onChange } = this.props;
-      const { jury } = data;
-      if (value === undefined) {
-         jury.splice(index, 1);
+   replace(index, v) {
+      const { value, onChange } = this.props;
+      if (v === undefined) {
+         value.jury.splice(index, 1);
       } else {
-         jury.splice(index, 1, value);
+         value.jury.splice(index, 1, v);
       }
-      onChange({ jury });
+      onChange(value);
    }
 
    renderItem(jury, index) {
       return <div className='item' key={index}>
          <UserLookup
-               wiki={this.props.allData.general.wiki}
+               wiki={this.props.value.wiki}
                value={jury}
                onChange={text => this.replace(index, text)} />
          <WikiButton className='delete' onClick={e => {
@@ -56,17 +50,13 @@ class JuryPage extends React.Component {
    }
 
    render() {
-      const { translation: { tr }, data: { jury = [] } } = this.props;
+      const { translation: { tr }, value: { jury = [] } } = this.props;
 
       return <div className='page JuryPage'>
          {jury.map((j, i) => this.renderItem(j, i))}
          <WikiButton className='add' onClick={() => this.add()}>
             {tr('add')}
          </WikiButton>
-         <label>
-            {this.bind('sendInvites', <input type='checkbox' />)}
-            <span>{tr('sendInvites')}</span>
-         </label>
       </div>;
    }
 }

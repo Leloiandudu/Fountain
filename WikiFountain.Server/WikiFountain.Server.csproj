@@ -173,7 +173,7 @@
     <Compile Include="Core\AuditContext.cs" />
     <Compile Include="Core\AuthExpiredException.cs" />
     <Compile Include="App_Start\Bootstrapper.cs" />
-    <Compile Include="App_Start\JObjectType.cs" />
+    <Compile Include="App_Start\JsonType.cs" />
     <Compile Include="Core\MediaWiki.cs" />
     <Compile Include="Core\MediaWikis.cs" />
     <Compile Include="Core\MvcControllerBase.cs" />

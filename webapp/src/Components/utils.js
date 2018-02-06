@@ -29,7 +29,7 @@ function setProp(me, prop, value, valueProp) {
       [prop]: value
    });
 }
-   
+
 function isObjectEmpty(obj) {
    return obj.constructor === Object && Object.keys(obj).length === 0;
 }
@@ -37,7 +37,7 @@ function isObjectEmpty(obj) {
 export function createSetter(valueProp = 'value') {
    return function set(prop, value) {
       return setProp(this, prop, value, valueProp);
-   } 
+   }
 }
 
 export function createBinder(valueProp = 'value') {
@@ -53,9 +53,46 @@ export function createBinder(valueProp = 'value') {
    }
 }
 
-export function setDefault(props, getDefault, valueProp = 'value') {
-   const { onChange, [valueProp]: value = {} } = props;
-   if (onChange && isObjectEmpty(value)) {
-      onChange(getDefault());
+export function setDefault(props, prop, getDefault, valueProp = 'value') {
+   if (getDefault === undefined) {
+      getDefault = prop;
+      prop = null;
    }
+
+   const { onChange } = props;
+   let { [valueProp]: value = {} } = props;
+
+   if (prop !== null) {
+      value = value[prop] || {};
+   }
+
+   if (onChange && isObjectEmpty(value)) {
+      value = getDefault();
+      if (prop !== null) {
+         const data = props[valueProp];
+         data[prop] = value;
+         onChange(data);
+      } else {
+         onChange(value);
+      }
+   }
+}
+
+export function createSubSection(parent, prop, valueProp = 'value', childValueProp = 'value') {
+   function onChange(v) {
+      const value = { ...parent.props[valueProp] };
+      value[prop] = v;
+      parent.props.onChange(value);
+   }
+
+   return {
+      get props() {
+         return {
+            [childValueProp]: parent.props[valueProp][prop],
+            onChange,
+         }
+      },
+      bind: createBinder(childValueProp),
+      set: createSetter(childValueProp),
+   };
 }

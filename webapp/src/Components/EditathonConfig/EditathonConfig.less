@@ -5,21 +5,23 @@
    .Headers {
       display: flex;
       flex-flow: row wrap;
-      margin-bottom: .25em;
+      margin-bottom: 1em;
 
       .item {
-         padding: .3em;
-         border: solid 1px #ccc;
+         padding: .1em .3em;
          flex: 0 1 5em;
          text-align: center;
          cursor: pointer;
+         @border-size: 3px;
 
-         &.selected {
-            background: #eee;
+         &:hover, &:focus {
+            margin-bottom: -@border-size;
+            border-bottom: solid @border-size fade(#2a62cc, 25%);
          }
 
-         & + .item {
-            border-left: none;
+         &.selected {
+            margin-bottom: -@border-size;
+            border-bottom: solid @border-size #2a62cc;
          }
       }
    }

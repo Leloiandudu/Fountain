@@ -1,89 +1,95 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Validation } from './validation';
-import { createBinder, setDefault } from '../utils';
+import { createSetter, createSubSection } from '../utils';
 import PageLookup from '../PageLookup';
 import WikiButton from '../WikiButton';
 import { withTranslation } from '../../translate';
 
-function getDefaultData() {
-   return {
-      enabled: false,
-      name: '',
-      talkPage: false,
-      args: [],
-   };
-}
-
 class TemplatePage extends React.Component {
    constructor(props) {
       super(props);
-      this._argId = 0;
-      this.bind = createBinder('data');
+      this.set = createSetter();
+      this.template = createSubSection(this, 'template');
+      this.state = { enabled: false };
    }
 
    componentWillMount() {
-      setDefault(this.props, getDefaultData, 'data');
+      this.setState({ enabled: !!this.props.value.template });
    }
 
    addArg() {
-      const { data, onChange } = this.props;
-      data.args.push({ id: this._argId++ });
-      onChange({ ...data });
+      const { value, onChange } = this.template.props;
+      value.args.push({});
+      onChange({ ...value });
    }
 
    deleteArg(arg) {
-      const { data, onChange } = this.props;
-      const index = data.args.indexOf(arg);
+      const { value, onChange } = this.template.props;
+      const index = value.args.indexOf(arg);
       if (index !== -1) {
-         data.args.splice(index, 1);
+         value.args.splice(index, 1);
       }
-      onChange({ ...data });
+      onChange({ ...value });
+   }
+
+   onEnable(enabled) {
+      if (enabled) {
+         this.set('template', this._value || {
+            name: '',
+            talkPage: false,
+            args: [],
+         });
+      } else {
+         this._value = { ...this.props.value.template };
+         this.set('template', null);
+      }
+      this.setState({ enabled });
    }
 
    render() {
-      const { 
-         translation: { tr },
-         data: { enabled },
-      } = this.props;
+      const { translation: { tr } } = this.props;
+      const { enabled } = this.state;
 
       return <div className='page TemplatePage'>
          <label id='add'>
-            {this.bind('enabled', <input type='checkbox' /> )}
+            <input
+               type='checkbox'
+               value={enabled}
+               onChange={e => this.onEnable(e.target.checked)} />
             <span>{tr('autoAdd')}</span>
          </label>
          {enabled && this.renderRest()}
       </div>;
    }
 
-   renderArg(arg) {
+   renderArg(arg, id) {
       const onChange = (e, p) => {
-         const { data, onChange } = this.props;
+         const { value, onChange } = this.template.props;
          arg[p] = e.target.value;
-         onChange({ ...data });
+         onChange({ ...value });
       }
 
-      return <div className='arg' key={arg.id}>
-         <input id={`${arg.id}-name`} value={arg.name || ''} onChange={e => onChange(e, 'name')} />
-         <span>=</span>
+      return <div className='arg' key={id}>
+         <input id={`${id}-name`} value={arg.name || ''} onChange={e => onChange(e, 'name')} />
+         <span>{'='}</span>
          <Validation isEmpty={() => !arg.value}>
-            <input id={`${arg.id}-value`} value={arg.value || ''} onChange={e => onChange(e, 'value')} />
+            <input id={`${id}-value`} value={arg.value || ''} onChange={e => onChange(e, 'value')} />
          </Validation>
          <WikiButton className='delete' onClick={() => this.deleteArg(arg)} />
       </div>;
    }
 
    renderRest() {
-      const { 
+      const {
          translation: { tr },
-         data: { name, args },
-         allData: { general: { wiki } }
+         value: { template: { name, args }, wiki },
       } = this.props;
       return (<div>
-         <div className='field' id='template'>            
+         <div className='field' id='template'>
             <label htmlFor='name'>{tr('name')}</label>
             <Validation isEmpty={() => !name}>
-               {this.bind('name', <PageLookup
+               {this.template.bind('name', <PageLookup
                   inputProps={{ id: 'name' }}
                   ns={10}
                   wiki={wiki} />)}
@@ -92,18 +98,18 @@ class TemplatePage extends React.Component {
          <div id='placement' className='field'>
             <header>{tr('placement')}</header>
             <label>
-               {this.bind('talkPage', <input type='radio' name='talkPage' value={false} />)}
+               {this.template.bind('talkPage', <input type='radio' name='talkPage' value={false} />)}
                <span>{tr('inArticle')}</span>
             </label>
             <label>
-               {this.bind('talkPage', <input type='radio' name='talkPage' value={true} />)}
+               {this.template.bind('talkPage', <input type='radio' name='talkPage' value={true} />)}
                <span>{tr('onTalkPage')}</span>
             </label>
          </div>
          <div id='args'>
             <header>{tr('args')}</header>
             <div className='args'>
-               {args.map(arg => this.renderArg(arg))}
+               {args.map((arg, id) => this.renderArg(arg, id))}
             </div>
             <WikiButton onClick={() => this.addArg()}>{tr('add')}</WikiButton>
          </div>
@@ -128,13 +134,14 @@ class TemplatePage extends React.Component {
 
       add('{{');
       add(name, 'name');
-      for (const arg of args) {
+      for (const id in args) {
+         const arg = args[id];
          add('|');
          if (arg.name) {
-            add(arg.name, `${arg.id}-name`);
+            add(arg.name, `${id}-name`);
             add('=');
          }
-         add(arg.value, `${arg.id}-value`);
+         add(arg.value, `${id}-value`);
       }
       add('}}');
 

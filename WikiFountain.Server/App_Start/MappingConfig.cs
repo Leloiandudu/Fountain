@@ -64,9 +64,9 @@ namespace WikiFountain.Server
                 {
                     prop.Type<UtcDateTimeType>();
                 }
-                else if (type == typeof(JObject))
+                else if (IsJson(type))
                 {
-                    prop.Type<JObjectType>();
+                    prop.Type(typeof(JsonType<>).MakeGenericType(type), null);
                     prop.Length(65536); // medium clob
                 }
             };
@@ -98,6 +98,11 @@ namespace WikiFountain.Server
 
             // apply above conventions
             return mapper.CompileMappingFor(typeof(PersistentAttribute).Assembly.GetExportedTypes().Where(IsEntity));
+        }
+
+        private static bool IsJson(Type t)
+        {
+            return !t.IsArray && Type.GetTypeCode(t) == TypeCode.Object;
         }
 
         private static bool IsEntity(Type t)
