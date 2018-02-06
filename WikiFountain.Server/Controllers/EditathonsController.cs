@@ -255,13 +255,11 @@ namespace WikiFountain.Server.Controllers
         [AuditOperation(OperationType.CreateEditathon)]
         public void Create(EditathonData e)
         {
-            throw Unauthorized();
+            var user = _identity.GetUserInfo().Username;
+            if (_session.Query<Editathon>().Any(_ => _.Creator == user && !_.IsPublished))
+                throw Forbidden();
 
-            var user = _identity.GetUserInfo();
-            var exist = _session.Query<Editathon>()
-                .Any(i => i.Code == e.Code || i.Name == e.Name);
-
-            if (exist)
+            if (_session.Query<Editathon>().Any(_ => _.Code == e.Code || _.Name == e.Name))
                 throw Forbidden();
 
             var editathon = new Editathon
@@ -274,12 +272,34 @@ namespace WikiFountain.Server.Controllers
                 Finish = e.FinishDate.AddDays(1).AddSeconds(-1),
                 Flags = e.Flags,
 
+                Creator = user,
+                IsPublished = false,
+
                 Template = e.Template,
                 Jury = new HashSet<string>(e.Jury),
                 Rules = new HashSet<Rule>(e.Rules),
             };
 
             _session.Save(editathon);
+        }
+
+        public object GetDraft(EditathonCode code)
+        {
+            var e = code.Get(q => q.Fetch(_ => _.Rules));
+            var user = _identity.GetUserInfo();
+
+            return new
+            {
+                e.Code,
+                e.Name,
+                e.Description,
+                e.Start,
+                e.Finish,
+                e.Wiki,
+                e.Flags,
+                e.Jury,
+                e.Marks,
+            };
         }
 
         public class EditathonData
@@ -301,7 +321,10 @@ namespace WikiFountain.Server.Controllers
         [JuryOnly]
         public IEnumerable<Editathon.ResultRow> Results(EditathonCode code, int limit)
         {
-            return code.Get().GetResults().Where(r => r.Rank <= limit);
+            return code
+                .Get(q => q.FetchMany(_ => _.Articles).ThenFetch(_ => _.Marks))
+                .GetResults()
+                .Where(r => r.Rank <= limit);
         }
 
         [HttpPost]
@@ -339,7 +362,7 @@ namespace WikiFountain.Server.Controllers
 
             public Editathon Get(Func<IQueryable<Editathon>, IQueryable<Editathon>> with = null)
             {
-                var query = _session.Query<Editathon>();
+                var query = _session.Query<Editathon>().Where(e => e.IsPublished);
                 if (with != null)
                     query = with(query);
                 foreach (var mod in QueryModifiers)

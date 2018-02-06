@@ -242,9 +242,11 @@ export default {
       title: 'Personal Cabinet',
       editathons: 'Participation',
       jury: 'Evaluation',
+      created: 'Created',
+      approval: 'Approval',
 
       Editathons: {
-         title: 'Editathons You Participate in',
+         title: 'Editathons You Participate In',
          hasEnded: date => `has ended ${formatDateIn(date)}`,
          willEndIn: date => `will end in ${formatDateIn(date)}`,
          noMarks: 'you don\'t have marks yet',
@@ -252,9 +254,18 @@ export default {
       },
 
       Jury: {
-         title: 'Editathons You Are in Jury',
+         title: 'Editathons Where You Are in Jury',
          hasEnded: date => `has ended ${formatDateIn(date)}`,
          willEndIn: date => `will end in ${formatDateIn(date)}`,
+      },
+
+      Created: {
+         title: 'Editathons Created by You',
+         draft: 'draft',
+      },
+
+      Approval: {
+         title: 'Editathons Requiring Approval',
       },
    },
 };

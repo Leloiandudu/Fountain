@@ -7,10 +7,14 @@ import url, { unUrl } from '../../url';
 import Link from '../Link';
 import Editathons from './Editathons';
 import Jury from './Jury';
+import Created from './Created';
+import Approval from './Approval';
 
 const Tabs = {
-   'editathons': Editathons,
-   'jury': Jury,
+   editathons: Editathons,
+   jury: Jury,
+   created: Created,
+   approval: Approval,
 };
 
 class Personal extends React.Component {
@@ -34,7 +38,7 @@ class Personal extends React.Component {
          <h1>{tr('title')}</h1>
          <div className='content'>
             <nav className='tabs'>
-               {Object.keys(Tabs).map(path => ({ 
+               {Object.keys(Tabs).map(path => ({
                      path,
                      active: location.pathname.endsWith(path),
                   })).map(({ path, active }) => <div key={path} className={classNames({ tab: true, active })}>

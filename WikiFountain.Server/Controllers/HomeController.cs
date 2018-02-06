@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
+﻿using System.Linq;
 using System.Web.Mvc;
+using NHibernate;
+using NHibernate.Linq;
 using WikiFountain.Server.Core;
+using WikiFountain.Server.Models;
 
 namespace WikiFountain.Server.Controllers
 {
-    [OutputCacheAttribute(VaryByParam = "*", Duration = 0, NoStore = true)]
+    [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
     public class HomeController : MvcControllerBase
     {
         private readonly Identity _identity;
+        private readonly ISession _session;
 
-        public HomeController(Identity identity)
+        public HomeController(Identity identity, ISession session)
         {
             _identity = identity;
+            _session = session;
         }
 
         public ActionResult Index(string path)
@@ -28,6 +29,7 @@ namespace WikiFountain.Server.Controllers
                 {
                     Name = user.Username,
                     user.Registered,
+                    HasEditathonDraft = _session.Query<Editathon>().Any(e => e.Creator == user.Username && !e.IsPublished),
                 },
             });
         }

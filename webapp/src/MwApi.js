@@ -3,14 +3,14 @@ import pkg from './../package.json';
 const wikisMap = [
    [ 'meta', 'meta.wikimedia.org' ],
    [ 'commons', 'commons.wikimedia.org' ],
-   [ /^([a-z\-]+)$/, '$1.wikipedia.org' ],
-   [ /^q:([a-z\-]+)$/, '$1.wikiquote.org' ],
-   [ /^s:([a-z\-]+)$/, '$1.wikisource.org' ],
-   [ /^b:([a-z\-]+)$/, '$1.wikibooks.org' ],
-   [ /^n:([a-z\-]+)$/, '$1.wikinews.org' ],
-   [ /^v:([a-z\-]+)$/, '$1.wikiversity.org' ],
-   [ /^voy:([a-z\-]+)$/, '$1.wikivoyage.org' ],
-   [ /^wikt:([a-z\-]+)$/, '$1.wiktionary.org' ],
+   [ /^([a-z0-9\-]+)$/, '$1.wikipedia.org' ],
+   [ /^q:([a-z0-9\-]+)$/, '$1.wikiquote.org' ],
+   [ /^s:([a-z0-9\-]+)$/, '$1.wikisource.org' ],
+   [ /^b:([a-z0-9\-]+)$/, '$1.wikibooks.org' ],
+   [ /^n:([a-z0-9\-]+)$/, '$1.wikinews.org' ],
+   [ /^v:([a-z0-9\-]+)$/, '$1.wikiversity.org' ],
+   [ /^voy:([a-z0-9\-]+)$/, '$1.wikivoyage.org' ],
+   [ /^wikt:([a-z0-9\-]+)$/, '$1.wiktionary.org' ],
 ];
 
 export function getWikiHost(wiki) {
@@ -149,7 +149,7 @@ export default function MwApi(url) {
       return all;
    }
 
-   // returns numberic id of the namespace, or null if there is no 
+   // returns numberic id of the namespace, or null if there is no
    // prefix, or undefined if prefix is unknown
    this.getNamespace = async function getNamespace(title) {
       const allNs = await this.getNamespaces();
@@ -160,7 +160,7 @@ export default function MwApi(url) {
 
       const index = title.indexOf(':');
       if (index === -1) {
-         return null; 
+         return null;
       }
 
       const prefix = title.slice(0, index).toLowerCase();

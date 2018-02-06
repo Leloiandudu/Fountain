@@ -154,6 +154,59 @@ namespace WikiFountain.Server.Core
             return dic;
         }
 
+        public async Task<IReadOnlyList<string>> GetSysopWikis(string user)
+        {
+            var result = (await Exec(new JObject
+            {
+                { "action", "query" },
+                { "meta", "globaluserinfo" },
+                { "guiuser", user },
+                { "guiprop", "merged|groups" },
+            }))["query"]["globaluserinfo"];
+
+            var list = result.Value<JArray>("merged")
+                .Where(w => (w["groups"] ?? new JArray()).ToObject<string[]>().Contains("sysop"))
+                .Select(w => GetCodeByWikiName(w.Value<string>("wiki")))
+                .Where(c => c != null)
+                .ToList();
+
+            if (result["groups"].ToObject<string[]>().Contains("global-sysop"))
+                list.Add("*");
+
+            return list;
+        }
+
+        private static string GetCodeByWikiName(string wiki)
+        {
+            const string wik = "wik";
+            var index = wiki.LastIndexOf(wik);
+            if (index == -1)
+                throw new FormatException("Unknown wiki name format: " + wiki);
+
+            var code = wiki.Substring(0, index).Replace('_', '-');
+            var suffix = wiki.Substring(index + wik.Length);
+            if (suffix == "i")
+                return code;
+            if (suffix == "iquote")
+                return "q:" + code;
+            if (suffix == "isource")
+                return "s:" + code;
+            if (suffix == "ibooks")
+                return "b:" + code;
+            if (suffix == "inews")
+                return "n:" + code;
+            if (suffix == "iversity")
+                return "v:" + code;
+            if (suffix == "ivoyage")
+                return "voy:" + code;
+            if (suffix == "tionary")
+                return "wikt:" + code;
+            if (suffix == "imedia")
+                return null;
+
+            throw new FormatException("Unknown wiki name format: " + wiki);
+        }
+
         private static string Join(IEnumerable<string> titles)
         {
             return string.Join("|", titles);

@@ -9,14 +9,14 @@ function cmp(a, b) {
    a = a.valueOf();
    b = b.valueOf();
    if (a === b) return 0;
-   
+
    return a < b ? -1 : 1;
 }
 
 function getResult(fn, objA, objB) {
    if (typeof fn === 'function') {
       if (fn.length === 1) {
-         // do nothign
+         // do nothing
       } else if (fn.length === 2) {
          return fn(objA, objB);
       } else {
@@ -30,7 +30,7 @@ function getResult(fn, objA, objB) {
    const a = fn(objA);
    const b = fn(objB);
 
-   return cmp(a, b);   
+   return cmp(a, b);
 }
 
 export default function sortBy(...parts) {

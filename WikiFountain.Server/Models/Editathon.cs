@@ -31,6 +31,9 @@ namespace WikiFountain.Server.Models
         public TemplateConfig Template { get; set; }
         public JObject Marks { get; set; }
 
+        public string Creator { get; set; }
+        public bool IsPublished { get; set; }
+
         public IEnumerable<Mark> GetArticleMarks(Article a, UserInfo currentUser)
         {
             if (!Flags.HasFlag(EditathonFlags.HiddenMarks))

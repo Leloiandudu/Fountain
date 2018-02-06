@@ -11,14 +11,14 @@ namespace WikiFountain.Server.Core
         {
             Const("meta", "meta.wikimedia.org"),
             Const("commons", "commons.wikimedia.org"),
-            Regex(@"^([a-z\-]+)$", "$1.wikipedia.org"),
-            Regex(@"^q:([a-z\-]+)$", "$1.wikiquote.org"),
-            Regex(@"^s:([a-z\-]+)$", "$1.wikisource.org"),
-            Regex(@"^b:([a-z\-]+)$", "$1.wikibooks.org"),
-            Regex(@"^n:([a-z\-]+)$", "$1.wikinews.org"),
-            Regex(@"^v:([a-z\-]+)$", "$1.wikiversity.org"),
-            Regex(@"^voy:([a-z\-]+)$", "$1.wikivoyage.org"),
-            Regex(@"^wikt:([a-z\-]+)$", "$1.wiktionary.org"),
+            Regex(@"^([a-z0-9\-]+)$", "$1.wikipedia.org"),
+            Regex(@"^q:([a-z0-9\-]+)$", "$1.wikiquote.org"),
+            Regex(@"^s:([a-z0-9\-]+)$", "$1.wikisource.org"),
+            Regex(@"^b:([a-z0-9\-]+)$", "$1.wikibooks.org"),
+            Regex(@"^n:([a-z0-9\-]+)$", "$1.wikinews.org"),
+            Regex(@"^v:([a-z0-9\-]+)$", "$1.wikiversity.org"),
+            Regex(@"^voy:([a-z0-9\-]+)$", "$1.wikivoyage.org"),
+            Regex(@"^wikt:([a-z0-9\-]+)$", "$1.wiktionary.org"),
         };
 
         private static Wiki Const(string code, string url)
@@ -39,6 +39,11 @@ namespace WikiFountain.Server.Core
                     return new MediaWiki(code, "https://" + wiki.Item2(code) + "/w/api.php", identity);
             }
             throw new Exception(string.Format("Unknown wiki '{0}'.", code));
+        }
+
+        public static MediaWiki CreateMeta(Identity identity)
+        {
+            return Create("meta", identity);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NHibernate;
 using NHibernate.Linq;
@@ -29,6 +30,7 @@ namespace WikiFountain.Server.Controllers
 
             var list = (
                 from ed in _session.Query<Editathon>()
+                where ed.IsPublished
                 where ed.Articles.Any(a => a.User == user.Username)
                 select ed
             ).FetchMany(_ => _.Articles)
@@ -66,6 +68,7 @@ namespace WikiFountain.Server.Controllers
 
             return
                 from ed in _session.Query<Editathon>()
+                where ed.IsPublished
                 where ed.Jury.Contains(user.Username)
                 orderby ed.Finish descending
                 select new
@@ -78,6 +81,50 @@ namespace WikiFountain.Server.Controllers
                     ed.Finish,
                     missing = ed.Articles.Count(a => a.Marks.All(m => m.User != user.Username)),
                 };
+        }
+
+        [ActionName("created-editathons")]
+        public IEnumerable<object> GetCreatedEditathons()
+        {
+            return
+                from ed in _session.Query<Editathon>()
+                where ed.Creator == _identity.GetUserInfo().Username
+                orderby ed.IsPublished, ed.Start descending
+                select new
+                {
+                    ed.Name,
+                    ed.Code,
+                    ed.Description,
+                    ed.Wiki,
+                    ed.Start,
+                    ed.Finish,
+                    ed.IsPublished,
+                };
+        }
+
+        [ActionName("unapproved-editathons")]
+        public async Task<object> GetEditathonsToApprove()
+        {
+            var user = _identity.GetUserInfo();
+            var wiki = MediaWikis.CreateMeta(_identity);
+            var groups = await wiki.GetSysopWikis(user.Username);
+
+            var query = _session.Query<Editathon>()
+                .Where(_ => !_.IsPublished);
+
+            if (!groups.Contains("*") && !groups.Contains("meta"))
+                query = query.Where(_ => groups.Contains(_.Wiki));
+
+            return query.Select(ed => new
+            {
+                ed.Name,
+                ed.Code,
+                ed.Description,
+                ed.Wiki,
+                ed.Start,
+                ed.Finish,
+                ed.Creator,
+            });
         }
     }
 }

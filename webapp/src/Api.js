@@ -100,6 +100,12 @@ export default {
    getJuryEditathons: () =>
       get('personal/jury-editathons'),
 
+   getCreatedEditathons: () =>
+      get('personal/created-editathons'),
+
+   getUnapprovedEditathons: () =>
+      get('personal/unapproved-editathons'),
+
    parse: (wiki, text, title = null) =>
       post('wiki/parse', { wiki, text, title }),
 

@@ -252,6 +252,8 @@ export default {
       title: 'Личный кабинет',
       editathons: 'Участие',
       jury: 'Оценка',
+      created: 'Созданные',
+      approval: 'Подтверджение',
 
       Editathons: {
          title: 'Марафоны, в которых вы принимаете участие',
@@ -265,6 +267,15 @@ export default {
          title: 'Марафоны, в которых вы в жюри',
          hasEnded: date => `закончился ${formatDateIn(date)}`,
          willEndIn: date => `заканчивается ${formatDateIn(date)}`,
+      },
+
+      Created: {
+         title: 'Марафоны, созданные вами',
+         draft: 'черновик',
+      },
+
+      Approval: {
+         title: 'Марафоны, требующие подтверждения',
       },
    },
 };

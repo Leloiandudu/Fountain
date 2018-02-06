@@ -1,0 +1,44 @@
+.Created {
+   display: flex;
+   flex-flow: column;
+   padding: 0 .3em;
+
+   .list {
+      display: flex;
+      flex-flow: column;
+
+      .row {
+         margin-top: .5em;
+         flex: 1 1 auto;
+         display: flex;
+         flex-flow: column;
+
+         min-width: 0;
+         max-width: 25em;
+         text-decoration: none;
+         color: inherit;
+      }
+
+      .name {
+         overflow-x: hidden;
+         text-overflow: ellipsis;
+         white-space: nowrap;
+         position: relative;
+
+         &:after {
+            content: '';
+            width: 3em;
+            height: 100%;
+            position: absolute;
+            right: 0;
+            background: linear-gradient(90deg, transparent, white);
+            pointer-events: none;
+         }
+      }
+
+      .description {
+         font-size: .7em;
+         color: #888;
+      }
+   }
+}
