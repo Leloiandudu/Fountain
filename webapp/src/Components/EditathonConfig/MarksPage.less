@@ -1,0 +1,113 @@
+.MarksPage {
+   @ident: 2em;
+
+   .mark {
+      display: flex;
+      flex-flow: column;
+   }
+
+   .mark .mark {
+      padding-left: @ident;
+   }
+
+   .mark .add {
+      margin-left: @ident;
+   }
+
+   .settings {
+      display: flex;
+      flex-flow: column;
+
+      border: solid 1px #ccc;
+      border-radius: 2px;
+      margin: .25em 0;
+
+      header {
+         display: flex;
+         flex-flow: row wrap;
+
+         background-color: #eee;
+         border-bottom: solid 1px #ccc;
+         padding: .2em;
+
+         span {
+            padding: 0 .3em;
+            font-weight: 600;
+         }
+
+         .delete {
+            margin-left: auto;
+            padding: 0;
+            padding: .625em 0;
+            min-width: 1.5em;
+            background-size: auto 75%;
+         }
+      }
+   }
+
+   .add {
+      margin: .25em auto .25em 0;
+
+      .popup {
+         font-size: medium;
+      }
+   }
+
+   .row {
+      display: flex;
+      flex-flow: row wrap;
+      flex: 1 0 auto;
+
+      padding: 0 .25em;
+
+      &:last-child {
+         padding-bottom: .25em;
+      }
+   }
+
+   header + .row {
+      padding-top: .25em;
+   }
+
+   label {
+      flex-flow: row;
+      align-items: center;
+
+      margin: .25em;
+
+      &.description {
+         flex: 1 0 auto;
+
+         input {
+            flex: 1 0 auto;
+         }
+      }
+
+      .IntegerInput {
+         align-self: stretch;
+      }
+
+      > span {
+         &::after {
+            content: ':';
+            margin-right: .25em;
+         }
+      }
+   }
+
+   .preview {
+      display: flex;
+      flex-flow: column;
+      align-items: flex-start;
+      margin-top: 2em;
+
+      header {
+         font-size: large;
+         font-weight: 600;
+      }
+
+      .reset {
+         margin-top: .25em;
+      }
+   }
+}

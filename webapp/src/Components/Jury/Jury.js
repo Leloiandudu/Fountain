@@ -51,7 +51,7 @@ const Jury = React.createClass({
          return;
       }
 
-      const marksCount = new Map(editathon.articles.map(article => [ 
+      const marksCount = new Map(editathon.articles.map(article => [
          article,
          editathon.jury.filter(j => findMarkOf(article.marks, j)).length
       ]));
@@ -125,13 +125,13 @@ const Jury = React.createClass({
       return readRules(this.state.editathon.rules).filter(r => r.flags & (RuleFlags.optional | RuleFlags.informational));
    },
 
-   onChanged() {
-      this.setState({ changed: true });
+   onChanged(changed) {
+      this.setState({ changed });
    },
 
    unsavedWarning() {
       return new Promise((resolve) => {
-         this.setState({ 
+         this.setState({
             unsavedWarning: (result) => {
                this.setState({ unsavedWarning: null });
                resolve(result);
@@ -180,7 +180,7 @@ const Jury = React.createClass({
             marks: mark.marks,
             comment: mark.comment,
          });
-         
+
          this.setMark(article, mark);
          this.setState({
             editathon: this.state.editathon,
@@ -188,6 +188,7 @@ const Jury = React.createClass({
          });
          this.moveNext();
       } catch (err) {
+         console.error(err);
          alert(`Error '${err}' while saving the mark for '${article.name}'.`);
       }
    },

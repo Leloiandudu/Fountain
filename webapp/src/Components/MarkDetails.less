@@ -1,0 +1,33 @@
+.MarkDetails {
+   dl, dt, dd {
+      text-align: left;
+      display: inline;
+   }
+
+   dl {
+      &:before {
+         content: ' (';
+      }
+
+      &:after {
+         content: ')';
+      }
+
+      dd {
+         &:not(:last-child):after {
+            content: ', ';
+         }
+      }
+   }
+
+   .jury, .sum {
+      font-weight: 600;
+   }
+
+   .comment {
+      font-size: .8em;
+      margin-left: 1px;
+      border-left: solid 2px lightgrey;
+      padding-left: 3px;
+   }
+}

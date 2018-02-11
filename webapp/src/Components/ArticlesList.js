@@ -4,15 +4,16 @@ import moment from 'moment';
 import stable from 'stable';
 import sortBy from './../sortBy';
 import { groupBy } from './../utils'
-import { EditathonFlags, findMarkOf, calcMark, getTotalMark } from './../jury';
+import { EditathonFlags, findMarkOf, getTotalMark } from './../jury';
 import { withTranslation } from './../translate';
 import Dashboard from './Dashboard';
 import DropDownButton from './DropDownButton'
-import Loader from './Loader';
 import Link from './Link';
+import Loader from './Loader';
+import MarkDetails from './MarkDetails';
 import RequiresLogin from './RequiresLogin';
-import WikiLink from './WikiLink';
 import WikiButton from './WikiButton';
+import WikiLink from './WikiLink';
 
 function sort(items, by, asc) {
    if (by === null) {
@@ -183,7 +184,9 @@ const ArticlesList = React.createClass({
                            {jury
                               .map(jury => findMarkOf(a.marks, jury))
                               .filter(x => x)
-                              .map((m, i) => this.renderMark(m, i, marksConfig))}
+                              .map((m, i) => <li key={i}>
+                                 <MarkDetails mark={m} config={marksConfig} />
+                              </li>)}
                         </ul>
                      </td>
                   </tr>
@@ -211,28 +214,6 @@ const ArticlesList = React.createClass({
          asc: sortBy === by && sortAsc,
          desc: sortBy === by && !sortAsc,
       })} onClick={() => this.sortBy(by)}>{title}</button>
-   },
-   renderMark(mark, index, marksConfig) {
-      const { sum, parts } = calcMark(mark.marks, marksConfig);
-
-      const details = [];
-      for (const p in parts) {
-         const v = parts[p];
-         details.push(<dt>{v && this.formatNumber(v, { forcePlus: true }) + ' ' || ''}</dt>);
-         details.push(<dd>{p}</dd>);
-      }
-
-      return (
-         <li className='mark' key={index}>
-            <span className='jury'>{mark.user}</span>{': '}<span className='sum'>{this.formatNumber(sum)}</span>
-            <dl className='details'>
-               {details}
-            </dl>
-            {mark.comment && <div className='comment'>
-               {mark.comment}
-            </div>}
-         </li>
-      );
    },
 });
 

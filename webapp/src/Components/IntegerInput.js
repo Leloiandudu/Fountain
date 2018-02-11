@@ -25,7 +25,7 @@ export default class IntegerInput extends React.Component {
          changed = true;
       }
       this.state = { value };
-      
+
       if (changed && onChange) {
          onChange(value);
       }
@@ -117,12 +117,12 @@ export default class IntegerInput extends React.Component {
       }
 
       return <div className={classNames([ 'IntegerInput', className ])}>
-         <div className='minus' onClick={() => this.dec()}>&minus;</div>
+         <div className='minus' onClick={() => this.dec()}><span>&minus;</span></div>
          <input type='number' value={value}
                 onChange={e => this.onChange(e.target.value)}
                 onBlur={() => this.onBlur()}
                 onKeyDown={e => this.onKeyDown(e)} />
-         <div className='plus' onClick={() => this.inc()}>+</div>
+         <div className='plus' onClick={() => this.inc()}><span>+</span></div>
       </div>;
    }
 }

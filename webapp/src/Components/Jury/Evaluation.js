@@ -1,12 +1,11 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import Header from './Header';
-import IntegerInput from '../IntegerInput';
+import MarkInput from '../MarkInput';
 import ModalDialog from '../ModalDialog';
 import WikiButton from '../WikiButton';
 import { withTranslation } from '../../translate';
-import { calcMark, getActiveMarks } from '../../jury';
+import { calcMark, isMarkValid } from '../../jury';
 
 const Evaluation = React.createClass({
    getInitialState() {
@@ -34,69 +33,7 @@ const Evaluation = React.createClass({
       });
    },
    saveComment() {
-      this.setState({ isCommentOpen: false, comment: this.state.editingComment });
-      this.props.onChanged();
-   },
-   setMark(id, value) {
-      if (value === undefined)
-         value = !this.state.marks[id];
-      this.state.marks[id] = value;
-      this.setState({ marks: this.state.marks });
-      this.props.onChanged();
-   },
-   clearMark(id) {
-      delete this.state.marks[id];
-      this.setState({ marks: this.state.marks });
-      this.props.onChanged();
-   },
-   renderCheck(id, mark) {
-      return <div className='check'>
-         <button className={classNames({
-               selected: this.state.marks[id],
-            })} title={mark.description} onClick={() => this.setMark(id)}>
-            {mark.title}
-         </button>
-         {this.renderMarkControls(mark.children)}
-      </div>;
-   },
-   renderRadio(id, mark) {
-      return <div className='radio'>
-         <span className='title'>{mark.title + ': '}</span>
-         <div className='buttons'>
-            {mark.values.map((v, i) => <button key={i} title={v.description} className={classNames({
-               selected: mark.cur && mark.cur.val === i,
-            })} onClick={() => this.setMark(id, i)}>
-               {v.title}
-            </button>)}
-         </div>
-         {this.renderMarkControls(mark.children)}
-      </div>;
-   },
-   renderInt(id, mark) {
-      return <div className='int'>
-         <span className='title'>{mark.title + ': '}</span>
-         <IntegerInput value={mark.cur ? mark.cur.val : undefined}
-                       min={mark.min} max={mark.max}
-                       onChange={v => v === undefined ? this.clearMark(id) : this.setMark(id, v)} />
-     </div>
-   },
-   renderMarkControl(id, mark) {
-      const components = {
-         check: this.renderCheck,
-         radio: this.renderRadio,
-         int: this.renderInt,
-      };
-
-      return components[mark.type](id, mark);
-   },
-   renderMarkControls(marks) {
-      if (!marks) return;
-      marks = getActiveMarks(this.state.marks, marks);
-      return <ul>
-         {Object.keys(marks).map(id => <li key={id}>
-            {this.renderMarkControl(id, marks[id])}
-         </li>)}
-      </ul>
+      this.onChanged({ isCommentOpen: false, comment: this.state.editingComment });
    },
    hasChanges() {
       const { marks: oldMark = {}, oldComment } = this.props.mark || {};
@@ -113,27 +50,8 @@ const Evaluation = React.createClass({
       }
       return false;
    },
-   markIsValid() {
-      // test if all radios have values
-      function isValid(marks) {
-         if (!marks) return true;
-
-         for (const m of Object.values(marks)) {
-            if (m.type === 'radio' && m.cur === undefined)
-               return false;
-            if (m.type === 'int' && m.cur === undefined)
-               return false;
-            if (!isValid(m.children))
-               return false;
-         }
-
-         return true;
-      }
-
-      return isValid(getActiveMarks(this.state.marks, this.props.marks));
-   },
    canSave() {
-      return this.hasChanges() && this.markIsValid();
+      return this.hasChanges() && isMarkValid(this.state.marks, this.props.marks);
    },
    onSave() {
       this.props.onSaveMarks({
@@ -141,34 +59,38 @@ const Evaluation = React.createClass({
          comment: this.state.comment,
       });
    },
-   getTotal() {
-      const { sum = null } = calcMark(this.state.marks, this.props.marks);
-      return sum === null ? '--' : sum;
+   onMarksChange(marks) {
+      this.onChanged({ marks });
+   },
+   onChanged(newState) {
+      this.setState(newState, () => this.props.onChanged(this.hasChanges()));
    },
    render() {
       if (!this.props.article)
          return null;
-      const { marks, translation: { tr } } = this.props;
+      const { marks: config, translation: { tr } } = this.props;
+      const { marks, comment, isCommentOpen, editingComment } = this.state;
+
+      const total = (calcMark(marks, config) || { sum: null }).sum;
+
       return (
          <div className='Evaluation'>
-            <div className='marks'>
-               {this.renderMarkControls(marks)}
-            </div>
+            <MarkInput config={config} value={marks} onChange={this.onMarksChange} />
             <button onClick={this.openComment} className={classNames({
                'comment-button': true,
-               selected: this.state.comment,
-            })} title={this.state.comment}>{tr('comment')}</button>
+               selected: comment,
+            })} title={comment}>{tr('comment')}</button>
             <div className='controls'>
                <div className='total'>
-                  {tr('total', this.getTotal())}
+                  {tr('total', total === null ? '--' : total)}
                </div>
                <WikiButton disabled={!this.canSave()} type='constructive' onClick={this.onSave}>
                   {tr('save')}
                </WikiButton>
                <WikiButton onClick={this.props.onNext}>{tr('skip')}</WikiButton>
             </div>
-            <ModalDialog isOpen={this.state.isCommentOpen} className='comment-dialog'>
-               <textarea autoFocus={true} ref='commentTextarea' value={this.state.editingComment} onChange={event => this.setState({ editingComment: event.target.value })} />
+            <ModalDialog isOpen={isCommentOpen} className='comment-dialog'>
+               <textarea autoFocus={true} ref='commentTextarea' value={editingComment} onChange={event => this.setState({ editingComment: event.target.value })} />
                <div className='buttons'>
                   <WikiButton type='progressive' onClick={this.saveComment}>{tr('Comment.save')}</WikiButton>
                   <WikiButton onClick={() => this.setState({ isCommentOpen: false })}>{tr('Comment.cancel')}</WikiButton>

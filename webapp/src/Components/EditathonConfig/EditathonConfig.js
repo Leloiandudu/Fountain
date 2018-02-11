@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import GeneralPage from './GeneralPage';
 import RulesPage from './RulesPage';
+import MarksPage from './MarksPage';
 import TemplatePage from './TemplatePage';
 import JuryPage from './JuryPage';
 import { ValidationForm } from './validation';
@@ -24,6 +25,7 @@ function Headers({ items, selected, onClick }) {
 const Pages = {
    general: GeneralPage,
    rules: RulesPage,
+   marks: MarksPage,
    template: TemplatePage,
    jury: JuryPage,
 };

@@ -50,17 +50,29 @@ export function calcMark(mark, marks) {
    return function calcMark(marks) {
       const res = { parts: {}, sum: null };
 
-      for (const m of Object.values(marks)) {
+      for (const id in marks) {
+         const m = marks[id];
          if (!m.cur) continue;
          res.sum += m.cur.value;
 
+         let title, value;
          if (m.type === 'radio') {
-            res.parts[m.cur.description || m.cur.title] = m.cur.value;
+            title = m.cur.description || m.cur.title;
+            value = m.cur.value;
          } else if (m.type === 'check') {
-            res.parts[m.title || m.description] = m.value;
+            title = m.title || m.description;
+            value = m.value;
          } else if (m.type === 'int') {
-            res.parts[m.title || m.description] = m.cur.value;
+            title = m.title || m.description;
+            value = m.cur.value;
+         } else {
+            throw new Error(`Unknown type: ${m.type}`)
          }
+
+         res.parts[id] = {
+            title: title || '',
+            value,
+         };
 
          if (m.children) {
             const { parts, sum } = calcMark(m.children);
@@ -74,10 +86,17 @@ export function calcMark(mark, marks) {
 }
 
 function isSameMark(m1, m2, marksConfig) {
+   function get(m) {
+      for (const id in m) {
+         m[id] = m[id].value;
+      }
+      return m;
+   }
+
    m1 = calcMark(m1, marksConfig);
    m2 = calcMark(m2, marksConfig);
    if (!m1 || !m2) return m1 === m2;
-   return eq(m1.parts, m2.parts);
+   return eq(get(m1.parts), get(m2.parts));
 }
 
 function getConsensualMark(marks, marksConfig) {
@@ -87,6 +106,27 @@ function getConsensualMark(marks, marksConfig) {
       }
    }
    return calcMark(marks[0], marksConfig).sum;
+}
+
+
+export function isMarkValid(marks, marksConfig) {
+   // tests if all radios & ints have values
+   function isValid(marks) {
+      if (!marks) return true;
+
+      for (const m of Object.values(marks)) {
+         if (m.type === 'radio' && m.cur === undefined)
+            return false;
+         if (m.type === 'int' && m.cur === undefined)
+            return false;
+         if (!isValid(m.children))
+            return false;
+      }
+
+      return true;
+   }
+
+   return isValid(getActiveMarks(marks, marksConfig));
 }
 
 export function calcTotalMark(jury, marks, marksConfig) {

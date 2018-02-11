@@ -91,6 +91,18 @@ button {
    }
 }
 
+.marks-button() {
+   .button-style();
+   padding: .1em .4em;
+   min-width: 2em;
+
+   &.selected {
+      border-color: #347bff;
+      background-color: #347bff;
+      color: white;
+   }
+}
+
 input[type=text], input:not([type]), textarea {
    border: 1px solid #ccc;
    padding: .3em .3em .3em .6em;
@@ -164,6 +176,8 @@ input[type=checkbox] {
 @import 'Components/Footer.less';
 @import 'Components/Header.less';
 @import 'Components/IntegerInput.less';
+@import 'Components/MarkDetails.less';
+@import 'Components/MarkInput.less';
 @import 'Components/LangSwitcher.less';
 @import 'Components/Loader.less';
 @import 'Components/LookupWithThrottle.less';

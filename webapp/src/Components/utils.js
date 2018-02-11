@@ -69,9 +69,7 @@ export function setDefault(props, prop, getDefault, valueProp = 'value') {
    if (onChange && isObjectEmpty(value)) {
       value = getDefault();
       if (prop !== null) {
-         const data = props[valueProp];
-         data[prop] = value;
-         onChange(data);
+         onChange({ ...props[valueProp], [prop]: value });
       } else {
          onChange(value);
       }

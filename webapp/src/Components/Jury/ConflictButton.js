@@ -1,8 +1,9 @@
 import React from 'react';
 import classNames from 'classnames';
 import ModalDialog from '../ModalDialog';
+import MarkDetails from '../MarkDetails';
 import WikiLink from '../WikiLink';
-import { findMarkOf, calcMark, isConflict } from './../../jury';
+import { findMarkOf, isConflict } from './../../jury';
 import { withTranslation } from './../../translate';
 
 class ConflictButton extends React.Component {
@@ -22,7 +23,7 @@ class ConflictButton extends React.Component {
    }
 
    isConflict() {
-      const article = this.props.article;
+      const { article } = this.props;
       return findMarkOf(article.marks) !== undefined && isConflict(this.props.editathon, article);
    }
 
@@ -44,26 +45,17 @@ class ConflictButton extends React.Component {
       if (!this.isConflict()) return null;
       const { editathon: { jury, marks: marksConfig, wiki }, article: { marks } } = this.props;
 
-      const all = jury.map(j => ({
-         jury: j,
-         mark: findMarkOf(marks, j),
-      })).filter(m => m.mark).map(m => ({
-         jury: m.jury,
-         parts: calcMark(m.mark.marks, marksConfig).parts,
-         comment: m.mark.comment,
-      }));
-
       return <div className='ConflictButton'>
          <button className={classNames({ firstTime: this.state.firstTime })} onClick={() => this.onClick()} />
          <ModalDialog isOpen={this.state.showDialog} tryClose={() => this.setState({ showDialog: false })}>
             <table>
                <tbody>
-                  {all.map((m, i) => <tr key={i}>
+                  {jury.map(j => findMarkOf(marks, j)).filter(m => m).map((m, i) => <tr key={i}>
                      <td className='jury'>
-                        <WikiLink to={'User_talk:' + m.jury} wiki={wiki} target='_blank' />
+                        <WikiLink to={'User_talk:' + m.user} wiki={wiki} target='_blank' />
                      </td>
                      <td className='mark'>
-                        <dl>{this.renderMark(m.parts)}</dl>
+                        <MarkDetails config={marksConfig} mark={{ marks: m.marks }} />
                      </td>
                      <td className='comment'>{m.comment}</td>
                   </tr>)}

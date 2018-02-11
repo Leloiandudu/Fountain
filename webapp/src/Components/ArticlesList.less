@@ -31,7 +31,7 @@
 
          .manageArticles {
             .removeAnchorStyling();
-            
+
             > button {
                border-left: none;
                border-top-left-radius: 0;
@@ -40,7 +40,7 @@
 
             .popup {
                right: 0;
-               font-size: medium;               
+               font-size: medium;
             }
          }
       }
@@ -141,29 +141,6 @@
       td {
          padding: 1px 3px;
          vertical-align: top;
-
-         .mark {
-            dl, dt, dd {
-               text-align: left;
-               display: inline;
-            }
-
-            dl {
-               &:before {
-                  content: ' (';
-               }
-
-               &:after {
-                  content: ')';
-               }
-
-               dd {
-                  &:not(:last-child):after {
-                     content: ', ';
-                  }
-               }
-            }
-         }
       }
 
       tr.spacer {
@@ -211,14 +188,14 @@
          th {
             padding: 0 .3em;
          }
-         
+
          .article {
             font-size: 1.2em;
          }
 
          .summary {
             > td {
-               padding-top: .5em;
+               padding-top: .5rem;
             }
 
             &:not(:first-child) > td {
@@ -227,25 +204,7 @@
          }
 
          .details:not(:last-child) > td {
-            padding-bottom: .5em;
-         }
-
-         .details {
-            .jury, .sum {
-               font-weight: 600;
-            }
-
-            .mark {
-               text-align: left;
-               padding-top: .5em;
-            }
-
-            .comment {
-               font-size: .8em;
-               margin-left: 1px;
-               border-left: solid 2px lightgrey;
-               padding-left: 3px;
-            }
+            padding-bottom: .75rem;
          }
       }
    }
