@@ -88,17 +88,17 @@ ${this.formatDate(e.start, 'L')} – ${this.formatDate(e.finish, 'L')}`}</Toolti
    render() {
       const editathons = this.props.editathons.map(e => ({
          ...e,
-         start: moment.utc(e.start).startOf('day'),
-         finish: moment.utc(e.finish).startOf('day'),
+         start: moment(e.start).startOf('day'),
+         finish: moment(e.finish).startOf('day'),
       })).filter(e => !e.start.isSame(e.finish));
-      
+
       let min = moment.min(editathons.map(e => e.start)).startOf('month');
       const max = moment.max(editathons.map(e => e.finish)).startOf('month').add(1, 'month');
       if (max.diff(min, 'months') < 7) {
          min = moment(max).add(-7, 'months');
       }
 
-      return <div className='EditathonCalendar' 
+      return <div className='EditathonCalendar'
                   onWheel={e => this.onWheel(e)}
                   ref={x => this._element = x}>
          <div className='content'>

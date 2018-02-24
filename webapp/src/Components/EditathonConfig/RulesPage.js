@@ -148,7 +148,7 @@ class ArticleCreatedRule extends React.Component {
    changeNotBefore(value) {
       const params = { ...this.props.params };
       if (value) {
-         params.after = toUtc(value);
+         params.after = value;
       } else {
          delete params.after;
       }
@@ -158,7 +158,7 @@ class ArticleCreatedRule extends React.Component {
    changeNotAfter(value) {
       const params = { ...this.props.params };
       if (value) {
-         params.before = toUtc(moment(value).add(1, 'day'));
+         params.before = moment(value).add(1, 'day');
       } else {
          delete params.before;
       }
@@ -174,7 +174,7 @@ class ArticleCreatedRule extends React.Component {
             <label htmlFor='notBefore'>{tr('notBefore')}</label>
             <DatePicker
                   id='notBefore'
-                  value={toLocal(after)}
+                  value={after}
                   allowEmpty={true}
                   onChange={v => this.changeNotBefore(v)} />
          </div>
@@ -182,7 +182,7 @@ class ArticleCreatedRule extends React.Component {
             <label htmlFor='notAfter'>{tr('notAfter')}</label>
             <DatePicker
                   id='notAfter'
-                  value={before ? toLocal(moment(before).add(-1, 'day')) : before}
+                  value={before ? moment(before).add(-1, 'day') : before}
                   allowEmpty={true}
                   onChange={v => this.changeNotAfter(v)} />
          </div>
@@ -196,7 +196,7 @@ class SubmitterRegisteredRule extends React.Component {
    changeNotBefore(value) {
       const params = { ...this.props.params };
       if (value) {
-         params.after = toUtc(value);
+         params.after = value;
       } else {
          delete params.after;
       }
@@ -211,7 +211,7 @@ class SubmitterRegisteredRule extends React.Component {
             <label htmlFor='notBefore'>{tr('notBefore')}</label>
             <DatePicker
                   id='notBefore'
-                  value={toLocal(after)}
+                  value={after}
                   allowEmpty={true}
                   onChange={v => this.changeNotBefore(v)} />
          </div>
@@ -220,18 +220,6 @@ class SubmitterRegisteredRule extends React.Component {
 }
 
 SubmitterRegisteredRule = withTranslation(SubmitterRegisteredRule, 'EditathonConfig.RulesPage.submitterRegistered');
-
-function toUtc(date) {
-   if (!date) return date;
-   date = moment(date).startOf('day');
-   return moment.utc([ date.year(), date.month(), date.date() ]).toDate();
-}
-
-function toLocal(date) {
-   if (!date) return date;
-   date = moment(date).startOf('day');
-   return moment([ date.year(), date.month(), date.date() ]).toDate();
-}
 
 function multi(component) {
    component.allowMulti = true;

@@ -121,7 +121,7 @@ const ArticlesList = React.createClass({
    },
    render() {
       const { editathon } = this.props;
-      if (!editathon || !editathon.jury || !editathon.start || !editathon.start.fromNow || !editathon.finish)
+      if (!editathon || !editathon.jury)
          return <Loader />;
 
       const { data } = this.state;

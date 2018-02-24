@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import moment from 'moment';
 import Link from '../Link';
 import Remote from '../Remote';
 import WikiButton from '../WikiButton';
@@ -15,7 +16,7 @@ const Jury = ({ translation: { translate, tr } }) => <Remote getData={Api.getJur
                <div className='details'>
                   <div className='name' title={ed.name}>{ed.name}</div>
                   <div className='finish' title={translate('formatDate', ed.finish, 'LL LT')}>
-                     {ed.finish.isBefore() ? tr('hasEnded', ed.finish) : tr('willEndIn', ed.finish)}
+                     {moment(ed.finish).isBefore() ? tr('hasEnded', ed.finish) : tr('willEndIn', ed.finish)}
                   </div>
                </div>
                <div className={classNames('marks', !ed.missing && 'marks-zero')}>

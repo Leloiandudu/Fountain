@@ -180,7 +180,7 @@ const EditathonList = React.createClass({
    },
    renderItem(item) {
       const today = moment().utc();
-      const isCurrent = item.start.isBefore(today) && item.finish.isAfter(today);
+      const isCurrent = moment(item.start).isBefore(today) && moment(item.finish).isAfter(today);
       const url = '/editathons/' + encodeURIComponent(item.code);
 
       return (
@@ -200,8 +200,8 @@ const EditathonList = React.createClass({
    renderDates({ start, finish }) {
       const { translation: { translate } } = this.props;
 
-      start = moment(start).utc();
-      finish = moment(finish).utc();
+      start = moment(start);
+      finish = moment(finish);
 
       let format = 'MMM';
       let startFormat = format;
@@ -223,7 +223,7 @@ const EditathonList = React.createClass({
 });
 
 function isPast(editathon) {
-   return editathon.finish.isBefore(moment().utc())
+   return moment(editathon.finish).isBefore(moment().utc());
 }
 
 export default withTranslation(EditathonList, 'EditathonList');

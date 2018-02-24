@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import moment from 'moment';
 import Link from '../Link';
 import Remote from '../Remote';
 import WikiButton from '../WikiButton';
@@ -12,7 +13,7 @@ const Editathons = ({ translation: { translate, tr } }) => <Remote getData={Api.
       <div className='list'>
          {data.map(ed => ({
             ...ed,
-            finished: ed.finish.isBefore(),
+            finished: moment(ed.finish).isBefore(),
             hasRows: ed.rows.length !== 0,
          })).map(ed =>
             <div className='row' key={ed.code}>
@@ -29,7 +30,7 @@ const Editathons = ({ translation: { translate, tr } }) => <Remote getData={Api.
                      <span className='total' />
                   </div>}
                   {ed.rows.map((r, i) =>
-                  <div className={classNames('row', r.name === Global.user.name && 'me')} 
+                  <div className={classNames('row', r.name === Global.user.name && 'me')}
                        key={`${ed.code}*${i}`}>
                      <span className='rank'>{translate('formatNumber', r.rank)}</span>
                      <span className='name'>{r.name}</span>

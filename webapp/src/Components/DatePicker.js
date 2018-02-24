@@ -101,7 +101,7 @@ class DatePicker extends React.Component {
             onBlur={() => this.onInputBlur()} />
          <div className='popup-container' onClick={() => this.onPopupClick()}>
             {this.state.isOpen && <div className='popup'>
-               <DayPicker 
+               <DayPicker
                   tabIndex={null}
                   locale={this.getCurLang()}
                   localeUtils={LocaleUtils}

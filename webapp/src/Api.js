@@ -46,7 +46,7 @@ function postProcess(result) {
 
    if (typeof result === 'string') {
       if (dateRegex.test(result))
-         return moment(result);
+         return moment.parseZone(result).toDate();
    } else if (Array.isArray(result)) {
       return result.map(postProcess);
    } else if (result && typeof result === 'object') {
