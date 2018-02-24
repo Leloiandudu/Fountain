@@ -30,6 +30,11 @@ export default class DropDown extends React.Component {
       }
    }
 
+   onBlur() {
+      if (this._ignoreBlur) return;
+      setTimeout(() => this.setState({ value: '', open: false }), 1);
+   }
+
    renderButton() {
       const { renderButton, value, renderItem = x => x, getValue, items } = this.props;
 
@@ -46,11 +51,12 @@ export default class DropDown extends React.Component {
          }
       }
 
-      const button = renderButton 
+      const button = renderButton
          ? renderButton(value, text, item)
          : <WikiButton>{text}</WikiButton>;
 
       return React.cloneElement(button, {
+         tabIndex: this.state.open ? -1 : 0,
          onFocus: () => this.onButtonFocus(),
          onMouseDown: () => this._ignoreBlur = true,
       });
@@ -59,14 +65,14 @@ export default class DropDown extends React.Component {
    renderItem(item, selected) {
       const { renderItem, getValue } = this.props;
       return <div
-            key={getValue ? getValue(item) : item} 
+            key={getValue ? getValue(item) : item}
             className={classNames({ item: true, selected })}>
          {renderItem ? renderItem(item) : item}
       </div>
    }
 
    renderMenu(items, value, style) {
-      return <div className='menu'>
+      return <div className='menu' tabIndex='-1'>
          {items}
       </div>
    }
@@ -159,7 +165,7 @@ export default class DropDown extends React.Component {
                      this._ignoreBlur = false;
                      e.target.select();
                   },
-                  onBlur: () => !this._ignoreBlur && this.setState({ value: '', open: false }),
+                  onBlur: () => this.onBlur(),
                   onKeyDown: e => this.onKeyDown(e),
                }}
                open={true}

@@ -9,25 +9,44 @@ const MaxItems = 10;
 export default class WikiLookup extends React.Component {
    constructor(props) {
       super(props);
-      this.state = { text: '', items: [], filteredItems: [] };
+      this.state = {
+         text: props.value || '',
+         items: [],
+         filteredItems: []
+      };
       this.init();
    }
 
    async init() {
       const matrix = await getSiteMatrix();
+      const items = matrix
+         .map(lang => lang.sites.map(s => ({
+            code: s.code,
+            name: s.name,
+            lang: {
+               code: lang.code,
+               name: lang.name,
+            },
+         })))
+         .reduce((a1, a2) => a1.concat(a2), [{
+            code: null, name: '',
+            lang: { code: 'commons', name: 'commons' },
+         }]);
 
-      this.setState({
-         items: matrix
-            .map(lang => lang.sites.map(s => ({
-               code: s.code,
-               name: s.name,
-               lang: {
-                  code: lang.code,
-                  name: lang.name,
-               },
-            })))
-            .reduce((a1, a2) => a1.concat(a2), [ { code: null, name: '', lang: { code: 'commons', name: 'commons' } } ]),
-      });
+      this.setState(state => ({
+         items,
+         filteredItems: this.filter(state.text, items),
+      }));
+   }
+
+   componentWillReceiveProps(newProps) {
+      const text = newProps.value || '';
+      if (newProps.value != this.props.value) {
+         this.setState(state =>({
+            text,
+            filteredItems: this.filter(text, state.items),
+         }));
+      }
    }
 
    renderItem(item, selected, styles) {
@@ -86,18 +105,18 @@ export default class WikiLookup extends React.Component {
       )(a, b);
    }
 
-   filter(text) {
+   filter(text, items) {
       text = text.toLowerCase();
-      return this.state.items
+      return items
          .filter(i => this.matchItem(i, text))
          .sort((a, b) => this.sortItems(a, b, text));
    }
 
    onChange(text, item) {
-      this.setState({
+      this.setState(state => ({
          text,
-         filteredItems: this.filter(text)
-      });
+         filteredItems: this.filter(text, state.items)
+      }));
 
       if (item === undefined) {
          item = this.state.items.filter(i => this.getItemCode(i) === text)[0];
@@ -110,7 +129,7 @@ export default class WikiLookup extends React.Component {
       return <Autocomplete
          wrapperProps={{ className: 'WikiLookup' }}
          inputProps={this.props.inputProps}
-         value={this.state.text || this.props.value || ''}
+         value={this.state.text}
          items={[...this.state.filteredItems].slice(0, MaxItems)}
          getItemValue={this.getItemCode}
          renderItem={this.renderItem.bind(this)}
