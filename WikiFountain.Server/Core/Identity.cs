@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
-using Newtonsoft.Json.Linq;
 using NHibernate;
 using NHibernate.Linq;
 using WikiFountain.Server.Models;
@@ -22,7 +21,7 @@ namespace WikiFountain.Server.Core
         private readonly ISession _session;
 
         private OAuthConsumer.Token _token;
-        private UserInfo _info;
+        private UserIdentity _user;
 
         public Identity(HttpContextBase context, OAuthConsumer oauth, ISession session)
         {
@@ -33,8 +32,14 @@ namespace WikiFountain.Server.Core
 
         public UserInfo GetUserInfo()
         {
-            _info = _info ?? ReadUserInfo();
-            return _info;
+            _user = _user ?? ReadUser();
+            if (_user == null) return null;
+            return _user.UserInfo;
+        }
+
+        public UserRights GetUserRights()
+        {
+            return new UserRights(this);
         }
 
         public void Sign(HttpRequestMessage msg)
@@ -60,7 +65,7 @@ namespace WikiFountain.Server.Core
                     {
                         Id = userId,
                         Token = encryptedToken,
-                        UserInfo = JObject.FromObject(userInfo),
+                        UserInfo = userInfo,
                     });
                 }
             }
@@ -106,17 +111,13 @@ namespace WikiFountain.Server.Core
             }
         }
 
-        private UserInfo ReadUserInfo()
+        private UserIdentity ReadUser()
         {
             var userId = UserId;
             if (userId == null)
                 return null;
 
-            var identity = GetUser(userId.Value);
-            if (identity == null)
-                return null;
-
-            return identity.UserInfo.ToObject<UserInfo>();
+            return GetUser(userId.Value);
         }
 
         public void Clear()

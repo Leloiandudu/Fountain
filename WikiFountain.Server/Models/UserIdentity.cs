@@ -1,5 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 
@@ -9,7 +8,7 @@ namespace WikiFountain.Server.Models
     public class UserIdentity
     {
         public Guid Id { get; set; }
-        public JObject UserInfo { get; set; }
+        public UserInfo UserInfo { get; set; }
         public byte[] Token { get; set; }
     }
 

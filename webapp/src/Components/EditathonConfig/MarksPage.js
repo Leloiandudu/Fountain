@@ -1,10 +1,8 @@
 import React from 'react';
 import DropDownButton from '../DropDownButton';
 import IntegerInput from '../IntegerInput';
-import MarkDetails from '../MarkDetails';
-import MarkInput from '../MarkInput';
+import MarksPreview from '../MarksPreview';
 import WikiButton from '../WikiButton';
-import { calcMark, isMarkValid } from '../../jury';
 import { withTranslation } from '../../translate';
 import { Validation } from './validation';
 import { setDefault } from '../utils';
@@ -12,9 +10,6 @@ import { setDefault } from '../utils';
 class MarksPage extends React.Component {
    constructor(props) {
       super(props);
-      this.state = {
-         marks: {},
-      };
 
       this._markPrototypes = {
          check: () => ({ title: '', value: 0, children: {} }),
@@ -220,11 +215,6 @@ class MarksPage extends React.Component {
    render() {
       const marks = this._marks;
       if (!marks) return null;
-      const { marks: mark } = this.state;
-
-      const sum = calcMark(mark, marks).sum;
-      const isValid = isMarkValid(mark, marks);
-      const isEmpty = !Object.keys(marks).length;
 
       return <div className='page MarksPage'>
          {this.renderMarks(marks)}
@@ -232,21 +222,7 @@ class MarksPage extends React.Component {
 
          <div className='preview'>
             <header>{this.tr('preview')}</header>
-
-            {isValid && !isEmpty
-               ? <MarkDetails mark={{ marks: mark }} config={marks} />
-               : this.tr('incomplete')
-            }
-
-            <MarkInput
-               config={marks}
-               value={mark}
-               onChange={marks => this.setState({ marks })} />
-
-            {Object.keys(mark).length !== 0 && <WikiButton
-               className='reset'
-               onClick={() => this.setState({ marks: {} })}
-               children={this.tr('resetPreview')} />}
+            <MarksPreview config={marks} />
          </div>
       </div>;
    }

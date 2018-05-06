@@ -1,0 +1,46 @@
+.Approval {
+   overflow-y: hidden;
+   padding: 0 .3em;
+
+   .row {
+      margin: 1em 0 0;
+
+      header {
+         font-size: large;
+         font-weight: 600;
+      }
+
+      dl > div {
+         display: flex;
+         margin-top: .25em;
+      }
+
+      dt {
+         min-width: 5em;
+         margin-right: .5em;
+         font-weight: 600;
+
+         &:after {
+            content: ":";
+         }
+      }
+
+      .jury {
+         &:not(:last-child):after {
+            content: ',';
+            margin-right: .25em;
+         }
+      }
+
+      .buttons {
+         display: flex;
+         flex-flow: row wrap;
+         justify-content: flex-end;
+         margin: -.25em;
+
+         > * {
+            margin: .25em;
+         }
+      }
+   }
+}

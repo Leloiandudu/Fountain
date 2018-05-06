@@ -253,68 +253,149 @@ namespace WikiFountain.Server.Controllers
 
         [HttpPost]
         [AuditOperation(OperationType.CreateEditathon)]
-        public void Create(EditathonData e)
+        public async Task Create([FromBody]EditathonConfig cfg)
         {
             var user = _identity.GetUserInfo().Username;
-            if (_session.Query<Editathon>().Any(_ => _.Creator == user && !_.IsPublished))
+
+            if (_session.Query<Editathon>().Any(_ => _.Code == cfg.Code || _.Name == cfg.Name))
                 throw Forbidden();
 
-            if (_session.Query<Editathon>().Any(_ => _.Code == e.Code || _.Name == e.Name))
+            var rights = _identity.GetUserRights();
+            await rights.Actualize();
+            var publish = rights.IsAdminIn(cfg.Wiki);
+
+            if (!publish && _session.Query<Editathon>().Any(_ => _.Creator == user && !_.IsPublished))
                 throw Forbidden();
 
-            var editathon = new Editathon
+            var e = new Editathon
             {
-                Name = e.Name,
-                Code = e.Code,
-                Description = e.Description,
-                Wiki = e.Wiki,
-                Start = e.StartDate,
-                Finish = e.FinishDate.AddDays(1).AddSeconds(-1),
-                Flags = e.Flags,
-
                 Creator = user,
-                IsPublished = false,
-
-                Template = e.Template,
-                Jury = new HashSet<string>(e.Jury),
-                Rules = new HashSet<Rule>(e.Rules),
+                IsPublished = publish,
             };
+            ApplyConfig(e, cfg);
 
-            _session.Save(editathon);
+            _session.Save(e);
         }
 
-        public object GetDraft(EditathonCode code)
+        [HttpGet]
+        [ActionName("config")]
+        public EditathonConfig GetConfig(EditathonCode code)
         {
-            var e = code.Get(q => q.Fetch(_ => _.Rules));
+            var e = code.Get(q => q
+                .Fetch(_ => _.Jury)
+                .Fetch(_ => _.Rules), false);
             var user = _identity.GetUserInfo();
 
-            return new
+            return new EditathonConfig
             {
-                e.Code,
-                e.Name,
-                e.Description,
-                e.Start,
-                e.Finish,
-                e.Wiki,
-                e.Flags,
-                e.Jury,
-                e.Marks,
+                Code = e.Code,
+                Name = e.Name,
+                Description = e.Description,
+                Start = e.Start,
+                Finish = e.Finish, // TODO:
+                Wiki = e.Wiki,
+                Flags = e.Flags,
+                
+                Rules = e.Rules.ToArray(),
+                Marks = e.Marks,
+                Template = e.Template,
+                Jury = e.Jury.ToArray(),
             };
         }
 
-        public class EditathonData
+        [HttpPost]
+        [ActionName("config")]
+        [AuditOperation(OperationType.ChangeEditathon)]
+        public async Task SetConfig(EditathonCode code, [FromBody]EditathonConfig cfg)
+        {
+            var e = code.Get(q => q
+                .Fetch(_ => _.Jury)
+                .Fetch(_ => _.Rules), false);
+
+            if (_session.Query<Editathon>().Any(_ => (_.Code == cfg.Code || _.Name == cfg.Name) && _ != e))
+                throw Forbidden();
+
+            var user = _identity.GetUserInfo();
+            var rights = _identity.GetUserRights();
+            await rights.Actualize();
+
+            if (!e.IsPublished)
+            {
+                // before publishing only creator and admins of the source wiki can edit
+                if (e.Creator != user.Username && !rights.IsAdminIn(e.Wiki))
+                    throw Forbidden();
+            }
+            else
+            {
+                // after publishing only admins of the source wiki can edit
+                if (!rights.IsAdminIn(e.Wiki))
+                    throw Forbidden();
+
+                if (e.Wiki != cfg.Wiki)
+                {
+                    // changing wikis is prohibited if editathon has any articles
+                    if (_session.Query<Article>().Any(a => a.Editathon == e))
+                        throw Forbidden();
+
+                    // don't publish to target wiki if user is not admin there
+                    if (!rights.IsAdminIn(cfg.Wiki))
+                        e.IsPublished = false;
+                }
+            }
+
+            ApplyConfig(e, cfg);
+        }
+
+        private void ApplyConfig(Editathon e, EditathonConfig cfg)
+        {
+            e.Code = cfg.Code;
+            e.Name = cfg.Name;
+            e.Description = cfg.Description;
+            e.Start = cfg.Start;
+            e.Finish = cfg.Finish.AddDays(1).AddSeconds(-1); // TODO: 
+            e.Wiki = cfg.Wiki;
+            e.Flags = cfg.Flags;
+
+            e.Rules.Clear();
+            e.Rules.UnionWith(cfg.Rules.Select(_session.Merge));
+
+            e.Marks = cfg.Marks;
+            e.Template = cfg.Template;
+
+            e.Jury.Clear();
+            e.Jury.UnionWith(cfg.Jury);
+        }
+
+
+        public class EditathonConfig
         {
             public string Name { get; set; }
             public string Code { get; set; }
             public string Description { get; set; }
             public string Wiki { get; set; }
-            public DateTime StartDate { get; set; }
-            public DateTime FinishDate { get; set; }
+            public DateTime Start { get; set; }
+            public DateTime Finish { get; set; }
             public EditathonFlags Flags { get; set; }
 
             public Rule[] Rules { get; set; }
+            public JObject Marks { get; set; }
             public TemplateConfig Template { get; set; }
             public string[] Jury { get; set; }
+        }
+
+        [HttpPost]
+        [AuditOperation(OperationType.PublishEditathon)]
+        public async Task Publish(EditathonCode code)
+        {
+            var e = code.Get(false);
+
+            var rights = _identity.GetUserRights();
+            await rights.Actualize();
+
+            if (!rights.IsAdminIn(e.Wiki))
+                throw Forbidden();
+
+            e.IsPublished = true;
         }
 
         [HttpGet]
@@ -360,9 +441,12 @@ namespace WikiFountain.Server.Controllers
             public List<Func<IQueryable<Editathon>, IQueryable<Editathon>>> QueryModifiers { get; private set; }
             public List<Action<Editathon>> Validators { get; private set; }
 
-            public Editathon Get(Func<IQueryable<Editathon>, IQueryable<Editathon>> with = null)
+            public Editathon Get(Func<IQueryable<Editathon>, IQueryable<Editathon>> with = null, bool onlyPublished = true)
             {
-                var query = _session.Query<Editathon>().Where(e => e.IsPublished);
+                var query = _session.Query<Editathon>();
+                if (onlyPublished)
+                    query = query.Where(e => e.IsPublished);
+
                 if (with != null)
                     query = with(query);
                 foreach (var mod in QueryModifiers)
@@ -370,13 +454,19 @@ namespace WikiFountain.Server.Controllers
 
                 var editathon = query.SingleOrDefault(e => e.Code == _code);
                 if (editathon == null)
-                    throw new HttpResponseException(System.Net.HttpStatusCode.NotFound);
+                    throw NotFound();
 
                 foreach (var validator in Validators)
                     validator(editathon);
 
                 return editathon;
             }
+
+            public Editathon Get(bool onlyPublished)
+            {
+                return Get(null, onlyPublished);
+            }
+
 
             class EditathonCodeBinder : TypedModelBinder<string, EditathonCode>
             {
@@ -418,14 +508,14 @@ namespace WikiFountain.Server.Controllers
 
                     var user = _identity.GetUserInfo();
                     if (user == null)
-                        throw new HttpResponseException(System.Net.HttpStatusCode.Unauthorized);
+                        throw Unauthorized();
 
                     code.QueryModifiers.Add(q => q.Fetch(_ => _.Jury));
                     code.Validators.Add(e =>
                     {
                         _executed = true;
                         if (!e.Jury.Contains(user.Username))
-                            throw new HttpResponseException(System.Net.HttpStatusCode.Forbidden);
+                            throw Forbidden();
                     });
                 }
 

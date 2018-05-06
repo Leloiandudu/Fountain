@@ -46,7 +46,7 @@ namespace WikiFountain.Server
 
         public object Replace(object original, object target, object owner)
         {
-            return DeepCopy(target);
+            return DeepCopy(original);
         }
 
         public object Assemble(object cached, object owner)

@@ -158,7 +158,7 @@ class ArticleCreatedRule extends React.Component {
    changeNotAfter(value) {
       const params = { ...this.props.params };
       if (value) {
-         params.before = moment(value).add(1, 'day');
+         params.before = moment(value).add(1, 'day').toDate();
       } else {
          delete params.before;
       }
@@ -182,7 +182,7 @@ class ArticleCreatedRule extends React.Component {
             <label htmlFor='notAfter'>{tr('notAfter')}</label>
             <DatePicker
                   id='notAfter'
-                  value={before ? moment(before).add(-1, 'day') : before}
+                  value={before ? moment(before).add(-1, 'day').toDate() : before}
                   allowEmpty={true}
                   onChange={v => this.changeNotAfter(v)} />
          </div>

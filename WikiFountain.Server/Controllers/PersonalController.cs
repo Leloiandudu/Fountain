@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Http;
 using NHibernate;
 using NHibernate.Linq;
@@ -103,19 +102,24 @@ namespace WikiFountain.Server.Controllers
         }
 
         [ActionName("unapproved-editathons")]
-        public async Task<object> GetEditathonsToApprove()
+        public object GetEditathonsToApprove()
         {
             var user = _identity.GetUserInfo();
+            var rights = _identity.GetUserRights();
             var wiki = MediaWikis.CreateMeta(_identity);
-            var groups = await wiki.GetSysopWikis(user.Username);
 
             var query = _session.Query<Editathon>()
+                .Fetch(_ => _.Rules)
+                .Fetch(_ => _.Jury)
                 .Where(_ => !_.IsPublished);
 
-            if (!groups.Contains("*") && !groups.Contains("meta"))
-                query = query.Where(_ => groups.Contains(_.Wiki));
+            if (!rights.IsGlobalAdmin())
+            {
+                var wikis = rights.GetAdminWikis().ToArray();
+                query = query.Where(_ => wikis.Contains(_.Wiki));
+            }
 
-            return query.Select(ed => new
+            return query.ToArray().Select(ed => new
             {
                 ed.Name,
                 ed.Code,
@@ -124,6 +128,12 @@ namespace WikiFountain.Server.Controllers
                 ed.Start,
                 ed.Finish,
                 ed.Creator,
+                ed.Flags,
+
+                Rules = ed.Rules,
+                Marks = ed.Marks,
+                Template = ed.Template,
+                Jury = ed.Jury,
             });
         }
     }

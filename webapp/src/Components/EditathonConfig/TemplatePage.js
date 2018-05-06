@@ -37,7 +37,7 @@ class TemplatePage extends React.Component {
       if (enabled) {
          this.set('template', this._value || {
             name: '',
-            talkPage: false,
+            talkPage: true,
             args: [],
          });
       } else {

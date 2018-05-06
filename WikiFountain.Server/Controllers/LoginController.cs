@@ -50,6 +50,7 @@ namespace WikiFountain.Server.Controllers
 
             var accessToken = await _oauth.GetAccessToken(token, verifier);
             _identity.Update(accessToken, await QueryInfo(msg => _oauth.Sign(msg, accessToken)));
+            await _identity.GetUserRights().Actualize();
 
             return Redirect(RedirectTo ?? "~/");
         }

@@ -75,6 +75,15 @@ export default {
    getEditathon: (code) =>
       get(`editathons/${enc(code)}`),
 
+   getEditathonConfig: (code) =>
+      get(`editathons/${enc(code)}/config`),
+
+   setEditathonConfig: (code, editathon) =>
+      post(`editathons/${enc(code)}/config`, editathon),
+
+   createEditathon: (editathon) =>
+      post(`editathons/new`, editathon),
+
    addArticle: (code, title, user) =>
       post(`editathons/${enc(code)}/article`, { title, user }),
 
@@ -87,9 +96,6 @@ export default {
          comment: comment || '',
          marks: JSON.stringify(marks),
       }),
-
-   createEditathon: (editathon) =>
-      post(`editathons/new`, editathon),
 
    getResults: (code, limit) =>
       get(`editathons/${enc(code)}/results`, { limit }),

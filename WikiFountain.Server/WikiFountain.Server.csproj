@@ -166,6 +166,7 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\PersonalController.cs" />
     <Compile Include="Core\EnumerableExtensions.cs" />
+    <Compile Include="Core\UserRights.cs" />
     <Compile Include="Core\UserTalk.cs" />
     <Compile Include="Controllers\WikiController.cs" />
     <Compile Include="App_Start\ApiControllerBase.cs" />

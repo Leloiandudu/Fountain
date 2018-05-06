@@ -144,6 +144,8 @@ export default {
       back: 'Back',
       next: 'Next',
       create: 'Create',
+      save: 'Save',
+      cancel: 'Cancel',
       general: 'General',
       rules: 'Rules',
       marks: 'Marks',
@@ -216,8 +218,6 @@ export default {
          add: 'add...',
          addOption: 'add radio button',
          preview: 'Preview',
-         incomplete: 'please pick all compulsory mark controls below to test the mark',
-         resetPreview: 'Reset preview',
       },
       TemplatePage: {
          autoAdd: 'Automatically add template',
@@ -232,6 +232,11 @@ export default {
       JuryPage: {
          add: 'add',
       },
+   },
+
+   MarksPreview: {
+      incomplete: 'please pick all compulsory mark controls below to test the mark',
+      resetPreview: 'Reset preview',
    },
 
    Validation: {

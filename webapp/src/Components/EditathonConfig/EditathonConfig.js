@@ -6,6 +6,7 @@ import MarksPage from './MarksPage';
 import TemplatePage from './TemplatePage';
 import JuryPage from './JuryPage';
 import { ValidationForm } from './validation';
+import Loader from '../Loader';
 import WikiButton from '../WikiButton';
 import Api from '../../Api';
 import { withTranslation } from '../../translate';
@@ -42,23 +43,35 @@ class EditathonConfig extends React.Component {
       this.state = {
          selected: 'general',
          sending: false,
+         loading: false,
          editathon: {},
       };
+      this._maxPageIndex = 0;
    }
 
    getCode() {
       return this.props.params.id;
    }
 
-   async componentWillMount() {
-      if (this.getCode() !== 'new') {
+   isNew() {
+      return this.getCode() === 'new';
+   }
 
+   async componentWillMount() {
+      if (!this.isNew() && Global.user) {
+         this.setState({ loading: true });
+         const editathon = await Api.getEditathonConfig(this.getCode());
+         this.setState({ loading: false, editathon });
       }
+   }
+
+   navigateBrowserBack() {
+      this.context.router.goBack();
    }
 
    moveBack() {
       if (this.getSelectedIndex() === 0) {
-         this.context.router.goBack();
+         this.navigateBrowserBack();
       } else {
          this.moveTo(Object.keys(Pages)[this.getSelectedIndex() - 1])
       }
@@ -71,11 +84,17 @@ class EditathonConfig extends React.Component {
    moveTo(key) {
       if (key && this._form.validate()) {
          this.setState({ selected: key });
+         this._maxPageIndex = Math.max(this._maxPageIndex, Object.keys(Pages).indexOf(key));
       }
    }
 
    getSelectedIndex() {
       return Object.keys(Pages).indexOf(this.state.selected);
+   }
+
+   shouldShowPage(key) {
+      if (!this.isNew()) return true;
+      return Object.keys(Pages).indexOf(key) <= this._maxPageIndex;
    }
 
    async submit() {
@@ -84,13 +103,18 @@ class EditathonConfig extends React.Component {
       }
 
       this.setState({ sending: true });
-      const { data } = this.state;
+      const { editathon } = this.state;
 
       try {
-         await Api.createEditathon(data);
-         this.context.router.replace({
-            pathname: url('/editathons/' + data.general.code),
-         });
+         if (this.isNew()) {
+            await Api.createEditathon(editathon);
+            this.context.router.replace({
+               pathname: url('/editathons/' + editathon.code),
+            });
+         } else {
+            await Api.setEditathonConfig(this.getCode(), editathon);
+            this.navigateBrowserBack();
+         }
       } catch(e) {
          alert(e.message);
          this.setState({ sending: false });
@@ -99,13 +123,17 @@ class EditathonConfig extends React.Component {
 
    render() {
       const { translation: { tr } } = this.props;
-      const { editathon, selected, sending } = this.state;
+      const { editathon, selected, sending, loading } = this.state;
 
       if (!Global.user) {
          this.context.router.replace({
             pathname: url('/editathons/'),
          });
-         return;
+         return null;
+      }
+
+      if (loading) {
+         return <Loader />;
       }
 
       const isLast = this.getSelectedIndex() === Object.keys(Pages).length - 1;
@@ -113,18 +141,24 @@ class EditathonConfig extends React.Component {
       return <ValidationForm className='EditathonConfig mainContentPane' ref={r => this._form = r}>
          <h1>{tr('newEditathon')}</h1>
          <Headers
-            items={Object.keys(Pages).map(k => tr(k))}
+            items={Object.keys(Pages).filter(k => this.shouldShowPage(k)).map(k => tr(k))}
             selected={this.getSelectedIndex()}
             onClick={k => this.moveTo(Object.keys(Pages)[k])} />
          {React.createElement(Pages[selected], {
             value: editathon,
             onChange: v => this.setState({ editathon: v }),
          })}
-         <div className='buttons'>
-            <WikiButton onClick={() => this.moveBack()}>{tr('back')}</WikiButton>
-            {!isLast && <WikiButton type='progressive' onClick={() => this.moveNext()}>{tr('next')}</WikiButton>}
-            {isLast && <WikiButton loading={sending} type='progressive' onClick={() => this.submit()}>{tr('create')}</WikiButton>}
-         </div>
+         {this.isNew()
+            ? <div className='buttons'>
+               <WikiButton onClick={() => this.moveBack()}>{tr('back')}</WikiButton>
+               {!isLast && <WikiButton type='progressive' onClick={() => this.moveNext()}>{tr('next')}</WikiButton>}
+               {isLast && <WikiButton loading={sending} type='progressive' onClick={() => this.submit()}>{tr('create')}</WikiButton>}
+            </div>
+            : <div className='buttons'>
+               <WikiButton loading={sending} type='progressive' onClick={() => this.submit()}>{tr('save')}</WikiButton>
+               <WikiButton onClick={() => this.navigateBrowserBack()}>{tr('cancel')}</WikiButton>
+            </div>
+         }
       </ValidationForm>;
    }
 }

@@ -190,37 +190,38 @@ const EditathonList = React.createClass({
                   <div className='name'>
                      {item.name}
                   </div>
-                  <div className='dates'>{this.renderDates(item)}</div>
+                  <div className='dates'>
+                     {renderEditathonDates(item.start, item.finish, this.props.translation.translate)}
+                  </div>
                </div>
                {isCurrent && <div className='description'>{item.description}</div>}
             </Link>
          </li>
       );
    },
-   renderDates({ start, finish }) {
-      const { translation: { translate } } = this.props;
-
-      start = moment(start);
-      finish = moment(finish);
-
-      let format = 'MMM';
-      let startFormat = format;
-
-      if (start.date() !== 1 || moment(finish).endOf('month').day() !== finish.day())
-         startFormat = format = 'D ' + format;
-      else if (start.isSame(finish, 'month'))
-         startFormat = '';
-
-      format = format + ' YYYY';
-      if (start.year() !== finish.year())
-         startFormat = format;
-
-      if (!startFormat)
-         return translate('formatDate', finish, format);
-
-      return `${translate('formatDate', start, startFormat)} — ${translate('formatDate', finish, format)}`;
-   },
 });
+
+export function renderEditathonDates(start, finish, translate) {
+   start = moment(start);
+   finish = moment(finish);
+
+   let format = 'MMM';
+   let startFormat = format;
+
+   if (start.date() !== 1 || moment(finish).endOf('month').day() !== finish.day())
+      startFormat = format = 'D ' + format;
+   else if (start.isSame(finish, 'month'))
+      startFormat = '';
+
+   format = format + ' YYYY';
+   if (start.year() !== finish.year())
+      startFormat = format;
+
+   if (!startFormat)
+      return translate('formatDate', finish, format);
+
+   return `${translate('formatDate', start, startFormat)} — ${translate('formatDate', finish, format)}`;
+}
 
 function isPast(editathon) {
    return moment(editathon.finish).isBefore(moment().utc());

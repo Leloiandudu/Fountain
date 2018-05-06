@@ -154,6 +154,8 @@ export default {
       back: 'Назад',
       next: 'Далее',
       create: 'Создать',
+      save: 'Сохранить',
+      cancel: 'Отмена',
       general: 'Общие',
       rules: 'Правила',
       marks: 'Оценки',
@@ -226,8 +228,6 @@ export default {
          add: 'добавить...',
          addOption: 'добавить переключатель',
          preview: 'Предпросмотр',
-         incomplete: 'пожалуйста введите все обязательные оценки внизу чтобы протестировать оценку',
-         resetPreview: 'Сбросить предпросмотр',
       },
       TemplatePage: {
          autoAdd: 'Автоматически добавлять шаблон',
@@ -242,6 +242,11 @@ export default {
       JuryPage: {
          add: 'добавить',
       },
+   },
+
+   MarksPreview: {
+      incomplete: 'пожалуйста введите все обязательные оценки внизу чтобы протестировать оценку',
+      resetPreview: 'Сбросить предпросмотр',
    },
 
    Validation: {
