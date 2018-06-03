@@ -9,6 +9,7 @@ export default {
    formatDate,
    formatDateIn,
    delimiter: ', ',
+   dateTimePicker: 'L LTS',
 
    Header: {
       signIn: 'Log in',

@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
 import { setDefault } from '../utils';
-import DatePicker from '../DatePicker';
+import DateTimePicker from '../DateTimePicker';
 import DropDown from '../DropDown';
 import DropDownButton from '../DropDownButton';
 import Loader from '../Loader';
@@ -145,24 +145,13 @@ let SubmitterIsCreatorRule = withTranslation(createSimple(), 'EditathonConfig.Ru
 let NamespaceRule = withTranslation(createSimple({ isIn: [ 0 ] }), 'EditathonConfig.RulesPage.namespace');
 
 class ArticleCreatedRule extends React.Component {
-   changeNotBefore(value) {
+   update(prop, value) {
       const params = { ...this.props.params };
       if (value) {
-         params.after = value;
+         params[prop] = value;
       } else {
-         delete params.after;
+         delete params[prop];
       }
-      this.props.onChange(params);
-   }
-
-   changeNotAfter(value) {
-      const params = { ...this.props.params };
-      if (value) {
-         params.before = moment(value).add(1, 'day').toDate();
-      } else {
-         delete params.before;
-      }
-
       this.props.onChange(params);
    }
 
@@ -172,19 +161,19 @@ class ArticleCreatedRule extends React.Component {
       return <div className='ArticleCreatedRule'>
          <div className='item'>
             <label htmlFor='notBefore'>{tr('notBefore')}</label>
-            <DatePicker
+            <DateTimePicker
                   id='notBefore'
                   value={after}
                   allowEmpty={true}
-                  onChange={v => this.changeNotBefore(v)} />
+                  onChange={v => this.update('after', v)} />
          </div>
          <div className='item'>
             <label htmlFor='notAfter'>{tr('notAfter')}</label>
-            <DatePicker
+            <DateTimePicker
                   id='notAfter'
-                  value={before ? moment(before).add(-1, 'day').toDate() : before}
+                  value={before}
                   allowEmpty={true}
-                  onChange={v => this.changeNotAfter(v)} />
+                  onChange={v => this.update('before', v)} />
          </div>
       </div>;
    }
@@ -209,7 +198,7 @@ class SubmitterRegisteredRule extends React.Component {
       return <div className='SubmitterRegisteredRule'>
          <div className='item'>
             <label htmlFor='notBefore'>{tr('notBefore')}</label>
-            <DatePicker
+            <DateTimePicker
                   id='notBefore'
                   value={after}
                   allowEmpty={true}

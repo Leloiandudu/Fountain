@@ -5,7 +5,25 @@ import LocaleUtils from 'react-day-picker/moment';
 import moment from 'moment';
 import { withTranslation } from '../translate';
 
-class DatePicker extends React.Component {
+function dateEqual(date1, date2) {
+   if (!date1) {
+      return !date2;
+   } else if (!date2) {
+      return false;
+   } else {
+      return date1.valueOf() === date2.valueOf();
+   }
+}
+
+function getUtcDate(date) {
+   return moment.utc({
+      y: date.getFullYear(),
+      M: date.getMonth(),
+      d: date.getDate(),
+   });
+}
+
+class DateTimePicker extends React.Component {
    constructor(props) {
       super(props);
       this.state = this.getState(props.value, props);
@@ -13,23 +31,25 @@ class DatePicker extends React.Component {
 
    componentWillReceiveProps(newProps) {
       let state = {};
-      if (newProps.value !== this.props.value) {
+      if (!dateEqual(newProps.value, this.props.value)
+         || this.getCurLang() !== this.getCurLang(newProps)) {
          state = this.getState(newProps.value, newProps);
-      }
-
-      if (this.getCurLang() !== this.getCurLang(newProps) && newProps.value) {
-         state.text = this.formatDate(newProps.value, newProps);
       }
 
       this.setState(state);
    }
 
    formatDate(date, props = this.props) {
-      return props.translation.translate('formatDate', date, 'L');
+      return props.translation.translate(
+         'formatDate', moment(date).utc(), this.getFormat(props));
    }
 
    parseDate(text) {
-      return moment.utc(text, 'L', this.getCurLang(), true);
+      return moment.utc(text, this.getFormat(), this.getCurLang(), true);
+   }
+
+   getFormat(props = this.props) {
+      return props.translation.translate('dateTimePicker');
    }
 
    getCurLang(props = this.props) {
@@ -37,14 +57,22 @@ class DatePicker extends React.Component {
    }
 
    onDayClick(date) {
-      date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      date = getUtcDate(date);
+
+      const prev = this.props.value;
+      if (prev) {
+         const time = moment.utc(prev);
+         date.add(time.diff(moment(time).startOf('d')));
+      }
+
+      date = date.toDate();
 
       this.setState(this.getState(date));
       this.props.onChange && this.props.onChange(date);
       setTimeout(() => this.setState({ isOpen: false }), 100);
    }
 
-   getState(date = this.props.value, props) {
+   getState(date, props) {
       return {
          text: date && this.formatDate(date, props) || '',
          month: date || new Date(),
@@ -76,7 +104,7 @@ class DatePicker extends React.Component {
 
    onInputBlur() {
       this.timeout = setTimeout(() => this.setState(() => ({
-         ...this.getState(),
+         ...this.getState(this.props.value),
          isOpen: false,
       })), 150);
    }
@@ -89,12 +117,20 @@ class DatePicker extends React.Component {
    }
 
    render() {
-      return <div className='DatePicker'>
+      const locale = moment.localeData(this.getCurLang());
+      const placeholder = this.getFormat()
+         .split(' ')
+         .map(x => x.toLowerCase().startsWith('l') ? locale.longDateFormat(x).toLowerCase() : x)
+         .join(' ');
+
+      const value = this.props.value && moment.utc(this.props.value);
+
+      return <div className='DateTimePicker'>
          <input
             id={this.props.id}
             value={this.state.text}
             ref='input'
-            placeholder={moment.localeData(this.getCurLang()).longDateFormat('L').toLowerCase()}
+            placeholder={placeholder}
             onClick={() => this.setState({ isOpen: true })}
             onChange={e => this.onInputChange(e.target.value)}
             onFocus={() => this.onInputFocus()}
@@ -112,7 +148,7 @@ class DatePicker extends React.Component {
                      },
                   }}
                   month={this.state.month}
-                  selectedDays={(date) => moment(this.props.value || '').isSame(date, 'day')}
+                  selectedDays={(date) => value && value.isSame(getUtcDate(date), 'day')}
                   disabledDays={(date) => moment().isAfter(date, 'day')}
                   onDayClick={(date, mods) => this.onDayClick(date, mods)}
                   onMonthChange={month => this.setState({ month })} />
@@ -122,4 +158,4 @@ class DatePicker extends React.Component {
    }
 }
 
-export default withTranslation(DatePicker);
+export default withTranslation(DateTimePicker);

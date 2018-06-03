@@ -292,7 +292,7 @@ namespace WikiFountain.Server.Controllers
                 Name = e.Name,
                 Description = e.Description,
                 Start = e.Start,
-                Finish = e.Finish, // TODO:
+                Finish = e.Finish,
                 Wiki = e.Wiki,
                 Flags = e.Flags,
                 
@@ -352,7 +352,7 @@ namespace WikiFountain.Server.Controllers
             e.Name = cfg.Name;
             e.Description = cfg.Description;
             e.Start = cfg.Start;
-            e.Finish = cfg.Finish.AddDays(1).AddSeconds(-1); // TODO: 
+            e.Finish = cfg.Finish;
             e.Wiki = cfg.Wiki;
             e.Flags = cfg.Flags;
 
@@ -365,7 +365,6 @@ namespace WikiFountain.Server.Controllers
             e.Jury.Clear();
             e.Jury.UnionWith(cfg.Jury);
         }
-
 
         public class EditathonConfig
         {

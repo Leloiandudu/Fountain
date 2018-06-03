@@ -3,10 +3,10 @@ import 'moment/locale/ru';
 import { plural, numberFormatter, dateFormatter, gender } from '../translate';
 
 moment.updateLocale('ru', {
-    monthsShort : [
-        'янв', 'фев', 'мар', 'апр', 'май', 'июн',
-        'июл', 'авг', 'сен', 'окт', 'ноя', 'дек',
-    ]
+   monthsShort : [
+      'янв', 'фев', 'мар', 'апр', 'май', 'июн',
+      'июл', 'авг', 'сен', 'окт', 'ноя', 'дек',
+   ]
 });
 
 const formatNumber = numberFormatter('\u00a0', ',');

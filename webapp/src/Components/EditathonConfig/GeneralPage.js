@@ -1,12 +1,22 @@
 import React from 'react';
 import classNames from 'classnames';
-import DatePicker from '../DatePicker';
+import moment from 'moment';
+import DateTimePicker from '../DateTimePicker';
 import WikiLookup from '../WikiLookup';
 import { EditathonFlags } from '../../jury';
 import { withTranslation } from '../../translate';
 import { Validation } from './validation';
-import { createBinder, createSetter } from '../utils';
+import { createBinder, createSetter, setDefault } from '../utils';
 import url from '../../url';
+
+function getDefaultData() {
+   const date = moment.utc().add('d', 1);
+
+   return {
+      start: moment(date).startOf('d'),
+      finish: moment(date).endOf('d'),
+   };
+}
 
 class GeneralPage extends React.Component {
    constructor(props) {
@@ -19,6 +29,7 @@ class GeneralPage extends React.Component {
    }
 
    componentWillMount() {
+      setDefault(this.props, getDefaultData);
       if (!this.state.code && this.props.value.code) {
          this.setState({ code: this.props.value.code });
       }
@@ -70,14 +81,14 @@ class GeneralPage extends React.Component {
             <div className='field'>
                <label htmlFor='startDate'>{tr('startDate')}</label>
                <Validation isEmpty={() => !value.start}>
-                  {this.bind('start', <DatePicker id='startDate' />)}
+                  {this.bind('start', <DateTimePicker id='startDate' vertical />)}
                </Validation>
             </div>
             <div className='field'>
                <label htmlFor='finishDate'>{tr('finishDate')}</label>
                <Validation isEmpty={() => !value.finish}
-                           validate={() => value.start && value.start > value.finish && tr('negativeDates')}>
-                  {this.bind('finish', <DatePicker id='finishDate' />)}
+                           validate={() => value.start && value.start >= value.finish && tr('negativeDates')}>
+                  {this.bind('finish', <DateTimePicker id='finishDate' vertical />)}
                </Validation>
             </div>
          </div>
