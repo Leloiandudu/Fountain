@@ -179,6 +179,13 @@ class ArticleCreatedRule extends React.Component {
    }
 }
 
+function getArticleCreatedRuleDefauls(editathon) {
+   return {
+      after: editathon.start,
+      before: editathon.finish,
+   }
+}
+
 ArticleCreatedRule = withTranslation(ArticleCreatedRule, 'EditathonConfig.RulesPage.articleCreated');
 
 class SubmitterRegisteredRule extends React.Component {
@@ -210,22 +217,16 @@ class SubmitterRegisteredRule extends React.Component {
 
 SubmitterRegisteredRule = withTranslation(SubmitterRegisteredRule, 'EditathonConfig.RulesPage.submitterRegistered');
 
-function multi(component) {
-   component.allowMulti = true;
-   return component;
-}
-
-function noJury(component) {
-   component.noJury = true;
-   return component;
+function editor(component, extras = {}) {
+   return { component, ...extras };
 }
 
 const Editors = {
-   namespace: noJury(NamespaceRule),
-   articleSize: multi(ArticleSizeRule),
-   articleCreated: ArticleCreatedRule,
-   submitterIsCreator: SubmitterIsCreatorRule,
-   submitterRegistered: noJury(SubmitterRegisteredRule),
+   namespace: editor(NamespaceRule, { noJury: true }),
+   articleSize: editor(ArticleSizeRule, { allowMulti: true }),
+   articleCreated: editor(ArticleCreatedRule, { getDefaults: getArticleCreatedRuleDefauls }),
+   submitterIsCreator: editor(SubmitterIsCreatorRule),
+   submitterRegistered: editor(SubmitterRegisteredRule, { noJury: true }),
 }
 
 class RulesDemo extends React.Component {
@@ -409,9 +410,10 @@ class RulesPage extends React.Component {
    addRule(type) {
       const { value, onChange } = this.props;
       const rules = [ ...value.rules ];
+      const { getDefaults } = Editors[type];
       rules.push({
          type,
-         params: {},
+         params: getDefaults && getDefaults(value) || {},
          flags: Editors[type].noJury ? 0 : RuleFlags.informational,
       });
       value.rules = rules;
@@ -474,7 +476,7 @@ class RulesPage extends React.Component {
                </label>}
                <WikiButton className='delete' onClick={() => this.deleteRule(r)} />
             </header>
-            {Editors[r.type] && React.createElement(Editors[r.type], {
+            {Editors[r.type] && React.createElement(Editors[r.type].component, {
                params: r.params,
                onChange: params => this.onParamsChanged(r, params),
             })}
