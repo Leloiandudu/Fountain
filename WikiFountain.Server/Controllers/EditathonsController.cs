@@ -28,7 +28,7 @@ namespace WikiFountain.Server.Controllers
 
         public IEnumerable<object> GetAll()
         {
-            return _session.Query<Editathon>().OrderByDescending(e => e.Finish).Select(e => new
+            return _session.Query<Editathon>().Where(e => e.IsPublished).OrderByDescending(e => e.Finish).Select(e => new
             {
                 e.Code,
                 e.Name,
