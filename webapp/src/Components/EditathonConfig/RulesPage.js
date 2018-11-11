@@ -1,6 +1,4 @@
 import React from 'react';
-import classNames from 'classnames';
-import moment from 'moment';
 import { setDefault } from '../utils';
 import DateTimePicker from '../DateTimePicker';
 import DropDown from '../DropDown';

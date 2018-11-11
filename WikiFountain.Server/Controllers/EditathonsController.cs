@@ -397,6 +397,28 @@ namespace WikiFountain.Server.Controllers
             e.IsPublished = true;
         }
 
+        [HttpDelete]
+        [AuditOperation(OperationType.RemoveEditathon)]
+        public async Task Delete(EditathonCode code)
+        {
+            var user = _identity.GetUserInfo();
+            var e = code.Get(false);
+
+            if (e.IsPublished)
+                throw Forbidden();
+
+            if (e.Creator != user.Username)
+            {
+                var rights = _identity.GetUserRights();
+                await rights.Actualize();
+
+                if (!rights.IsAdminIn(e.Wiki))
+                    throw Forbidden();
+            }
+
+            _session.Delete(e);
+        }
+
         [HttpGet]
         [JuryOnly]
         public IEnumerable<Editathon.ResultRow> Results(EditathonCode code, int limit)

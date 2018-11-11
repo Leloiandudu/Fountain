@@ -281,6 +281,20 @@ export default {
 
       Approval: {
          title: 'Марафоны, требующие подтверждения',
+         noTemplate: 'нет',
+         noFlags: 'нет',
+         creator: 'Создатель',
+         code: 'Код',
+         project: 'Проект',
+         dates: 'Даты',
+         flags: 'Флаги',
+         jury: 'Жюри',
+         rules: 'Правила',
+         marks: 'Оценки',
+         template: 'Шаблон',
+         approve: 'Подтвердить',
+         edit: 'Редактировать',
+         delete: 'Удалить',
       },
    },
 };

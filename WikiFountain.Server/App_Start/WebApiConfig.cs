@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
 using System.Web.Http.Filters;
 using System.Web.Http.ModelBinding;
+using System.Web.Http.Routing;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.WebApi;
 using Newtonsoft.Json;
@@ -29,7 +31,15 @@ namespace WikiFountain.Server
             config.Routes.MapHttpRoute(
                 name: "editathons",
                 routeTemplate: "api/editathons/{code}/{action}",
-                defaults: new { controller = "Editathons", action = "Get" }
+                defaults: new { controller = "Editathons", action = "Get" },
+                constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Get, HttpMethod.Post) }
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "editathons-delete",
+                routeTemplate: "api/editathons/{code}",
+                defaults: new { controller = "Editathons" },
+                constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Delete) }
             );
 
             config.Routes.MapHttpRoute(

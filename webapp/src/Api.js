@@ -66,6 +66,10 @@ function post(url, params) {
    return query('POST', url, params);
 }
 
+function del(url, params) {
+   return query('DELETE', url, params);
+}
+
 const enc = encodeURIComponent;
 
 export default {
@@ -99,6 +103,12 @@ export default {
 
    getResults: (code, limit) =>
       get(`editathons/${enc(code)}/results`, { limit }),
+
+   publishEditathon: (code) =>
+      post(`editathons/${enc(code)}/publish`),
+
+   removeEditathon: (code) =>
+      del(`editathons/${enc(code)}`),
 
    getMyCurrentEditathons: () =>
       get('personal/current-editathons'),

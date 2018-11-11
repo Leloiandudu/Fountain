@@ -272,6 +272,20 @@ export default {
 
       Approval: {
          title: 'Editathons Requiring Approval',
+         noTemplate: 'none',
+         noFlags: 'none',
+         creator: 'Creator',
+         code: 'Code',
+         project: 'Project',
+         dates: 'Dates',
+         flags: 'Flags',
+         jury: 'Jury',
+         rules: 'Rules',
+         marks: 'Marks',
+         template: 'Template',
+         approve: 'Approve',
+         edit: 'Edit',
+         delete: 'Delete',
       },
    },
 };

@@ -1,10 +1,10 @@
 import React from 'react';
-import classNames from 'classnames';
 import { Validation } from './validation';
 import { createSetter, createSubSection } from '../utils';
 import PageLookup from '../PageLookup';
 import WikiButton from '../WikiButton';
 import { withTranslation } from '../../translate';
+import TemplatePreview from '../TemplatePreview';
 
 class TemplatePage extends React.Component {
    constructor(props) {
@@ -115,37 +115,9 @@ class TemplatePage extends React.Component {
          </div>
          <div id='preview'>
             <header>{tr('preview')}</header>
-            <div className='preview'>
-               {this.renderTemplate(name, args)}
-            </div>
+            <TemplatePreview name={name} args={args} labelFor={(id, isName) => id === null ? 'name' : `${id}-${isName ? 'name' : 'value'}`} />
          </div>
       </div>).props.children;
-   }
-
-   renderTemplate(name, args) {
-      const parts = [];
-      const add = (text, label) => {
-         const props = { key: parts.length - 1 };
-         if (label) {
-            props.htmlFor = label;
-         }
-         parts.push(React.createElement(label ? 'label' : 'span', props, text));
-      };
-
-      add('{{');
-      add(name, 'name');
-      for (const id in args) {
-         const arg = args[id];
-         add('|');
-         if (arg.name) {
-            add(arg.name, `${id}-name`);
-            add('=');
-         }
-         add(arg.value, `${id}-value`);
-      }
-      add('}}');
-
-      return parts;
    }
 }
 

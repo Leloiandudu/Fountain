@@ -25,6 +25,10 @@
          }
       }
 
+      dd {
+         flex: 1 auto;
+      }
+
       .jury {
          &:not(:last-child):after {
             content: ',';
@@ -40,6 +44,52 @@
 
          > * {
             margin: .25em;
+         }
+      }
+   }
+
+   .flags {
+      display: flex;
+      align-items: center;
+   }
+
+   .flag {
+      padding: 0 .25rem;
+      border-radius: 2px;
+      font-size: small;
+      background-color: #ccc;
+
+      & + .flag {
+         margin-left: .25em;
+      }
+   }
+
+   .Rule {
+      flex-flow: 1 auto;
+      display: flex;
+      flex-flow: row wrap;
+      margin-left: -.25rem;
+
+      > * {
+         margin-left: .25rem;
+         margin-bottom: .5rem;
+      }
+
+      .type {
+         font-weight: 600;
+      }
+
+      .flags {
+         .required {
+            background-color: #fcc;
+         }
+
+         .optional {
+            background-color: #fd7;
+         }
+
+         .jury {
+            background-color: #ade;
          }
       }
    }
