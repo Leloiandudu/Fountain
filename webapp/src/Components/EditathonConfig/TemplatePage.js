@@ -11,11 +11,6 @@ class TemplatePage extends React.Component {
       super(props);
       this.set = createSetter();
       this.template = createSubSection(this, 'template');
-      this.state = { enabled: false };
-   }
-
-   componentWillMount() {
-      this.setState({ enabled: !!this.props.value.template });
    }
 
    addArg() {
@@ -44,18 +39,17 @@ class TemplatePage extends React.Component {
          this._value = { ...this.props.value.template };
          this.set('template', null);
       }
-      this.setState({ enabled });
    }
 
    render() {
-      const { translation: { tr } } = this.props;
-      const { enabled } = this.state;
+      const { translation: { tr }, value: { template } } = this.props;
+      const enabled = !!template;
 
       return <div className='page TemplatePage'>
          <label id='add'>
             <input
                type='checkbox'
-               value={enabled}
+               checked={enabled}
                onChange={e => this.onEnable(e.target.checked)} />
             <span>{tr('autoAdd')}</span>
          </label>
