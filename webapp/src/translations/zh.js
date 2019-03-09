@@ -63,7 +63,6 @@ export default {
          articleCreated: date => `本条目创建${formatDate(date, 'L LT')}`,
          chars: n => `${formatNumber(n)}字`,
          bytes: n => `${formatNumber(n)}字节`,
-         words: '',
       },
 
       unauthorized: '您未被授权',
@@ -94,7 +93,6 @@ export default {
       Warnings: {
          chars: n => `${formatNumber(n)}字`,
          bytes: n => `${formatNumber(n)}字节`,
-         words: '',
          author: '创建者',
          createdOn: '创建时间',
          createdDate: date => formatDate(date, 'L LT'),
