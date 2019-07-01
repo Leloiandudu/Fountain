@@ -81,7 +81,7 @@ class MarksPage extends React.Component {
          ];
       }
 
-      const { marks } = this.props.value;
+      const { marks } = props.value;
       if (!marks) return;
       this._id = Math.max(...getIds(marks).concat(-1)) + 1;
    }
