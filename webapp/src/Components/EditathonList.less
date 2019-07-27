@@ -9,7 +9,7 @@
 
    .EditathonFilter {
       display: flex;
-      flex-flow: row;
+      flex-flow: column;
       margin: .25em -.25em;
 
       > * {
@@ -32,6 +32,7 @@
    }
 
    > h2 {
+      font-size: 1.5em;
       margin: 1em 0;
    }
 
@@ -45,12 +46,10 @@
       }
 
       > li {
-         display: flex;
-         flex-flow: column;
          cursor: default;
 
          padding: .25em .5em;
-         line-height: 2em;
+         line-height: 1.5em;
 
          &:not(:last-child) {
             border-bottom: solid 1px #ddd;
@@ -65,10 +64,6 @@
             text-decoration: none;
          }
 
-         .name {
-            flex: 1 auto;
-         }
-
          .dates, .description {
             color: #444;
             font-size: small;
@@ -76,7 +71,43 @@
 
          .summary {
             display: flex;
+            flex-flow: column;
          }
       }
    }
+}
+
+@media only all and (min-width: 600px)  {
+    .EditathonList {
+
+       .EditathonFilter {
+          flex-flow: row;
+       }
+    }
+}
+
+@media only all and (min-width: 768px)  {
+    .EditathonList {
+
+       > ul {
+
+          > li {
+             line-height: 2em;
+
+             .summary {
+                align-items: center;
+                flex-flow: row;
+
+                .description {
+                  width: 15em;
+                  padding-right: 1em;
+                }
+                
+                .dates {
+                  margin-left: auto;
+                }
+             }
+          }
+       }
+    }
 }
