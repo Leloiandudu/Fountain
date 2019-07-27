@@ -1,7 +1,7 @@
 import React from 'react';
-import classNames from 'classnames';
 import moment from 'moment';
 import Link from './Link';
+import Loader from './Loader';
 import RequiresLogin from './RequiresLogin';
 import DropDown from './DropDown';
 import EditathonCalendar from './EditathonCalendar';
@@ -99,7 +99,7 @@ class EditathonFilter extends React.PureComponent {
       const { translation: { tr } } = this.props;
       return <div className='EditathonFilter'>
          {this.bind('text', <input type='text' placeholder={tr('search')} />)}
-         {this.bind('type', <DropDown 
+         {this.bind('type', <DropDown
             items={[{
                name: tr('all'),
                value: null,
@@ -127,11 +127,12 @@ EditathonFilter = withTranslation(EditathonFilter, 'EditathonFilter');
 
 const EditathonList = React.createClass({
    getInitialState() {
-      return {};
+      return { loading: true };
    },
    async componentWillMount() {
       this.setState({
          list: await Api.getEditathons(),
+         loading: false,
       });
    },
    onCreate(e) {
@@ -148,8 +149,12 @@ const EditathonList = React.createClass({
    },
    render() {
       const { translation: { tr } } = this.props;
-      const { filter = {}, list } = this.state
+      const { filter = {}, list, loading } = this.state
       const editathons = list && list.filter(e => this.filter(e)) || [];
+
+      if (loading) {
+         return <Loader />
+      }
 
       return (
          <div className='EditathonList mainContentPane'>
@@ -164,20 +169,22 @@ const EditathonList = React.createClass({
                </WikiButton>
             </RequiresLogin>}
             <ul>
-               {editathons.map(this.renderItem)}
+               {editathons.filter(item => !isPast(item)).map(this.renderItem)}
+            </ul>
+            <h2>{tr('finished')}</h2>
+            <ul className='past'>
+               {editathons.filter(isPast).map(this.renderItem)}
             </ul>
          </div>
       );
    },
    renderItem(item) {
       const today = moment().utc();
-      const isPast = item.finish.isBefore(today);
       const isCurrent = item.start.isBefore(today) && item.finish.isAfter(today);
       const url = '/editathons/' + encodeURIComponent(item.code);
 
       return (
-         <li key={item.code} className={classNames({ past: isPast })}
-             title={isCurrent ? '' : item.description}>
+         <li key={item.code} title={isCurrent ? '' : item.description}>
             <div className='summary'>
                <span className='name'>
                   <Link to={{ pathname: url, state: { editathon: item } }}>{item.name}</Link>
@@ -193,7 +200,7 @@ const EditathonList = React.createClass({
 
       start = moment(start).utc();
       finish = moment(finish).utc();
-      
+
       let format = 'MMM';
       let startFormat = format;
 
@@ -212,5 +219,9 @@ const EditathonList = React.createClass({
       return `${translate('formatDate', start, startFormat)} — ${translate('formatDate', finish, format)}`;
    },
 });
+
+function isPast(editathon) {
+   return editathon.finish.isBefore(moment().utc())
+}
 
 export default withTranslation(EditathonList, 'EditathonList');

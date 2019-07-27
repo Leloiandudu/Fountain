@@ -31,13 +31,25 @@
       }
    }
 
-   > ul {      
+   > h2 {
+      margin: 1em 0;
+   }
+
+   > ul {
+      &.past {
+         opacity: 0.5;
+      }
+
+      &:not(.past) {
+         margin-top: 1em;
+      }
+
       > li {
          display: flex;
          flex-flow: column;
          cursor: default;
 
-         padding: 0 .5em;
+         padding: .25em .5em;
          line-height: 2em;
 
          &:not(:last-child) {
@@ -48,12 +60,9 @@
             background: #f8f8f8;
          }
 
-         &.past {
-            opacity: 0.5;
-         }
-
          a {
             color: inherit;
+            text-decoration: none;
          }
 
          .name {

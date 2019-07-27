@@ -34,6 +34,7 @@ export default {
    EditathonList: {
       title: 'Марафоны',
       create: 'Создать',
+      finished: 'Завершившиеся',
    },
 
    EditathonFilter: {

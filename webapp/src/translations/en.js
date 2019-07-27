@@ -24,6 +24,7 @@ export default {
    EditathonList: {
       title: 'Editathons',
       create: 'Create new',
+      finished: 'Finished',
    },
 
    EditathonFilter: {
