@@ -29,6 +29,12 @@
             opacity: .54;
          }
       }
+
+      @media (max-width: 535px)  {
+         & {
+            flex-flow: column;
+         }
+      }
    }
 
    > h2 {
@@ -67,9 +73,17 @@
 
          .name {
             flex: 1 auto;
+            margin-right: 0.5em;
+         }
+
+         .name, .description {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
          }
 
          .dates, .description {
+            white-space: nowrap;
             color: #444;
             font-size: small;
          }

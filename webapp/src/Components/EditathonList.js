@@ -184,14 +184,16 @@ const EditathonList = React.createClass({
       const url = '/editathons/' + encodeURIComponent(item.code);
 
       return (
-         <li key={item.code} title={isCurrent ? '' : item.description}>
-            <div className='summary'>
-               <span className='name'>
-                  <Link to={{ pathname: url, state: { editathon: item } }}>{item.name}</Link>
-               </span>
-               <span className='dates'>{this.renderDates(item)}</span>
-            </div>
-            {isCurrent && <span className='description'>{item.description}</span>}
+         <li key={item.code} title={item.description}>
+         	<Link to={{ pathname: url, state: { editathon: item } }}>
+               <div className='summary'>
+                  <div className='name'>
+                     {item.name}
+                  </div>
+                  <div className='dates'>{this.renderDates(item)}</div>
+               </div>
+               {isCurrent && <div className='description'>{item.description}</div>}
+            </Link>
          </li>
       );
    },

@@ -10,7 +10,7 @@ import { findMarkOf } from './../../jury';
 import Loader from './../Loader';
 import ModalDialog from '../ModalDialog';
 import WikiButton from '../WikiButton';
-import ArticlesList from './articlesList';
+import ArticlesList from './ArticlesList';
 import Header from './Header';
 import Warnings from './Warnings';
 import Preview from './Preview';
