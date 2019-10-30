@@ -60,7 +60,8 @@ class TemplatePage extends React.Component {
    renderArg(arg, id) {
       const onChange = (e, p) => {
          const { value, onChange } = this.template.props;
-         arg[p] = e.target.value;
+         const val = e.target.value;
+         arg[p] = val ? val : null;
          onChange({ ...value });
       }
 
