@@ -104,7 +104,7 @@ namespace WikiFountain.Server.Controllers
         [HttpPost]
         [ActionName("article")]
         [AuditOperation(OperationType.AddArticle)]
-        public async void AddArticle(EditathonCode code, [FromBody] ArticlePostData body)
+        public async Task AddArticle(EditathonCode code, [FromBody] ArticlePostData body)
         {
             if (body == null || string.IsNullOrWhiteSpace(body.Title))
                 throw BadRequest();
@@ -445,7 +445,7 @@ namespace WikiFountain.Server.Controllers
 
         [HttpPost]
         [JuryOnly]
-        public async void Award(EditathonCode code, [FromBody] IDictionary<string, string> awards)
+        public async Task Award(EditathonCode code, [FromBody] IDictionary<string, string> awards)
         {
             if (awards == null || awards.Count == 0)
                 throw BadRequest();
