@@ -2,6 +2,18 @@
    display: flex;
    flex-flow: column;
 
+   &.validating {
+      cursor: wait;
+
+      input, label, textarea {
+         cursor: inherit;
+      }
+
+      .Headers .item {
+         cursor: inherit;
+      }
+   }
+
    .Headers {
       display: flex;
       flex-flow: row wrap;

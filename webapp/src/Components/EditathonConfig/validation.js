@@ -10,7 +10,7 @@ export class ValidationForm extends React.Component {
       }
    }
 
-   static get propTypes() { 
+   static get propTypes() {
       return {
          className: React.PropTypes.string,
       }
@@ -21,11 +21,11 @@ export class ValidationForm extends React.Component {
       this._validations = new Set();
    }
 
-   validate() {
+   async validate() {
       let valid = true;
       for (const v of this._validations) {
-         const result = v.validate(true);
-         valid = valid && result; 
+         const result = await v.validate(true);
+         valid = valid && result;
       }
       return valid;
    }
@@ -61,7 +61,7 @@ class Validation extends React.Component {
       }
    }
 
-   static get propTypes() { 
+   static get propTypes() {
       return {
          isEmpty: React.PropTypes.func,
          validate: React.PropTypes.func,
@@ -84,7 +84,7 @@ class Validation extends React.Component {
       this.context.ValidationContext.remove(this);
    }
 
-   validate(checkEmpty) {
+   async validate(checkEmpty) {
       let message = null;
       const props = this.props;
 
@@ -97,7 +97,7 @@ class Validation extends React.Component {
       }
 
       if (!isEmpty) {
-         message = props.validate && props.validate();
+         message = props.validate && await props.validate();
       }
 
       this.setState({ message });

@@ -29,6 +29,12 @@ namespace WikiFountain.Server
             );
 
             config.Routes.MapHttpRoute(
+                name: "editathons-check-exists",
+                routeTemplate: "api/editathons/exists",
+                defaults: new { controller = "Editathons", action = "CheckExists" }
+            );
+
+            config.Routes.MapHttpRoute(
                 name: "editathons",
                 routeTemplate: "api/editathons/{code}/{action}",
                 defaults: new { controller = "Editathons", action = "Get" },

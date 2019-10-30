@@ -164,6 +164,8 @@ export default {
          negativeDates: 'Finish Date should not be less than Start Date',
          consensualVote: 'Consensual vote',
          hiddenMarks: 'Hidden marks',
+         exists: 'This editathon already exists',
+         codeSymbols: 'Only latin letters, digits and spaces are allowed',
       },
       RulesPage: {
          add: 'Add rule',

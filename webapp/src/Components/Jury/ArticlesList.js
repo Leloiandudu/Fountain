@@ -1,9 +1,7 @@
-import React from 'react';
 import classNames from 'classnames';
-import Header from './Header';
+import React from 'react';
 import { findMarkOf, isConflict } from './../../jury';
 import { withTranslation } from './../../translate';
-import sortBy from './../../sortBy';
 
 const ArticlesList = React.createClass({
    onItemClick(e, article) {
@@ -15,7 +13,7 @@ const ArticlesList = React.createClass({
    },
    getJuryWithMarks(article) {
       const { jury } = this.props.editathon;
-      return jury.filter(j => findMarkOf(article.marks, j));      
+      return jury.filter(j => findMarkOf(article.marks, j));
    },
    renderArticle(article) {
       const { editathon, translation } = this.props;

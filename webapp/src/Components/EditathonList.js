@@ -161,7 +161,7 @@ const EditathonList = React.createClass({
             <h1>{tr('title')}</h1>
             <EditathonFilter value={filter} onChange={filter => this.setState({ filter })} />
             {filter.lang && <EditathonCalendar editathons={editathons} />}
-            {false && <RequiresLogin className='create' redirectTo='/editathons/new/config'>
+            {<RequiresLogin className='create' redirectTo='/editathons/new/config'>
                <WikiButton type='progressive'>
                   <Link to='/editathons/new/config' onClick={this.onCreate}>
                      {tr('create')}

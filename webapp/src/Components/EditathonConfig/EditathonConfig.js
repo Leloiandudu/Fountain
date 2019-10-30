@@ -45,6 +45,7 @@ class EditathonConfig extends React.Component {
          sending: false,
          loading: false,
          editathon: {},
+         validating: false,
       };
       this._maxPageIndex = 0;
    }
@@ -73,19 +74,23 @@ class EditathonConfig extends React.Component {
       if (this.getSelectedIndex() === 0) {
          this.navigateBrowserBack();
       } else {
-         this.moveTo(Object.keys(Pages)[this.getSelectedIndex() - 1])
+         this.moveTo(Object.keys(Pages)[this.getSelectedIndex() - 1], 'back')
       }
    }
 
    moveNext() {
-      this.moveTo(Object.keys(Pages)[this.getSelectedIndex() + 1])
+      this.moveTo(Object.keys(Pages)[this.getSelectedIndex() + 1], 'next')
    }
 
-   moveTo(key) {
-      if (key && this._form.validate()) {
+   async moveTo(key, validating = true) {
+      if (this.state.validating) { return }
+
+      this.setState({ validating })
+      if (key && await this._form.validate()) {
          this.setState({ selected: key });
          this._maxPageIndex = Math.max(this._maxPageIndex, Object.keys(Pages).indexOf(key));
       }
+      this.setState({ validating: false })
    }
 
    getSelectedIndex() {
@@ -98,7 +103,7 @@ class EditathonConfig extends React.Component {
    }
 
    async submit() {
-      if (!this._form.validate()) {
+      if (!(await this._form.validate())) {
          return;
       }
 
@@ -123,7 +128,7 @@ class EditathonConfig extends React.Component {
 
    render() {
       const { translation: { tr } } = this.props;
-      const { editathon, selected, sending, loading } = this.state;
+      const { editathon, selected, sending, loading, validating } = this.state;
 
       if (!Global.user) {
          this.context.router.replace({
@@ -138,7 +143,7 @@ class EditathonConfig extends React.Component {
 
       const isLast = this.getSelectedIndex() === Object.keys(Pages).length - 1;
 
-      return <ValidationForm className='EditathonConfig mainContentPane' ref={r => this._form = r}>
+      return <ValidationForm className={classNames('EditathonConfig', 'mainContentPane', validating && 'validating')} ref={r => this._form = r}>
          <h1>{tr('newEditathon')}</h1>
          <Headers
             items={Object.keys(Pages).filter(k => this.shouldShowPage(k)).map(k => tr(k))}
@@ -150,13 +155,13 @@ class EditathonConfig extends React.Component {
          })}
          {this.isNew()
             ? <div className='buttons'>
-               <WikiButton onClick={() => this.moveBack()}>{tr('back')}</WikiButton>
-               {!isLast && <WikiButton type='progressive' onClick={() => this.moveNext()}>{tr('next')}</WikiButton>}
-               {isLast && <WikiButton loading={sending} type='progressive' onClick={() => this.submit()}>{tr('create')}</WikiButton>}
+               <WikiButton disabled={validating} loading={validating === 'back'} onClick={() => this.moveBack()}>{tr('back')}</WikiButton>
+               {!isLast && <WikiButton disabled={validating} loading={validating === 'next'} type='progressive' onClick={() => this.moveNext()}>{tr('next')}</WikiButton>}
+               {isLast && <WikiButton disabled={validating} loading={sending || validating === 'next'} type='progressive' onClick={() => this.submit()}>{tr('create')}</WikiButton>}
             </div>
             : <div className='buttons'>
-               <WikiButton loading={sending} type='progressive' onClick={() => this.submit()}>{tr('save')}</WikiButton>
-               <WikiButton onClick={() => this.navigateBrowserBack()}>{tr('cancel')}</WikiButton>
+               <WikiButton disabled={validating} loading={sending} type='progressive' onClick={() => this.submit()}>{tr('save')}</WikiButton>
+               <WikiButton disabled={validating} onClick={() => this.navigateBrowserBack()}>{tr('cancel')}</WikiButton>
             </div>
          }
       </ValidationForm>;

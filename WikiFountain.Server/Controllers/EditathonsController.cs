@@ -81,6 +81,20 @@ namespace WikiFountain.Server.Controllers
             };
         }
 
+        [HttpGet]
+        public bool CheckExists(string what, string value)
+        {
+            var query = _session.Query<Editathon>();
+            if (what == "code")
+                query = query.Where(e => e.Code == value);
+            else if (what == "name")
+                query = query.Where(e => e.Name == value);
+            else
+                throw Forbidden();
+
+            return query.Any();
+        }
+
         public class ArticlePostData
         {
             public string Title { get; set; }
@@ -295,7 +309,7 @@ namespace WikiFountain.Server.Controllers
                 Finish = e.Finish,
                 Wiki = e.Wiki,
                 Flags = e.Flags,
-                
+
                 Rules = e.Rules.ToArray(),
                 Marks = e.Marks,
                 Template = e.Template,
