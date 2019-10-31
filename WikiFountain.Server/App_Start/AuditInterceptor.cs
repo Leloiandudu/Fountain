@@ -69,7 +69,11 @@ namespace WikiFountain.Server
             if (col == null) return;
 
             var ce = _sessionImpl.PersistenceContext.GetCollectionEntry(col);
-            foreach (var entity in col.Entries(ce.LoadedPersister))
+
+            var entries = col.Entries(ce.LoadedPersister);
+            if (entries == null) return;
+
+            foreach (var entity in entries)
                 _audit.Collections.Add(AuditCollection(col, entity, false));
         }
 
