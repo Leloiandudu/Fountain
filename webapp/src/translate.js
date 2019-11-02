@@ -100,6 +100,7 @@ const Langs = {
    bn: require('./translations/bn').default,
    de: require('./translations/de').default,
    en: require('./translations/en').default,
+   hu: require('./translations/hu').default,
    id: require('./translations/id').default,
    ja: require('./translations/ja').default,
    ka: require('./translations/ka').default,
