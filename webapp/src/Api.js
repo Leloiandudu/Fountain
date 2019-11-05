@@ -128,8 +128,8 @@ export default {
    award: (code, awards) =>
       post(`editathons/${enc(code)}/award`, awards),
 
-   exists: (what, value) =>
-      get('editathons/exists', { what, value }),
+   exists: (what, value, existingCode) =>
+      get('editathons/exists', { what, value, existingCode }),
 };
 
 export function UnauthorizedHttpError() { }

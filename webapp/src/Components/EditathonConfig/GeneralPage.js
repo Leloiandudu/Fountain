@@ -29,7 +29,7 @@ class GeneralPage extends React.Component {
       this.bind = createBinder();
 
       this.codeChecker = existanceChecker('code')
-      this.nameChecker = existanceChecker('name')
+      this.nameChecker = existanceChecker('name', props.isNew ? null : props.value.code)
    }
 
    componentWillMount() {
@@ -60,7 +60,9 @@ class GeneralPage extends React.Component {
    }
 
    async validateCodeOrName(what) {
-      const { value: { [what]: value }, translation: { tr } } = this.props;
+      const { value: { [what]: value }, translation: { tr }, isNew } = this.props;
+      if (what === 'code' && !isNew) return
+
       if (value.length < 3) { return tr('tooShort') }
 
       if (what === 'code') {
@@ -74,7 +76,7 @@ class GeneralPage extends React.Component {
    }
 
    render() {
-      const { value, translation: { tr } } = this.props;
+      const { value, translation: { tr }, isNew } = this.props;
       return <div className='page GeneralPage'>
          <label id='name'>
             <span>{tr('title')}</span>
@@ -85,7 +87,7 @@ class GeneralPage extends React.Component {
          <label id='code'>
             <span>{tr('code')}</span>
             <Validation isEmpty={() => !value.code} validate={() => this.validateCodeOrName('code')}>
-               <input type='text' value={this.state.code} onChange={e => this.setCode(e.target.value)} />
+               <input disabled={!isNew} type='text' value={this.state.code} onChange={e => this.setCode(e.target.value)} />
             </Validation>
             <span id='url'>{window.location.origin + url('/editathons/') + encodeURIComponent(value.code || '')}</span>
          </label>
@@ -137,7 +139,7 @@ class GeneralPage extends React.Component {
    }
 }
 
-function existanceChecker(what) {
+function existanceChecker(what, existingCode) {
    let value = ''
    let result = false
 
@@ -146,7 +148,7 @@ function existanceChecker(what) {
       if (!val) { return false }
       if (val === value) { return result }
       value = val
-      return result = Api.exists(what, val)
+      return result = Api.exists(what, val, existingCode)
    }
 
    return {

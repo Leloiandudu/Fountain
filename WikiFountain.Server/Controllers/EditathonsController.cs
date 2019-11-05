@@ -82,7 +82,7 @@ namespace WikiFountain.Server.Controllers
         }
 
         [HttpGet]
-        public bool CheckExists(string what, string value)
+        public bool CheckExists(string what, string value, string existingCode)
         {
             var query = _session.Query<Editathon>();
             if (what == "code")
@@ -91,6 +91,9 @@ namespace WikiFountain.Server.Controllers
                 query = query.Where(e => e.Name == value);
             else
                 throw Forbidden();
+
+            if (!string.IsNullOrEmpty(existingCode))
+                query = query.Where(e => e.Code != existingCode);
 
             return query.Any();
         }
@@ -341,6 +344,9 @@ namespace WikiFountain.Server.Controllers
             }
             else
             {
+                if (e.Code != cfg.Code)
+                    throw Forbidden();
+
                 // after publishing only admins of the source wiki can edit
                 if (!rights.IsAdminIn(e.Wiki))
                     throw Forbidden();

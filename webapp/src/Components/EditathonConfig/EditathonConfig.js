@@ -152,6 +152,7 @@ class EditathonConfig extends React.Component {
          {React.createElement(Pages[selected], {
             value: editathon,
             onChange: v => this.setState({ editathon: v }),
+            isNew: this.isNew(),
          })}
          {this.isNew()
             ? <div className='buttons'>
