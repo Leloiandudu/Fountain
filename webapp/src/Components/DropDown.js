@@ -89,7 +89,7 @@ export default class DropDown extends React.Component {
 
       if (this._autocomplete) {
          if (filter) {
-            this.highlightIndex(this._autocomplete.getFilteredItems().length ? 0 : null);
+            this.highlightIndex(this._autocomplete.getFilteredItems(this._autocomplete.props).length ? 0 : null);
          } else {
             this.highlightFirst(item => matchItem(item, value));
          }
@@ -105,7 +105,7 @@ export default class DropDown extends React.Component {
 
    highlightFirst(pred) {
       if (!this._autocomplete) return;
-      const items = this._autocomplete.getFilteredItems();
+      const items = this._autocomplete.getFilteredItems(this._autocomplete.props);
 
       for (let i = 0; i < items.length; i++) {
          if (pred(items[i])) {
