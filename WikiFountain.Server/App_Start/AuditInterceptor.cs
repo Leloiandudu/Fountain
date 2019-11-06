@@ -131,13 +131,16 @@ namespace WikiFountain.Server
         {
             var parentEntry = GetEntry(col.Owner);
             var entry = GetEntry(entity);
+
+            var role = col.Role ?? ce.CurrentPersister.Role;
+
             return new AuditCollection
             {
                 Key = (long)_session.GetIdentifier(entity),
                 Entity = entry.EntityName,
                 ParentKey = (long)_session.GetIdentifier(col.Owner),
                 ParentEntity = parentEntry.EntityName,
-                Collection = ce.CurrentPersister.Role.Substring(parentEntry.EntityName.Length + 1),
+                Collection = role.Substring(parentEntry.EntityName.Length + 1),
                 Added = added,
             };
         }
