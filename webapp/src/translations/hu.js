@@ -1,10 +1,12 @@
-import { plural, numberFormatter, dateFormatter } from '../translate';
+import 'moment/locale/hu';
+import { numberFormatter, dateFormatter } from '../translate';
 
 const formatNumber = numberFormatter(' ', ',');
 const { formatDateIn, formatDate } = dateFormatter('hu');
 
 export default {
    _name: 'magyar',
+   _fallback: 'en',
    formatNumber,
    formatDate,
    formatDateIn,
