@@ -57,7 +57,7 @@ namespace WikiFountain.Server
 
             var col = collection as IPersistentCollection;
             if (col == null) return;
-            Audit(col);
+            Audit(col, true);
         }
 
         public override void OnCollectionRemove(object collection, object key)
@@ -74,7 +74,7 @@ namespace WikiFountain.Server
             if (entries == null) return;
 
             foreach (var entity in entries)
-                _audit.Collections.Add(AuditCollection(col, entity, false));
+                _audit.Collections.Add(AuditCollection(col, ce, entity, false));
         }
 
         public override void OnCollectionUpdate(object collection, object key)
@@ -84,7 +84,7 @@ namespace WikiFountain.Server
 
             var col = collection as IPersistentCollection;
             if (col == null) return;
-            Audit(col);
+            Audit(col, false);
         }
 
         public override void PostFlush(ICollection entities)
@@ -105,23 +105,29 @@ namespace WikiFountain.Server
             }
         }
 
-        private void Audit(IPersistentCollection col)
+        private void Audit(IPersistentCollection col, bool recreate)
         {
             var ce = _sessionImpl.PersistenceContext.GetCollectionEntry(col);
             var entities = col.Entries(ce.CurrentPersister).Cast<object>().ToArray();
 
+            // we don't support non-entity collections... (Jury?)
+            if (!ce.CurrentPersister.ElementType.IsEntityType) return;
+
             for (var i = 0; i < entities.Length; i++)
             {
                 var entity = entities[i];
-                if (col.NeedsInserting(entity, i, ce.CurrentPersister.ElementType))
-                    _audit.Collections.Add(AuditCollection(col, entity, true));
+                if (recreate || col.NeedsInserting(entity, i, ce.CurrentPersister.ElementType))
+                    _audit.Collections.Add(AuditCollection(col, ce, entity, true));
             }
 
-            foreach (var entity in col.GetDeletes(ce.CurrentPersister, true))
-                _audit.Collections.Add(AuditCollection(col, entity, false));
+            if (!recreate)
+            {
+                foreach (var entity in col.GetDeletes(ce.CurrentPersister, true))
+                    _audit.Collections.Add(AuditCollection(col, ce, entity, false));
+            }
         }
 
-        private AuditCollection AuditCollection(IPersistentCollection col, object entity, bool added)
+        private AuditCollection AuditCollection(IPersistentCollection col, CollectionEntry ce, object entity, bool added)
         {
             var parentEntry = GetEntry(col.Owner);
             var entry = GetEntry(entity);
@@ -131,7 +137,7 @@ namespace WikiFountain.Server
                 Entity = entry.EntityName,
                 ParentKey = (long)_session.GetIdentifier(col.Owner),
                 ParentEntity = parentEntry.EntityName,
-                Collection = col.Role.Substring(parentEntry.EntityName.Length + 1),
+                Collection = ce.CurrentPersister.Role.Substring(parentEntry.EntityName.Length + 1),
                 Added = added,
             };
         }
