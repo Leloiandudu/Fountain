@@ -165,7 +165,7 @@ namespace WikiFountain.Server.Controllers
             }
 
             if (e.Template != null)
-                await UpdateTemplate(wiki, user, body.Title, page, e.Template);
+                await UpdateTemplate(wiki, user, body.Title, page, e.Template, ControllerContext.ResolveUrl($"~/editathons/{e.Code}"));
 
             e.Articles.Add(new Article
             {
@@ -175,7 +175,7 @@ namespace WikiFountain.Server.Controllers
             });
         }
 
-        private static async Task UpdateTemplate(MediaWiki wiki, UserInfo user, string title, string page, TemplateConfig settings)
+        private static async Task UpdateTemplate(MediaWiki wiki, UserInfo user, string title, string page, TemplateConfig settings, string message)
         {
             var template = new Template { Name = settings.Name };
 
@@ -212,7 +212,7 @@ namespace WikiFountain.Server.Controllers
                 page = page.Insert(regions.Last().Offset, templateString);
             }
 
-            await wiki.EditPage(title, page, "Automatically adding template");
+            await wiki.EditPage(title, page, message);
         }
 
         [HttpPost]

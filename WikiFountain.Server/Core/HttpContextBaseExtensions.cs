@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Web;
+using System.Web.Http.Controllers;
 
 namespace WikiFountain.Server.Core
 {
@@ -13,7 +14,7 @@ namespace WikiFountain.Server.Core
             else
                 return ctx.Request.Cookies[name];
         }
-        
+
         public static string GetCookieValue(this HttpContextBase ctx, string name)
         {
             var cookie = ctx.GetCookie(name);
@@ -34,7 +35,29 @@ namespace WikiFountain.Server.Core
 
         public static string GetSiteRoot(this HttpContextBase ctx)
         {
-            return HttpRuntime.AppDomainAppVirtualPath.TrimEnd('/');
+            return GetSiteRoot();
+        }
+
+        public static string GetSiteRoot(this HttpControllerContext ctx)
+        {
+            return GetSiteRoot();
+        }
+
+        private static string GetSiteRoot()
+        {
+            return System.Web.Hosting.HostingEnvironment.ApplicationVirtualPath.TrimEnd('/');
+        }
+
+        public static string ResolveUrl(this HttpControllerContext ctx, string url)
+        {
+            if (!url.StartsWith("~"))
+                throw new ArgumentException();
+            url = url.Substring(1);
+
+            var uri = new UriBuilder(ctx.Request.RequestUri.GetLeftPart(UriPartial.Authority));
+            uri.Path = GetSiteRoot() + url;
+
+            return uri.Uri.AbsoluteUri;
         }
     }
 }
