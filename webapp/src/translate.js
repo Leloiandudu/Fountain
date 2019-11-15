@@ -51,8 +51,8 @@ export function numberFormatter(group, decimal) {
       const p = Math.abs(n) + 5 * Math.pow(10, -places - 1);
       const i = Math.trunc(p);
 
-      const sign = Math.sign(n) === -1 ? 
-         '\u2212' : 
+      const sign = Math.sign(n) === -1 ?
+         '\u2212' :
          (forcePlus ? '+' : '');
 
       const start = sign + formatInt(i, places);
@@ -98,6 +98,7 @@ const Langs = {
    be: require('./translations/be').default,
    bg: require('./translations/bg').default,
    bn: require('./translations/bn').default,
+   cs: require('./translations/cs').default,
    de: require('./translations/de').default,
    en: require('./translations/en').default,
    hu: require('./translations/hu').default,
@@ -110,6 +111,7 @@ const Langs = {
    pt: require('./translations/pt').default,
    ru: require('./translations/ru').default,
    sah: require('./translations/sah').default,
+   sk: require('./translations/sk').default,
    sq: require('./translations/sq').default,
    uk: require('./translations/uk').default,
    vi: require('./translations/vi').default,
@@ -148,7 +150,7 @@ export class TranslationContext extends React.Component {
       }
    }
 
-   static get propTypes() { 
+   static get propTypes() {
       return {
          defaultLang: React.PropTypes.string.isRequired,
          onSetLang: React.PropTypes.func,

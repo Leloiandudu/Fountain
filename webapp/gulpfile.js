@@ -29,7 +29,7 @@ var additionalDependencies = [
    'moment/locale/de', 'moment/locale/id', 'moment/locale/ja', 'moment/locale/ka',
    'moment/locale/lo', 'moment/locale/ml', 'moment/locale/ne', 'moment/locale/pt',
    'moment/locale/ru', 'moment/locale/sq', 'moment/locale/uk', 'moment/locale/vi',
-   'moment/locale/zh-cn', 'moment/locale/hu'
+   'moment/locale/zh-cn', 'moment/locale/hu', 'moment/locale/cs', 'moment/locale/sk'
 ];
 
 taskTime.init(function(s) {
