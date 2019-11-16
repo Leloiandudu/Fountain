@@ -33,7 +33,7 @@ const AddArticle = React.createClass({
          return this.returnToList();
       }
 
-      const isJury = this.props.editathon.jury.filter(j => j === Global.user.name)[0];
+      const isJury = !!this.props.editathon.jury.filter(j => j === Global.user.name)[0];
       this.setState({ isJury, stage: isJury ? 'user' : 'pick' })
    },
    async update() {
@@ -102,7 +102,7 @@ const AddArticle = React.createClass({
          pick: this.renderPickStage,
          approve: this.renderApproveStage,
       }[this.state.stage];
-      
+
       return renderer ? renderer().props.children : null;
    },
    tr(...args) {
@@ -131,9 +131,9 @@ const AddArticle = React.createClass({
       return <WikiButton onClick={action}>{this.tr(name)}</WikiButton>;
    },
    async pickUser() {
-      this.setState({ updating: true, error: false });
+      const user = this.state.user.trim();
+      this.setState({ updating: true, error: false, user });
 
-      const { user } = this.state;
       let regDate;
       try {
          const mwApi = getMwApi(this.props.editathon.wiki);
