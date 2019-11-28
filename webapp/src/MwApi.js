@@ -1,4 +1,5 @@
 import pkg from './../package.json';
+import { logFetch, logResponseBody } from './telemetry.js';
 
 const wikisMap = [
    [ 'meta', 'meta.wikimedia.org' ],
@@ -46,8 +47,10 @@ export default function MwApi(url) {
          // 'Api-User-Agent': `${pkg.name}/${pkg.version}`,
       })
 
-      const response = await fetch(url + '?' + data, { method: 'GET', headers });
-      return await response.json();
+      const { response, log } = await logFetch(url + '?' + data, { method: 'GET', headers });
+      const body = await response.json();
+      logResponseBody(log, body);
+      return body;
    }
 
    this.exec = exec;

@@ -1,5 +1,6 @@
 import moment from 'moment';
-import url from './url'
+import { logFetch, logResponseBody } from './telemetry';
+import url from './url';
 
 const apiUrl = url('/api/');
 
@@ -21,14 +22,20 @@ async function query(method, url, params) {
       }
    }
 
-   const response = await fetch(apiUrl + url, init);
-   if (response.status === 401)
+   const { response, log } = await logFetch(apiUrl + url, init)
+
+   if (response.status === 401) {
       throw new UnauthorizedHttpError();
-   if (!response.ok)
+   } else if (!response.ok) {
       throw new Error(`${response.status} ${response.statusText}\n` + await response.text());
-   if (response.status === 204 || response.headers.get('Content-Length') == 0)
+   } else if (response.status === 204 || response.headers.get('Content-Length') == 0) {
       return;
-   return postProcess(await response.json());
+   }
+
+   const body = await response.json();
+   logResponseBody(log, body)
+
+   return postProcess(body);
 }
 
 function getParams(params, isUrl) {
