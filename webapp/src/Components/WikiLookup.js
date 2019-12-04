@@ -25,7 +25,7 @@ export default class WikiLookup extends React.Component {
             name: s.name,
             lang: {
                code: lang.code,
-               name: lang.name,
+               name: lang.name || '',
             },
          })))
          .reduce((a1, a2) => a1.concat(a2), [{
