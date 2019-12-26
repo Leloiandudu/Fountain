@@ -31,15 +31,6 @@ export default {
 
    EditathonList: {
       title: 'Editačné maratóny',
-      create: 'Создать',
-      finished: 'Завершившиеся',
-   },
-
-   EditathonFilter: {
-      search: 'поиск...',
-      all: '(все)',
-      project: 'проект...',
-      language: 'язык...',
    },
 
    ArticlesList: {
