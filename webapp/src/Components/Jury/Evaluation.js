@@ -13,6 +13,7 @@ const Evaluation = React.createClass({
          marks: {},
          comment: null,
          isCommentOpen: false,
+         editingComment: '',
       };
    },
    componentWillMount() {
@@ -90,7 +91,8 @@ const Evaluation = React.createClass({
                <WikiButton onClick={this.props.onNext}>{tr('skip')}</WikiButton>
             </div>
             <ModalDialog isOpen={isCommentOpen} className='comment-dialog'>
-               <textarea autoFocus={true} ref='commentTextarea' value={editingComment} onChange={event => this.setState({ editingComment: event.target.value })} />
+               <textarea maxLength={255} autoFocus={true} ref='commentTextarea' value={editingComment} onChange={event => this.setState({ editingComment: event.target.value })} />
+               <div className='commentLength'>{editingComment.length} / 255</div>
                <div className='buttons'>
                   <WikiButton type='progressive' onClick={this.saveComment}>{tr('Comment.save')}</WikiButton>
                   <WikiButton onClick={() => this.setState({ isCommentOpen: false })}>{tr('Comment.cancel')}</WikiButton>

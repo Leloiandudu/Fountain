@@ -24,14 +24,25 @@
    }
 
    .comment-dialog {
+      padding: 1rem;
       width: 30%;
+      display: flex;
+      flex-flow: column;
 
       textarea {
          resize: vertical;
-         width: 100%;
          height: 6em;
          font-size: 15px;
-         margin-bottom: 1em;
+      }
+
+      .commentLength {
+         font-size: 0.75rem;
+         text-align: right;
+         color: #444;
+      }
+
+      .buttons {
+         margin-top: 1rem;
       }
    }
 }
