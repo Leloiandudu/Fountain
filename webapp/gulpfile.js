@@ -19,7 +19,6 @@ var exorcist = require('exorcist');
 var envify = require('envify');
 var gulpif = require('gulp-if');
 var argv = require('yargs').argv;
-var taskTime = require('./build/gulp-total-task-time');
 var fs = require('fs');
 
 var Package = require('./package.json');
@@ -31,10 +30,6 @@ var additionalDependencies = [
    'moment/locale/ru', 'moment/locale/sq', 'moment/locale/uk', 'moment/locale/vi',
    'moment/locale/zh-cn', 'moment/locale/hu', 'moment/locale/cs', 'moment/locale/sk'
 ];
-
-taskTime.init(function(s) {
-   notify().write('Done in ' + s.toFixed(1) + ' seconds');
-});
 
 var paths = {
    src: './src/main.js',
@@ -113,13 +108,15 @@ gulp.task('libs', function() {
    return bundleBrowserify(createBrowserify(true), paths.libs);
 });
 
-gulp.task('serve', function() {
+gulp.task('serve', function(done) {
    browserSync({
       proxy: 'http://localhost:61712/',
       open: false,
       host: '192.168.1.2',
       ghostMode: false,
    });
+
+   done()
 });
 
 gulp.task('javascript', function() {
@@ -156,8 +153,10 @@ gulp.task('clean', function(cb) {
    Promise.all(all.map(p => unlink(p))).then(() => cb());
 });
 
-gulp.task('watch', [ 'clean', 'libs', 'watchify', 'serve', 'less' ], function() {
+gulp.task('watch', gulp.series('clean', gulp.parallel('libs', 'watchify', 'serve', 'less'), function watchLess(done) {
    watch(lessPaths.watch, () => runLess().pipe(browserSync.stream()));
-});
+   done()
+   notify().write('Done')
+}));
 
-gulp.task('default', [ 'clean', 'libs', 'javascript', 'less' ]);
+gulp.task('default', gulp.series('clean', gulp.parallel('libs', 'javascript', 'less')));
