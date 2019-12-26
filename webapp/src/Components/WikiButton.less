@@ -11,22 +11,11 @@
    text-shadow: 0 1px rgba(0, 0, 0, .1);
    display: block;
 
-   &:disabled {
-      background-color: #ddd;
-      border-color: #ddd;
-      cursor: default;
-
-      a {
-         text-decoration: none;
-         color: inherit;
-      }
-   }
-
    &.progressive, &.constructive, &.destructive {
       color: #fff;
    }
 
-   &.progressive:not(:disabled) {
+   &.progressive {
       background-color: #347bff;
       border: 1px solid #347bff;
 
@@ -39,7 +28,7 @@
       }
    }
 
-   &.constructive:not(:disabled) {
+   &.constructive {
       background-color: #00af89;
       border: 1px solid #00af89;
 
@@ -52,7 +41,7 @@
       }
    }
 
-   &.destructive:not(:disabled) {
+   &.destructive {
       background-color: #d11d13;
       border: 1px solid #d11d13;
 
@@ -62,6 +51,23 @@
 
       &:active {
          background-color: #a7170f;
+      }
+   }
+
+   &:disabled, &.loading {
+      background-color: #ddd;
+      border-color: #ddd;
+      cursor: default;
+      color: white;
+
+      &:hover {
+         border-bottom-color: #ddd;
+         box-shadow: none;
+      }
+
+      a {
+         text-decoration: none;
+         color: inherit;
       }
    }
 
