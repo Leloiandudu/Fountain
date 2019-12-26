@@ -66,13 +66,15 @@ class EditathonConfig extends React.Component {
       }
    }
 
-   navigateBrowserBack() {
-      this.context.router.goBack();
+   goBack() {
+      this.context.router.replace({
+         pathname: url(this.isNew() ? '/editathons/' : `/editathons/${this.state.editathon.code}`),
+      });
    }
 
    moveBack() {
       if (this.getSelectedIndex() === 0) {
-         this.navigateBrowserBack();
+         this.goBack();
       } else {
          this.moveTo(Object.keys(Pages)[this.getSelectedIndex() - 1], 'back')
       }
@@ -113,13 +115,10 @@ class EditathonConfig extends React.Component {
       try {
          if (this.isNew()) {
             await Api.createEditathon(editathon);
-            this.context.router.replace({
-               pathname: url('/editathons/' + editathon.code),
-            });
          } else {
             await Api.setEditathonConfig(this.getCode(), editathon);
-            this.navigateBrowserBack();
          }
+         this.goBack();
       } catch(e) {
          alert(e.message);
          this.setState({ sending: false });
@@ -131,9 +130,7 @@ class EditathonConfig extends React.Component {
       const { editathon, selected, sending, loading, validating } = this.state;
 
       if (!Global.user) {
-         this.context.router.replace({
-            pathname: url('/editathons/'),
-         });
+         this.goBack();
          return null;
       }
 
@@ -162,7 +159,7 @@ class EditathonConfig extends React.Component {
             </div>
             : <div className='buttons'>
                <WikiButton disabled={validating} loading={sending} type='progressive' onClick={() => this.submit()}>{tr('save')}</WikiButton>
-               <WikiButton disabled={validating} onClick={() => this.navigateBrowserBack()}>{tr('cancel')}</WikiButton>
+               <WikiButton disabled={validating} onClick={() => this.goBack()}>{tr('cancel')}</WikiButton>
             </div>
          }
       </ValidationForm>;
