@@ -126,6 +126,9 @@ class GeneralPage extends React.Component {
                      checked={value.flags & EditathonFlags.consensualVote}
                      onChange={e => this.changeFlag(EditathonFlags.consensualVote, e.target.checked)} />
                {tr('consensualVote')}
+               <span className='note'>
+                  {tr('consensualVoteNote')}
+               </span>
             </label>
             <label>
                <input
@@ -133,6 +136,9 @@ class GeneralPage extends React.Component {
                      checked={value.flags & EditathonFlags.hiddenMarks}
                      onChange={e => this.changeFlag(EditathonFlags.hiddenMarks, e.target.checked)} />
                {tr('hiddenMarks')}
+               <span className='note'>
+                  {tr('hiddenMarksNote')}
+               </span>
             </label>
          </div>
       </div>;

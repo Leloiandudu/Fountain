@@ -41,6 +41,7 @@
    .page {
       display: flex;
       flex-flow: column;
+      font-size: 0.875rem;
 
       label, .field {
          display: flex;
@@ -58,6 +59,15 @@
       label > span,
       .field > label {
          font-weight: 600;
+      }
+
+      label > .note {
+         display: block;
+         font-size: 0.75rem;
+         font-weight: normal;
+         color: #586069;
+         margin-left: 19px;
+         width: 100%;
       }
 
       > label, > .field {
