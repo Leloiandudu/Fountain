@@ -78,7 +78,7 @@ class EditathonFilter extends React.PureComponent {
 
       value = value.toLowerCase();
       return (item.code || '').startsWith(value) ||
-             item.name.toLowerCase().startsWith(value);
+             (item.name || '').toLowerCase().startsWith(value);
    }
 
    getDefaultLang() {
