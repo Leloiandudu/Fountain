@@ -129,9 +129,12 @@ export function isMarkValid(marks, marksConfig) {
    return isValid(getActiveMarks(marks, marksConfig));
 }
 
-export function calcTotalMark(jury, marks, marksConfig) {
+function calcTotalMark(jury, marks, marksConfig, minMarks) {
    const all = jury.map(j => findMarkOf(marks, j)).filter(m => m).map(m => m.marks);
    if (all.length == 0)
+      return null;
+
+   if (all.length < minMarks)
       return null;
 
    return {
@@ -140,9 +143,9 @@ export function calcTotalMark(jury, marks, marksConfig) {
    }
 }
 
-export function getTotalMark({ jury, marks: marksConfig, flags }, marks) {
+export function getTotalMark({ jury, marks: marksConfig, flags, minMarks }, marks) {
    const consensualVote = !!(flags & EditathonFlags.consensualVote);
-   const mark = calcTotalMark(jury, marks, marksConfig);
+   const mark = calcTotalMark(jury, marks, marksConfig, minMarks);
    return mark && (consensualVote ? mark.consensual : mark.average);
 }
 
@@ -150,6 +153,6 @@ export function isConflict(editathon, article) {
    const { jury, marks, flags } = editathon;
    if (flags & EditathonFlags.hiddenMarks) return false;
    if (!(flags & EditathonFlags.consensualVote)) return false;
-   const mark = calcTotalMark(jury, article.marks, marks);
+   const mark = calcTotalMark(jury, article.marks, marks, minMarks);
    return mark && mark.consensual === null;
 }

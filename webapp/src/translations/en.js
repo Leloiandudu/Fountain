@@ -62,6 +62,7 @@ export default {
       users: 'Users',
       marks: 'Marks',
       withoutMarks: 'Without marks',
+      needsYourMark: 'Needs your mark',
    },
 
    AddArticle: {
@@ -236,6 +237,7 @@ export default {
       },
       JuryPage: {
          add: 'add',
+         minMarks: 'Minimum number of marks per article',
       },
    },
 

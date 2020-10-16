@@ -24,6 +24,7 @@ namespace WikiFountain.Server.Models
         public DateTime Finish { get; set; }
         public string Wiki { get; set; }
         public EditathonFlags Flags { get; set; }
+        public int MinMarks { get; set; }
 
         public ISet<Article> Articles { get; set; }
         public ISet<string> Jury { get; set; }
@@ -57,6 +58,10 @@ namespace WikiFountain.Server.Models
                 .ToArray();
 
             if (all.Length == 0) return null;
+
+            // don't show mark unless we met the minimum
+            if (all.Length < MinMarks) return null;
+
             var config = ReadMarksConfig();
 
             decimal result;
@@ -120,7 +125,7 @@ namespace WikiFountain.Server.Models
         public bool TalkPage { get; set; }
         public Core.Template.Argument[] Args { get; set; }
     }
-    
+
     public class EditathonMapping : ClassMapping<Editathon>
     {
         public EditathonMapping()

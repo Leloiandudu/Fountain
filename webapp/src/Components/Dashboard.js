@@ -21,12 +21,16 @@ class Dashboard extends React.Component {
          value: e.articles.reduce((m, a) => [ ...m, ...a.marks], []).length,
       }, {
          name: tr('withoutMarks'),
-         value: e.articles.filter(a => a.marks.length === 0).length,
+         value: e.articles.filter(a => a.marks.length < e.minMarks).length,
+         isGood: x => x === 0
+      }, e.minMarks > 1 && Global.user && e.jury.indexOf(Global.user.name) !== -1 && {
+         name: tr('needsYourMark'),
+         value: e.articles.filter(a => a.marks.length < e.minMarks && !a.marks.some(m => m.user === Global.user.name)).length,
          isGood: x => x === 0
       }];
 
       return <div className='Dashboard'>
-         {items.map((x, i) => <div className='itemWrapper' key={i}>
+         {items.filter(x => x).map((x, i) => <div className='itemWrapper' key={i}>
             <div className={classNames({
                item: true,
                good: x.isGood && x.isGood(x.value),

@@ -1,13 +1,13 @@
 import React from 'react';
-import classNames from 'classnames';
-import { createBinder, setDefault } from '../utils';
-import UserLookup from '../UserLookup';
-import WikiButton from '../WikiButton';
-import { getMwApi } from '../../MwApi';
 import { withTranslation } from '../../translate';
+import IntegerInput from '../IntegerInput';
+import UserLookup from '../UserLookup';
+import { createBinder, setDefault } from '../utils';
+import WikiButton from '../WikiButton';
+import { Validation } from './validation';
 
 function getDefaultData() {
-   return [ Global.user.name ];
+   return [Global.user.name];
 }
 
 class JuryPage extends React.Component {
@@ -38,10 +38,12 @@ class JuryPage extends React.Component {
 
    renderItem(jury, index) {
       return <div className='item' key={index}>
-         <UserLookup
+         <Validation isEmpty={() => !jury}>
+            <UserLookup
                wiki={this.props.value.wiki}
                value={jury}
                onChange={text => this.replace(index, text)} />
+         </Validation>
          <WikiButton className='delete' onClick={e => {
             this.replace(index);
             e.target.blur();
@@ -50,13 +52,24 @@ class JuryPage extends React.Component {
    }
 
    render() {
-      const { translation: { tr }, value: { jury = [] } } = this.props;
+      const { translation: { tr }, value } = this.props;
+      const { jury = [], minMarks = 1 } = value
 
       return <div className='page JuryPage'>
          {jury.map((j, i) => this.renderItem(j, i))}
-         <WikiButton className='add' onClick={() => this.add()}>
-            {tr('add')}
-         </WikiButton>
+         <Validation isEmpty={() => jury.length === 0}>
+            <WikiButton className='add' onClick={() => this.add()}>
+               {tr('add')}
+            </WikiButton>
+         </Validation>
+
+         <label>
+            <span>{tr('minMarks')}</span>
+            <IntegerInput value={minMarks || 0} min={1} max={Math.max(1, jury.length)}
+               onChange={v => {
+                  this.props.onChange({ ...value, minMarks: v });
+               }} />
+         </label>
       </div>;
    }
 }

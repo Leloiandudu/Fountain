@@ -59,6 +59,7 @@ namespace WikiFountain.Server.Controllers
                 e.Flags,
                 e.Jury,
                 e.Marks,
+                e.MinMarks,
                 Rules = e.Rules.Select(r => new
                 {
                     r.Type,
@@ -312,6 +313,7 @@ namespace WikiFountain.Server.Controllers
                 Finish = e.Finish,
                 Wiki = e.Wiki,
                 Flags = e.Flags,
+                MinMarks = e.MinMarks,
 
                 Rules = e.Rules.ToArray(),
                 Marks = e.Marks,
@@ -375,6 +377,7 @@ namespace WikiFountain.Server.Controllers
             e.Finish = cfg.Finish;
             e.Wiki = cfg.Wiki;
             e.Flags = cfg.Flags;
+            e.MinMarks = cfg.MinMarks;
 
             e.Rules.Clear();
             e.Rules.UnionWith(cfg.Rules.Select(_session.Merge));
@@ -395,6 +398,7 @@ namespace WikiFountain.Server.Controllers
             public DateTime Start { get; set; }
             public DateTime Finish { get; set; }
             public EditathonFlags Flags { get; set; }
+            public int MinMarks { get; set; }
 
             public Rule[] Rules { get; set; }
             public JObject Marks { get; set; }

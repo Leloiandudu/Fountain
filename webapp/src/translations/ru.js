@@ -71,6 +71,7 @@ export default {
       users: 'Участников',
       marks: 'Оценок',
       withoutMarks: 'Не оценено',
+      needsYourMark: 'Нужна ваша оценка',
    },
 
    AddArticle: {
@@ -245,6 +246,7 @@ export default {
       },
       JuryPage: {
          add: 'добавить',
+         minMarks: 'Минимум оценок за статью',
       },
    },
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import classNames from 'classnames';
-import Header from './Header';
 import MarkInput from '../MarkInput';
 import ModalDialog from '../ModalDialog';
 import WikiButton from '../WikiButton';

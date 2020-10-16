@@ -178,7 +178,7 @@ const ArticlesList = React.createClass({
                      <td className='dateAdded'>{this.tr('dateAdded', moment(a.dateAdded).utc())}</td>
                      {this.showMarks() && <td className='mark'>{this.formatMark(getTotalMark(editathon, a.marks))}</td>}
                   </tr>,
-                  this.showMarks() && <tr className='details'>
+                  this.showMarks() && a.marks.length >= editathon.minMarks && <tr className='details'>
                      <td colSpan={3}>
                         <ul>
                            {jury
