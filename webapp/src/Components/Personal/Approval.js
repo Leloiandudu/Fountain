@@ -145,7 +145,7 @@ class Approval extends React.Component {
                         {tr('approve')}
                      </WikiButton>
                      <WikiButton disabled={sending}>
-                        <Link to={`/editathons/${ed.code}/config`}>
+                        <Link to={`/editathons/${ed.code}/config?returnTo=/personal/approval`}>
                            {tr('edit')}
                         </Link>
                      </WikiButton>

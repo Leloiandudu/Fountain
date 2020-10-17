@@ -67,9 +67,12 @@ class EditathonConfig extends React.Component {
    }
 
    goBack() {
-      this.context.router.replace({
-         pathname: url(this.isNew() ? '/editathons/' : `/editathons/${this.state.editathon.code}`),
-      });
+      const returnTo = this.props.location.query.returnTo
+      if (returnTo) {
+         this.context.router.push(url(returnTo))
+      } else {
+         this.context.router.replace(url(this.isNew() ? '/editathons/' : `/editathons/${this.state.editathon.code}`))
+      }
    }
 
    moveBack() {
