@@ -150,7 +150,7 @@ export function getTotalMark({ jury, marks: marksConfig, flags, minMarks }, mark
 }
 
 export function isConflict(editathon, article) {
-   const { jury, marks, flags } = editathon;
+   const { jury, marks, flags, minMarks } = editathon;
    if (flags & EditathonFlags.hiddenMarks) return false;
    if (!(flags & EditathonFlags.consensualVote)) return false;
    const mark = calcTotalMark(jury, article.marks, marks, minMarks);
