@@ -141,7 +141,7 @@ class EditathonConfig extends React.Component {
       const isLast = this.getSelectedIndex() === Object.keys(Pages).length - 1;
 
       return <ValidationForm className={classNames('EditathonConfig', 'mainContentPane', validating && 'validating')} ref={r => this._form = r}>
-         <h1>{tr('newEditathon')}</h1>
+         <h1>{this.isNew() ? tr('newEditathon') : editathon.name}</h1>
          <Headers
             items={Object.keys(Pages).filter(k => this.shouldShowPage(k)).map(k => tr(k))}
             selected={this.getSelectedIndex()}
