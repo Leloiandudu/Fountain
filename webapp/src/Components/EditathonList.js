@@ -202,13 +202,13 @@ const EditathonList = React.createClass({
 });
 
 export function renderEditathonDates(start, finish, translate) {
-   start = moment(start);
-   finish = moment(finish);
+   start = moment.utc(start);
+   finish = moment.utc(finish);
 
    let format = 'MMM';
    let startFormat = format;
 
-   if (start.date() !== 1 || moment(finish).endOf('month').day() !== finish.day())
+   if (start.date() !== 1 || moment.utc(finish).endOf('month').date() !== finish.date())
       startFormat = format = 'D ' + format;
    else if (start.isSame(finish, 'month'))
       startFormat = '';
