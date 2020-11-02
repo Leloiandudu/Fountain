@@ -53,7 +53,7 @@ class JuryPage extends React.Component {
 
    render() {
       const { translation: { tr }, value } = this.props;
-      const { jury = [], minMarks = 1 } = value
+      const { jury = [], minMarks = 0 } = value
 
       return <div className='page JuryPage'>
          {jury.map((j, i) => this.renderItem(j, i))}
@@ -65,7 +65,7 @@ class JuryPage extends React.Component {
 
          <label>
             <span>{tr('minMarks')}</span>
-            <IntegerInput value={minMarks || 0} min={1} max={Math.max(1, jury.length)}
+            <IntegerInput value={minMarks} min={1} max={Math.max(1, jury.length)}
                onChange={v => {
                   this.props.onChange({ ...value, minMarks: v });
                }} />
