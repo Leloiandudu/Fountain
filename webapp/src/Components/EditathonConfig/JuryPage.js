@@ -16,7 +16,7 @@ class JuryPage extends React.Component {
       this.bind = createBinder();
    }
 
-   componentWillMount() {
+   componentDidMount() {
       setDefault(this.props, 'jury', getDefaultData);
    }
 
