@@ -232,7 +232,7 @@ const AddArticle = React.createClass({
          <WikiLink to={title} wiki={editathon.wiki} red={missing} />
       </header>;
 
-      const addedBy = stats && editathon.articles.filter(a => a.name === stats.title)[0];
+      const addedBy = stats && editathon.articles.find(a => a.name.toLowerCase() === stats.title.toLowerCase());
 
       const rules = this.getRules().filter(rule => !rule.userOnly);
       const ctx = this.getCtx();
