@@ -1,10 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import Header from './Header';
 import { withTranslation } from '../../translate';
-import { getWikiHost, getArticleUrl } from './../../MwApi'
 import Loader from '../Loader';
 import { WikiHtml } from '../wikiPreview';
+import { getArticleUrl } from './../../MwApi';
 
 const Preview = React.createClass({
    shouldComponentUpdate({ title, info }) {
@@ -41,7 +39,10 @@ const Preview = React.createClass({
       }
 
       return <WikiHtml className='content' wiki={wiki} title={info.title} html={`
-${info.title !== title ? `<h1>
+<div class="mw-indicators">
+   ${Object.keys(info.indicators).map(k => `<div class="mw-indicator">${info.indicators[k]}</div>`)}
+</div>
+${info.title !== title ? `<h1 id="firstHeading" class="firstHeading">
    <a href='${getArticleUrl(wiki, info.title)}'>${info.title}</a>
 </h1>` : ''}
 ${info.fileUrl && `

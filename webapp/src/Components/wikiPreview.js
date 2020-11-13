@@ -1,7 +1,7 @@
-import React from 'react';
 import classNames from 'classnames';
-import { getArticleUrl, getWikiHost } from '../MwApi'
+import React from 'react';
 import Api from '../Api';
+import { getArticleUrl, getWikiHost } from '../MwApi';
 import throttle from '../throttle';
 import { withTranslation } from '../translate';
 
@@ -102,7 +102,8 @@ function WikiHtml({ html, wiki, title, className, translation, padding = true, a
       h1 {
          line-height: 1.2em;
          padding-top: 0;
-         margin-bottom: 0.25em;
+         margin: 0 0 0.25em !important;
+         overflow: visible;
       }
 
       h1 > a,

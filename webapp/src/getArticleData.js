@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { getPlainText, getWordCount, findTemplate } from './parsing';
+import { findTemplate, getPlainText, getWordCount } from './parsing';
 
 class Request {
    constructor() {
@@ -23,7 +23,7 @@ class Request {
                _title: 'page',
                action: 'parse',
                redirects: true,
-               prop: [ 'text' ],
+               prop: [ 'text', 'indicators' ],
                wrapoutputclass: '',
             }
          } else if (type === 'custom') {
@@ -101,7 +101,7 @@ class Request {
 
 const Types = {
    title: [
-      'lastRev', { 
+      'lastRev', {
          prop: [ 'revisions' ],
          rvlimit: 1,
       }, ({
@@ -111,7 +111,7 @@ const Types = {
       }) => title,
    ],
    ns: [
-      'lastRev', { 
+      'lastRev', {
          prop: [ 'revisions' ],
          rvlimit: 1,
       }, ({
@@ -124,6 +124,11 @@ const Types = {
       'html', {}, ({
          parse: { text }
       }) => text,
+   ],
+   indicators: [
+      'html', {}, ({
+         parse: { indicators }
+      }) => indicators,
    ],
    chars: [
       'html', {}, ({

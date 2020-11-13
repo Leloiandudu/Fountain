@@ -1,21 +1,21 @@
 import React from 'react';
-import sortBy from './../../sortBy';
-import url from './../../url';
-import Api from './../../Api';
-import { getMwApi } from './../../MwApi';
-import readRules, { getRulesReqs, RuleFlags } from './../../rules';
-import getArticleData from './../../getArticleData';
-import { withTranslation } from './../../translate';
-import { findMarkOf } from './../../jury';
-import Loader from './../Loader';
 import ModalDialog from '../ModalDialog';
 import WikiButton from '../WikiButton';
+import Api from './../../Api';
+import getArticleData from './../../getArticleData';
+import { findMarkOf } from './../../jury';
+import { getMwApi } from './../../MwApi';
+import readRules, { getRulesReqs, RuleFlags } from './../../rules';
+import sortBy from './../../sortBy';
+import { withTranslation } from './../../translate';
+import url from './../../url';
+import Loader from './../Loader';
 import ArticlesList from './ArticlesList';
-import Header from './Header';
-import Warnings from './Warnings';
-import Preview from './Preview';
-import Expander from './Expander';
 import Evaluation from './Evaluation';
+import Expander from './Expander';
+import Header from './Header';
+import Preview from './Preview';
+import Warnings from './Warnings';
 
 const Jury = React.createClass({
    contextTypes: {
@@ -104,7 +104,7 @@ const Jury = React.createClass({
             }
 
             [ info, userGender ] = await Promise.all([
-               getArticleData(mwApi, title, [ ...what, 'html' ]),
+               getArticleData(mwApi, title, [ ...what, 'html', 'indicators' ]),
                mwApi.getUserGender(article.user)
             ]);
             if (info === null)
