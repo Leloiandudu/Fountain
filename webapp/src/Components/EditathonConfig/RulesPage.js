@@ -1,19 +1,19 @@
 import React from 'react';
-import { setDefault } from '../utils';
+import getArticleData from '../../getArticleData';
+import { getMwApi } from '../../MwApi';
+import readRules, { getRulesReqs, RuleFlags } from '../../rules';
+import { withTranslation } from '../../translate';
 import DateTimePicker from '../DateTimePicker';
 import DropDown from '../DropDown';
 import DropDownButton from '../DropDownButton';
+import JuryWarnings from '../Jury/Warnings';
 import Loader from '../Loader';
 import PageLookup from '../PageLookup';
 import UserLookup from '../UserLookup';
+import { setDefault } from '../utils';
 import Warnings from '../Warnings';
-import JuryWarnings from '../Jury/Warnings';
 import WikiButton from '../WikiButton';
 import WikiLink from '../WikiLink';
-import readRules, { getRulesReqs, RuleFlags } from '../../rules';
-import getArticleData from '../../getArticleData';
-import { getMwApi } from '../../MwApi';
-import { withTranslation } from '../../translate';
 
 function setDefaultParams(component, params) {
    const cwm = component.componentWillMount;
@@ -455,7 +455,7 @@ class RulesPage extends React.Component {
          .filter(t => Editors[t].allowMulti || rules.every(r => r.type !== t));
 
       return <div className='page RulesPage'>
-         {rules.map((r, i) => <div className='rule' key={i}>
+         {rules.filter(r => Editors[r.type]).map((r, i) => <div className='rule' key={i}>
             <header>
                <span>{tr(r.type + '.title')}</span>
                <label>
@@ -474,7 +474,7 @@ class RulesPage extends React.Component {
                </label>}
                <WikiButton className='delete' onClick={() => this.deleteRule(r)} />
             </header>
-            {Editors[r.type] && React.createElement(Editors[r.type].component, {
+            {React.createElement(Editors[r.type].component, {
                params: r.params,
                onChange: params => this.onParamsChanged(r, params),
             })}
