@@ -1,16 +1,16 @@
 import React from 'react';
-import url from './../url'
-import readRules, { getRulesReqs, RuleFlags } from './../rules';
-import getArticleData from './../getArticleData';
 import Api, { UnauthorizedHttpError } from './../Api';
+import getArticleData from './../getArticleData';
 import { getMwApi } from './../MwApi';
+import readRules, { getRulesReqs, RuleFlags } from './../rules';
 import { withTranslation } from './../translate';
+import url from './../url';
+import Loader from './Loader';
+import PageLookup from './PageLookup';
+import UserLookup from './UserLookup';
 import Warnings from './Warnings';
 import WikiButton from './WikiButton';
 import WikiLink from './WikiLink';
-import PageLookup from './PageLookup';
-import UserLookup from './UserLookup';
-import Loader from './Loader';
 
 const AddArticle = React.createClass({
    contextTypes: {
@@ -42,8 +42,7 @@ const AddArticle = React.createClass({
       try {
          if (!stats || title !== stats.title) {
             const what = getRulesReqs(this.getRules());
-            const mwApi = getMwApi(this.props.editathon.wiki);
-            stats = await getArticleData(mwApi, title, [ 'title', 'card', ...what ]);
+            stats = await getArticleData(this.props.editathon.wiki, title, [ 'title', 'card', ...what ]);
             if (stats)
                title = stats.title;
          }

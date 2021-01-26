@@ -1,4 +1,4 @@
-import { matchAll, escapeRegExp } from './utils';
+import { escapeRegExp, matchAll } from './utils';
 
 function eraseTags(tag, tags) {
    if (!tag.childNodes.length)
@@ -9,17 +9,16 @@ function eraseTags(tag, tags) {
       .map(tag => eraseTags(tag, tags).trim())
       .filter(tag => tag)
       .join(" ");
-};
+}
 
-export function getPlainText(text) {
-   const tags = ["sup", "sub", "table", "div", "ul", "ol", "li", "dl", "dd", "dt", "#comment", "h1", "h2", "h3", "h4", "h5", "h6"];
+export function getPlainText(text, tags = ["sup", "sub", "table", "div", "ul", "ol", "li", "dl", "dd", "dt", "#comment", "h1", "h2", "h3", "h4", "h5", "h6"]) {
    const parser = new DOMParser();
    const html = parser.parseFromString(text, "text/html");
    return eraseTags(html.body, tags);
 }
 
-export function getWordCount(text) {
-   return (getPlainText(text).match(/[^\s]*[^\s\u2000-\u206f!"$%'()*,\-.:;?\\\[\]|~¡«°·»¿՚՛՜՝՞՟։־׀׆׳״،؟।၊။♪⟨⟩、。《》「」『』【】〜〽・﬩️﹁﹂！（），：？［］｛｝]+[^\s]*(\s|$)+/g) || []).length;
+export function getWordCount(text, tags) {
+   return (getPlainText(text, tags).match(/[^\s]*[^\s\u2000-\u206f!"$%'()*,\-.:;?\\\[\]|~¡«°·»¿՚՛՜՝՞՟։־׀׆׳״،؟।၊။♪⟨⟩、。《》「」『』【】〜〽・﬩️﹁﹂！（），：？［］｛｝]+[^\s]*(\s|$)+/g) || []).length;
 }
 
 function parseTemplateAt(text, index, strict) {
@@ -116,9 +115,9 @@ export function ignoredRegionsContain(regions, index) {
 function getArticleTitleRegex(title) {
    const index = title.lastIndexOf(':') + 1;
    return new RegExp(
-      '[\\s_]*' + escapeRegExp(title.substring(0, index)) + 
-      '[' + title[index].toUpperCase() + title[index].toLowerCase() + ']' + 
-      title.substring(index + 1).split(/[ _]+/).map(x => escapeRegExp(x)).join('[\\s_]+') + 
+      '[\\s_]*' + escapeRegExp(title.substring(0, index)) +
+      '[' + title[index].toUpperCase() + title[index].toLowerCase() + ']' +
+      title.substring(index + 1).split(/[ _]+/).map(x => escapeRegExp(x)).join('[\\s_]+') +
       '[\\s_]*'
    );
 }

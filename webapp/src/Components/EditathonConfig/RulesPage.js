@@ -267,9 +267,8 @@ class RulesDemo extends React.Component {
       this.setState({ updating: true, stats: null, title });
 
       try {
-         const mwApi = getMwApi(this.props.wiki);
          this._title = title;
-         stats = await getArticleData(mwApi, title, [ 'title', ...newReqs ]);
+         stats = await getArticleData(this.props.wiki, title, [ 'title', ...newReqs ]);
          if (this._title !== title) return;
       } catch(e) {
          console.log('error retrieving article info', e);

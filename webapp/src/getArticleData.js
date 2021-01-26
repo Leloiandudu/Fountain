@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { getMwApi } from './MwApi';
 import { findTemplate, getPlainText, getWordCount } from './parsing';
 
 class Request {
@@ -99,6 +100,8 @@ class Request {
    }
 }
 
+const ItalianWikiVoyageTags = ["sup", "sub", "table", "div", "#comment", "h1", "h2", "h3", "h4", "h5", "h6"]
+
 const Types = {
    title: [
       'lastRev', {
@@ -135,10 +138,20 @@ const Types = {
          parse: { text }
       }) => getPlainText(text).length,
    ],
+   charsItalianWikiVoyage: [
+      'html', {}, ({
+         parse: { text }
+      }) => getPlainText(text, ItalianWikiVoyageTags).length,
+   ],
    words: [
       'html', {}, ({
          parse: { text }
       }) => getWordCount(text),
+   ],
+   wordsItalianWikiVoyage: [
+      'html', {}, ({
+         parse: { text }
+      }) => getWordCount(text, ItalianWikiVoyageTags),
    ],
    bytes: [
       'lastRev', {
@@ -262,9 +275,10 @@ const Types = {
 };
 
 // what: title, ns, html, chars, bytes, creator, created, card, { type: addedForCleanupRu, arg: { at: 'date' } }
-export default async function getArticleData(mwApi, title, what) {
+export default async function getArticleData(wiki, title, what) {
    const req = new Request();
    const result = {};
+   const mwApi = getMwApi(wiki)
 
    for (const item of new Set(what)) {
       let type, arg;
@@ -275,10 +289,19 @@ export default async function getArticleData(mwApi, title, what) {
          ({ type, arg } = item);
       }
 
+      let realType = type
+      if (wiki === 'voy:it') {
+         if (type === 'chars') {
+            realType = 'charsItalianWikiVoyage'
+         } else if (type === 'words') {
+            realType = 'wordsItalianWikiVoyage'
+         }
+      }
+
       if (!(type in Types))
          throw new Error(`Unknown type '${type}'`);
 
-      let config = Types[type];
+      let config = Types[realType];
       if (typeof config === 'function') {
          config = config(arg);
       }
