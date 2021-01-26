@@ -1,5 +1,5 @@
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
 import Autocomplete from 'react-autocomplete';
 import { getSiteMatrix } from './../MwApi';
 import sortBy from './../sortBy';
@@ -15,6 +15,7 @@ export default class WikiLookup extends React.Component {
          filteredItems: []
       };
       this.init();
+      this.value = props.value
    }
 
    async init() {
@@ -40,8 +41,10 @@ export default class WikiLookup extends React.Component {
    }
 
    componentWillReceiveProps(newProps) {
-      const text = newProps.value || '';
-      if (newProps.value != this.props.value) {
+      console.log(newProps, this.props)
+      if (newProps.value != this.value) {
+         this.value = newProps.value
+         const text = newProps.value || '';
          this.setState(state =>({
             text,
             filteredItems: this.filter(text, state.items),
@@ -118,17 +121,20 @@ export default class WikiLookup extends React.Component {
          filteredItems: this.filter(text, state.items)
       }));
 
-      if (item === undefined) {
-         item = this.state.items.filter(i => this.getItemCode(i) === text)[0];
+      if (item && this.props.onChange) {
+         this.props.onChange(item && this.getItemCode(item) || null);
       }
+   }
 
-      this.props.onChange && this.props.onChange(item && this.getItemCode(item) || null);
+   onBlur(e) {
+      this.setState({ text: this.props.value || '' })
+      this.props.inputProps && this.props.inputProps.onBlur && this.props.inputProps.onBlur(e)
    }
 
    render() {
       return <Autocomplete
          wrapperProps={{ className: 'WikiLookup' }}
-         inputProps={this.props.inputProps}
+         inputProps={{ ...this.props.inputProps, onBlur: e => this.onBlur(e) }}
          value={this.state.text}
          items={[...this.state.filteredItems].slice(0, MaxItems)}
          getItemValue={this.getItemCode}
