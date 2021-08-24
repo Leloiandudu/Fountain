@@ -314,6 +314,7 @@ namespace WikiFountain.Server.Controllers
                 Wiki = e.Wiki,
                 Flags = e.Flags,
                 MinMarks = e.MinMarks,
+                IsPublished = e.IsPublished,
 
                 Rules = e.Rules.ToArray(),
                 Marks = e.Marks,
@@ -399,6 +400,7 @@ namespace WikiFountain.Server.Controllers
             public DateTime Finish { get; set; }
             public EditathonFlags Flags { get; set; }
             public int MinMarks { get; set; }
+            public bool IsPublished { get; set; }
 
             public Rule[] Rules { get; set; }
             public JObject Marks { get; set; }
@@ -511,7 +513,6 @@ namespace WikiFountain.Server.Controllers
             {
                 return Get(null, onlyPublished);
             }
-
 
             class EditathonCodeBinder : TypedModelBinder<string, EditathonCode>
             {

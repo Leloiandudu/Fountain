@@ -91,7 +91,7 @@ class EditathonConfig extends React.Component {
       if (returnTo) {
          this.context.router.push(url(returnTo))
       } else {
-         this.context.router.replace(url(this.isNew() ? '/editathons/' : `/editathons/${this.state.editathon.code}`))
+         this.context.router.replace(url(this.isNew() || !this.state.editathon.isPublished ? '/editathons/' : `/editathons/${this.state.editathon.code}`))
       }
    }
 
