@@ -136,5 +136,21 @@ namespace WikiFountain.Server.Controllers
                 Jury = ed.Jury,
             });
         }
+
+        [ActionName("get-draft")]
+        public object GetDraft()
+        {
+            var user = _identity.GetUserInfo();
+            var draft = _session.Query<Editathon>().FirstOrDefault(e => e.Creator == user.Username && !e.IsPublished);
+
+            if (draft == null)
+                return null;
+
+            return new
+            {
+                draft.Code,
+                draft.Name,
+            };
+        }
     }
 }

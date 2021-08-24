@@ -38,13 +38,14 @@ const Preview = React.createClass({
          </div>;
       }
 
-      return <WikiHtml className='content' wiki={wiki} title={info.title} html={`
-<div class="mw-indicators">
-   ${Object.keys(info.indicators).map(k => `<div class="mw-indicator">${info.indicators[k]}</div>`)}
+      return <WikiHtml className='content' wiki={wiki} title={info.title} preHtml={`
+<div class="mw-indicators" style="z-index: 1; position: relative">
+   ${Object.keys(info.indicators).map(k => `<div id="mw-indicator-${k}" class="mw-indicator">${info.indicators[k]}</div>`)}
 </div>
 ${info.title !== title ? `<h1 id="firstHeading" class="firstHeading">
    <a href='${getArticleUrl(wiki, info.title)}'>${info.title}</a>
 </h1>` : ''}
+`} html={`
 ${info.fileUrl && `
 <div>
    <a href='${info.fileUrl.url}'>

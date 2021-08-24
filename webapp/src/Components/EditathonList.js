@@ -135,11 +135,6 @@ const EditathonList = React.createClass({
          loading: false,
       });
    },
-   onCreate(e) {
-      if (!Global.user) {
-         e.preventDefault();
-      }
-   },
    filter(e) {
       const [, type, lang ] = /^(?:(.+):)?(.+)$/.exec(e.wiki);
       const { filter = {} } = this.state;
@@ -163,7 +158,7 @@ const EditathonList = React.createClass({
             {filter.lang && <EditathonCalendar editathons={editathons} />}
             {<RequiresLogin className='create' redirectTo='/editathons/new/config'>
                <WikiButton type='progressive'>
-                  <Link to='/editathons/new/config' onClick={this.onCreate}>
+                  <Link to='/editathons/new/config'>
                      {tr('create')}
                   </Link>
                </WikiButton>

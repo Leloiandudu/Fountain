@@ -110,4 +110,26 @@
          border-color: #d11d13;
       }
    }
+
+   .draftExists {
+      border-radius: 3px;
+      padding: 20px;
+      max-width: 30%;
+      align-self: center; // fix for IE11 flex+max-width issue
+
+      .message {
+         margin-bottom: 2em;
+         font-size: 1.1em;
+         white-space: pre-wrap;
+      }
+
+      .buttons {
+         display: flex;
+         justify-content: flex-end;
+         
+         > * {
+            margin-left: 10px;
+         }
+      }
+   }
 }

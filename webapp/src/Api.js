@@ -126,6 +126,9 @@ export default {
    getCreatedEditathons: () =>
       get('personal/created-editathons'),
 
+   getDraft: () =>
+      get('personal/get-draft'),
+
    getUnapprovedEditathons: () =>
       get('personal/unapproved-editathons'),
 

@@ -11,6 +11,8 @@ import WikiButton from '../WikiButton';
 import Api from '../../Api';
 import { withTranslation } from '../../translate';
 import url from '../../url';
+import ModalDialog from '../ModalDialog';
+import Link from '../Link';
 
 function Headers({ items, selected, onClick }) {
    return <div className='Headers'>
@@ -46,12 +48,13 @@ class EditathonConfig extends React.Component {
          loading: false,
          editathon: {},
          validating: false,
+         existingDraft: null,
       };
       this._maxPageIndex = 0;
    }
 
-   getCode() {
-      return this.props.params.id;
+   getCode(props = this.props) {
+      return props.params.id;
    }
 
    isNew() {
@@ -59,7 +62,24 @@ class EditathonConfig extends React.Component {
    }
 
    async componentWillMount() {
-      if (!this.isNew() && Global.user) {
+      this.setState({ loading: true })
+      const draft = await Api.getDraft()
+      this.setState({ loading: false, draft })
+
+      if (!draft && !this.isNew() && Global.user) {
+         this.setState({ loading: true });
+         const editathon = await Api.getEditathonConfig(this.getCode());
+         this.setState({ loading: false, editathon });
+      }
+   }
+
+   async componentDidUpdate(prevProps) {
+      const { draft } = this.state
+      if (draft && this.getCode() === draft.code) {
+         this.setState({ draft: null })
+      }
+
+      if (this.getCode(prevProps) !== this.getCode()) {
          this.setState({ loading: true });
          const editathon = await Api.getEditathonConfig(this.getCode());
          this.setState({ loading: false, editathon });
@@ -130,7 +150,7 @@ class EditathonConfig extends React.Component {
 
    render() {
       const { translation: { tr } } = this.props;
-      const { editathon, selected, sending, loading, validating } = this.state;
+      const { editathon, selected, sending, loading, validating, draft } = this.state;
 
       if (!Global.user) {
          this.goBack();
@@ -142,6 +162,26 @@ class EditathonConfig extends React.Component {
       }
 
       const isLast = this.getSelectedIndex() === Object.keys(Pages).length - 1;
+
+      if (draft) {
+         return <div className='EditathonConfig'>
+            <ModalDialog isOpen className='draftExists'>
+               <div className='message'>
+                  {tr('draftExists', draft.name)}
+               </div>
+               <div className='buttons'>
+                  <WikiButton type='progressive'>
+                     <Link replace to={`/editathons/${draft.code}/config`}>
+                        {tr('editDraft')}
+                     </Link>
+                  </WikiButton>
+                  <WikiButton onClick={() => this.goBack()}>
+                     {tr('cancel')}
+                  </WikiButton>
+               </div>
+            </ModalDialog>
+         </div>
+      }
 
       return <ValidationForm className={classNames('EditathonConfig', 'mainContentPane', validating && 'validating')} ref={r => this._form = r}>
          <h1>{this.isNew() ? tr('newEditathon') : editathon.name}</h1>

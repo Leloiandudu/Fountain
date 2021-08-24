@@ -22,7 +22,7 @@ namespace WikiFountain.Server.Controllers
         public ActionResult Index(string path)
         {
             var user = _identity.GetUserInfo();
-            var rights = _identity.GetUserRights();
+            //var rights = _identity.GetUserRights();
 
             return View(new
             {
@@ -31,8 +31,7 @@ namespace WikiFountain.Server.Controllers
                 {
                     Name = user.Username,
                     user.Registered,
-                    HasEditathonDraft = _session.Query<Editathon>().Any(e => e.Creator == user.Username && !e.IsPublished),
-                    AdminWikis = rights.IsGlobalAdmin() ? (object)"*" : rights.GetAdminWikis(),
+                    //AdminWikis = rights.IsGlobalAdmin() ? (object)"*" : rights.GetAdminWikis(),
                 },
             });
         }

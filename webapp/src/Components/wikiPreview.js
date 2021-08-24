@@ -75,24 +75,26 @@ class IFrame extends React.Component {
    render() {
       const {
          className,
-         sandbox = 'allow-popups allow-scripts'
+         sandbox = 'allow-popups allow-scripts',
+         autoSize,
       } = this.props;
 
       return <iframe
          ref={x => this._iframe = x}
-         className={classNames('IFrame', className)}
+         className={classNames('IFrame', autoSize && 'autoSize', className)}
+         scrolling={autoSize ? 'no' : undefined}
          sandbox={BrowserSupportsSrcDoc ? sandbox : undefined}
          srcDoc={BrowserSupportsSrcDoc ? (this.getHtml() || '') : undefined} />
    }
 }
 
-function WikiHtml({ html, wiki, title, className, translation, padding = true, autoSize = false }) {
+function WikiHtml({ html, preHtml, wiki, title, className, translation, padding = true, autoSize = false }) {
    return <IFrame className={classNames('WikiHtml', className)} autoSize={autoSize} html={script => `
 <!DOCTYPE html>
-<html>
+<html ${padding ? `style='padding: 10px' ` : ''}>
 <head>
    <base href='${getArticleUrl(wiki, title)}' target='_blank'>
-   <link rel='stylesheet' href='https://${getWikiHost(wiki)}/w/load.php?debug=false&lang=${translation.curLang}&modules=ext.cite.styles%7Cext.echo.badgeicons%7Cext.echo.styles.badge%7Cext.flaggedRevs.basic%7Cext.gadget.logo%7Cext.uls.interlanguage%7Cext.math.scripts,styles%7Cext.tmh.thumbnail.styles%7Cext.uls.nojs%7Cext.wikimediaBadges%7Cmediawiki.legacy.commonPrint,shared%7Cmediawiki.page.gallery.styles%7Cmediawiki.sectionAnchor%7Cmediawiki.skinning.interface%7Csite.styles%7Cskins.vector.styles%7Cwikibase.client.init&only=styles&skin=vector' />
+   <link rel='stylesheet' href='https://${getWikiHost(wiki)}/w/load.php?debug=false&lang=${translation.curLang}&modules=ext.cite.styles%7Cext.echo.badgeicons%7Cext.echo.styles.badge%7Cext.flaggedRevs.basic%7Cext.gadget.logo%7Cext.uls.interlanguage%7Cext.math.scripts,styles%7Cext.tmh.thumbnail.styles%7Cext.uls.nojs%7Cext.wikimediaBadges%7Cmediawiki.legacy.commonPrint,shared%7Cmediawiki.page.gallery.styles%7Cmediawiki.sectionAnchor%7Cmediawiki.skinning.interface%7Csite.styles%7Cskins.vector.styles%7Cwikibase.client.init%7Cext.kartographer.style&only=styles&skin=vector' />
    <style>
       ${autoSize ? `
       html {
@@ -117,7 +119,8 @@ function WikiHtml({ html, wiki, title, className, translation, padding = true, a
    </style>
 </head>
 <body class='mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject skin-vector' style='background: white; height: auto'>
-   <div id='bodyContent' class='mw-body-content' ${padding ? `style='padding: 10px' ` : ''}>
+   ${preHtml || ''}
+   <div id='bodyContent' class='vector-body'>
       ${html}
    </div>
    ${script}

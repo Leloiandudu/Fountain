@@ -153,6 +153,8 @@ export default {
       marks: 'Marks',
       template: 'Template',
       jury: 'Jury',
+      draftExists: t => `You already have a draft '${t}'. Please ask an administrator to approve it before creating another one.\nDo you want to edit the draft now?`,
+      editDraft: 'Edit draft',
       GeneralPage: {
          title: 'Title',
          code: 'Code',
