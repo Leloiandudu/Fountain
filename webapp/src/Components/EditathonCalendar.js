@@ -92,8 +92,8 @@ ${this.formatDate(e.start, 'L')} – ${this.formatDate(e.finish, 'L')}`}</Toolti
          finish: moment(e.finish).startOf('day'),
       })).filter(e => !e.start.isSame(e.finish));
 
-      let min = moment.min(editathons.map(e => e.start)).startOf('month');
-      const max = moment.max(editathons.map(e => e.finish)).startOf('month').add(1, 'month');
+      let min = moment(moment.min(editathons.map(e => e.start))).startOf('month');
+      const max = moment(moment.max(editathons.map(e => e.finish))).startOf('month').add(1, 'month');
       if (max.diff(min, 'months') < 7) {
          min = moment(max).add(-7, 'months');
       }
