@@ -192,7 +192,7 @@ namespace WikiFountain.Server.Controllers
 
             if (settings.TalkPage)
             {
-                title = "Talk:" + title;
+                title = await wiki.GetTalkPageTitle(title);
                 page = await wiki.GetPage(title) ?? "";
             }
 

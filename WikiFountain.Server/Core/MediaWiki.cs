@@ -137,7 +137,7 @@ namespace WikiFountain.Server.Core
             var map = GetOriginalTitleMapping(result, titles);
 
             return result["query"].Value<JArray>("pages").ToDictionary(
-                p => map[p.Value<string>("title")], 
+                p => map[p.Value<string>("title")],
                 p => p.Value<JArray>("categories")
                     .EmptyIfNull()
                     .Select(c => c.Value<string>("title")).ToArray());
@@ -176,6 +176,54 @@ namespace WikiFountain.Server.Core
             return list;
         }
 
+
+        public async Task<string> GetTalkPageTitle(string title)
+        {
+            if (!title.Contains(":"))
+                return "Talk:" + title;
+
+            var namespaces = await GetNamespaces();
+            var res = namespaces.Select(ns => {
+                var val = ns.Value.SingleOrDefault(v => title.StartsWith(v + ":"));
+                if (val == null) return null;
+                return new { Title = title.Substring(val.Length + 1), Id = ns.Key };
+            })
+            .SingleOrDefault(v => v != null);
+
+            if (res == null)
+                return "Talk:" + title;
+
+            if (res.Id % 2 == 1)
+                throw new InvalidOperationException("Already a talk page");
+
+            return namespaces[res.Id + 1][0] + ":" + res.Title;
+        }
+
+        private IDictionary<int, string[]> _namespaces;
+        public async Task<IDictionary<int, string[]>> GetNamespaces()
+        {
+            if (_namespaces != null)
+                return _namespaces;
+
+            var props = new[] { "name", "canonical" };
+
+            var query = (await Query(new Dictionary<string, string>
+            {
+                { "meta", "siteinfo" },
+                { "siprop", "namespaces|namespacealiases" },
+            })).Single();
+
+            return _namespaces = (
+                query["namespaces"].Values().SelectMany(x =>
+                {
+                    var id = x.Value<int>("id");
+                    return props.Select(p => x.Value<string>(p)).Where(v => v != null).Select(v => Tuple.Create(id, v));
+                })
+            ).Concat(
+                query["namespacealiases"].Select(x => Tuple.Create(x.Value<int>("id"), x.Value<string>("alias")))
+            ).Distinct().GroupBy(x => x.Item1, x => x.Item2).ToDictionary(x => x.Key, x => x.ToArray());
+        }
+
         private static string GetCodeByWikiName(string wiki)
         {
             const string wik = "wik";
@@ -212,6 +260,33 @@ namespace WikiFountain.Server.Core
             return string.Join("|", titles);
         }
 
+        private async Task<IReadOnlyList<JObject>> Query(IDictionary<string, string> queryArgs)
+        {
+            queryArgs = new Dictionary<string, string>(queryArgs)
+            {
+                { "action", "query" },
+            };
+
+            var cont = new JObject(new JProperty("continue", ""));
+            var results = new List<JObject>();
+
+            for (; ; )
+            {
+                var args = JObject.FromObject(queryArgs);
+                foreach (var p in cont.Properties())
+                    args.Add(p.Name, p.Value.Value<string>());
+
+                var result = await Exec(args);
+                results.Add(result.Value<JObject>("query"));
+
+                cont = result.Value<JObject>("continue");
+                if (cont == null)
+                    break;
+            }
+
+            return results;
+        }
+
         public async Task<JObject> Exec(JObject args)
         {
             var data = new JObject
@@ -219,7 +294,7 @@ namespace WikiFountain.Server.Core
                 { "format", "json" },
                 { "formatversion", 2 },
             };
-            
+
             data.Merge(args);
 
             var body = new MultipartFormDataContent();
@@ -236,7 +311,7 @@ namespace WikiFountain.Server.Core
 
                 req.Headers.UserAgent.Add(new ProductInfoHeaderValue("Fountain", GetVersion().ToString(2)));
                 req.Headers.UserAgent.Add(new ProductInfoHeaderValue("(https://github.com/leloiandudu/fountain; kf8.wikipedia@gmail.com)"));
-                
+
                 _identity.Sign(req);
 
                 using (var resp = await http.SendAsync(req))
@@ -248,7 +323,7 @@ namespace WikiFountain.Server.Core
                 }
             }
         }
-        
+
         private static Version GetVersion()
         {
             return typeof(Global).Assembly.GetName().Version;
