@@ -42,9 +42,7 @@ namespace WikiFountain.Server.Controllers
         public object Get(EditathonCode code)
         {
             var e = code.Get(q => q
-                .FetchMany(_ => _.Articles).ThenFetch(a => a.Marks)
-                .Fetch(_ => _.Jury)
-                .Fetch(_ => _.Rules));
+                .FetchMany(_ => _.Articles).ThenFetch(a => a.Marks));
 
             var user = _identity.GetUserInfo();
 
