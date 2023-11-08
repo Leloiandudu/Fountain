@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using System.Web;
 using System.Web.Http.Controllers;
 
@@ -54,10 +55,23 @@ namespace WikiFountain.Server.Core
                 throw new ArgumentException();
             url = url.Substring(1);
 
-            var uri = new UriBuilder(ctx.Request.RequestUri.GetLeftPart(UriPartial.Authority));
+            var uri = new UriBuilder(GetRequestUri(ctx.Request).GetLeftPart(UriPartial.Authority));
             uri.Path = GetSiteRoot() + url;
 
             return uri.Uri.AbsoluteUri;
+        }
+
+        private static Uri GetRequestUri(HttpRequestMessage req)
+        {
+            if (!req.Headers.TryGetValues("X-Forwarded-Host", out var host))
+                return req.RequestUri;
+
+            if (!req.Headers.TryGetValues("X-Forwarded-Proto", out var protos))
+                req.Headers.TryGetValues("X-Forwarded-Scheme", out protos);
+
+            var proto = protos?.FirstOrDefault() ?? "http";
+
+            return new Uri(new Uri($"{proto}://{host.First()}"), req.RequestUri.PathAndQuery);
         }
     }
 }
