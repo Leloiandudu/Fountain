@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,6 +22,7 @@ namespace WikiFountain.Server.Core
                 return false;
 
             return user.Username == "Ле Лой"
+                || (ConfigurationManager.AppSettings["ExtraAdmins"] ?? "").Split(',').Contains(user.Username)
                 || user.SysopWikis.Any(IsGlobalWiki);
         }
 
