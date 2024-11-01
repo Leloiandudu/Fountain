@@ -91,10 +91,10 @@ class IFrame extends React.Component {
 function WikiHtml({ html, preHtml, wiki, title, className, translation, padding = true, autoSize = false }) {
    return <IFrame className={classNames('WikiHtml', className)} autoSize={autoSize} html={script => `
 <!DOCTYPE html>
-<html ${padding ? `style='padding: 10px' ` : ''}>
+<html ${padding ? `style='padding: 10px' ` : ''} class='vector-feature-custom-font-size-clientpref-0'>
 <head>
    <base href='${getArticleUrl(wiki, title)}' target='_blank'>
-   <link rel='stylesheet' href='https://${getWikiHost(wiki)}/w/load.php?debug=false&lang=${translation.curLang}&modules=ext.cite.styles%7Cext.echo.badgeicons%7Cext.echo.styles.badge%7Cext.flaggedRevs.basic%7Cext.gadget.logo%7Cext.uls.interlanguage%7Cext.math.scripts,styles%7Cext.tmh.thumbnail.styles%7Cext.uls.nojs%7Cext.wikimediaBadges%7Cmediawiki.legacy.commonPrint,shared%7Cmediawiki.page.gallery.styles%7Cmediawiki.sectionAnchor%7Cmediawiki.skinning.interface%7Csite.styles%7Cskins.vector.styles%7Cwikibase.client.init%7Cext.kartographer.style&only=styles&skin=vector' />
+   <link rel='stylesheet' href='https://${getWikiHost(wiki)}/w/load.php?debug=false&lang=${translation.curLang}&modules=ext.cite.styles%7Cext.echo.badgeicons%7Cext.echo.styles.badge%7Cext.flaggedRevs.basic%7Cext.gadget.logo%7Cext.uls.interlanguage%7Cext.math.scripts,styles%7Cext.tmh.thumbnail.styles%7Cext.uls.nojs%7Cext.wikimediaBadges%7Cmediawiki.legacy.commonPrint,shared%7Cmediawiki.page.gallery.styles%7Cmediawiki.sectionAnchor%7Cmediawiki.skinning.interface%7Csite.styles%7Cskins.vector.styles%7Cwikibase.client.init%7Cext.kartographer.style&only=styles&skin=vector-2022' />
    <style>
       ${autoSize ? `
       html {
