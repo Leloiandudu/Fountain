@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -13,6 +14,19 @@ namespace WikiFountain.Server.Controllers
     [OutputCacheAttribute(VaryByParam = "*", Duration = 0, NoStore = true)]
     public class LoginController : MvcControllerBase
     {
+        private static readonly OAuthConsumer.Token TestToken;
+
+        static LoginController()
+        {
+            var testToken = ConfigurationManager.AppSettings["accessTokenFallback"];
+            if (testToken != null)
+            {
+                var parts = testToken.Split(':');
+                if (parts.Length == 2)
+                    TestToken = new OAuthConsumer.Token { Key = parts[0], Secret = parts[1] };
+            }
+        }
+
         private readonly OAuthConsumer _oauth;
         private readonly Identity _identity;
 
@@ -25,6 +39,9 @@ namespace WikiFountain.Server.Controllers
         public async Task<ActionResult> Login(string redirectTo = null)
         {
             _identity.Clear();
+
+            if (TestToken != null)
+                return await Login(TestToken, redirectTo);
 
             var token = await _oauth.GetRequestToken("oob");
             RequestToken = token;
@@ -49,10 +66,15 @@ namespace WikiFountain.Server.Controllers
                 return View("error");
 
             var accessToken = await _oauth.GetAccessToken(token, verifier);
+            return await Login(accessToken, RedirectTo);
+        }
+
+        private async Task<ActionResult> Login(OAuthConsumer.Token accessToken, string redirectTo)
+        {
             _identity.Update(accessToken, await QueryInfo(msg => _oauth.Sign(msg, accessToken)));
             await _identity.GetUserRights().Actualize();
 
-            return Redirect(RedirectTo ?? "~/");
+            return Redirect(redirectTo ?? "~/");
         }
 
         private async Task<UserInfo> QueryInfo(Action<HttpRequestMessage> sign)
@@ -72,9 +94,9 @@ namespace WikiFountain.Server.Controllers
 
         private OAuthConsumer.Token RequestToken
         {
-            get 
+            get
             {
-                return Session["token"] as OAuthConsumer.Token; 
+                return Session["token"] as OAuthConsumer.Token;
             }
             set { Session["token"] = value; }
         }
