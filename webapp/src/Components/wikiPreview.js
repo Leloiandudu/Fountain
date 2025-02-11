@@ -75,7 +75,7 @@ class IFrame extends React.Component {
    render() {
       const {
          className,
-         sandbox = 'allow-popups allow-scripts',
+         sandbox = 'allow-popups allow-scripts allow-popups-to-escape-sandbox',
          autoSize,
       } = this.props;
 
