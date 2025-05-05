@@ -2,12 +2,11 @@ import React from 'react';
 import { withTranslation } from './../translate';
 import { getNavitagorLang } from './../utils';
 import SendReportButton from './SendReportButton';
-import WikiLink from './WikiLink';
 
 const Footer = ({ translation: { tr }}) =>
    <div className='Footer mainContentPane'>
       <span>{tr('preLink')}</span>
-      <WikiLink to='User_talk:Ле Лой'>{tr('link')}</WikiLink>
+      <a href='mailto:kf8.wikipedia@gmail.com'>{tr('link')}</a>
       <span>{tr('postLink')}</span>
       {' '}
       <a className='WikiLink' rel='noopener noreferrer' target='_blank'
