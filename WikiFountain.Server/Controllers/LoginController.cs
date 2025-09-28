@@ -79,7 +79,13 @@ namespace WikiFountain.Server.Controllers
 
         private async Task<UserInfo> QueryInfo(Action<HttpRequestMessage> sign)
         {
-            var msg = new HttpRequestMessage(HttpMethod.Get, "https://meta.wikimedia.org/w/index.php?title=Special:OAuth/identify");
+            var msg = new HttpRequestMessage(HttpMethod.Get, "https://meta.wikimedia.org/w/index.php?title=Special:OAuth/identify")
+            {
+                Headers =
+                {
+                    { "User-Agent", MediaWiki.GetUserAgent() },
+                }
+            };
             using (var http = new HttpClient())
             {
                 sign(msg);

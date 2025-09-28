@@ -110,7 +110,7 @@ gulp.task('libs', function() {
 
 gulp.task('serve', function(done) {
    browserSync({
-      proxy: 'http://localhost:61712/',
+      proxy: 'http://localhost:8712/',
       open: false,
       host: '192.168.1.2',
       ghostMode: false,

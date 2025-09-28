@@ -309,8 +309,7 @@ namespace WikiFountain.Server.Core
                     body.Add(new StringContent(value.Value<string>()), prop.Name);
                 }
 
-                req.Headers.UserAgent.Add(new ProductInfoHeaderValue("Fountain", GetVersion().ToString(2)));
-                req.Headers.UserAgent.Add(new ProductInfoHeaderValue("(https://github.com/leloiandudu/fountain; kf8.wikipedia@gmail.com)"));
+                req.Headers.UserAgent.ParseAdd(GetUserAgent());
 
                 _identity.Sign(req);
 
@@ -327,6 +326,11 @@ namespace WikiFountain.Server.Core
         private static Version GetVersion()
         {
             return typeof(Global).Assembly.GetName().Version;
+        }
+
+        public static string GetUserAgent()
+        {
+            return $"Fountain/{GetVersion().ToString(2)} (https://github.com/leloiandudu/fountain; kf8.wikipedia@gmail.com)";
         }
     }
 
