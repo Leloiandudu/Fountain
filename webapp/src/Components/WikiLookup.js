@@ -3,10 +3,11 @@ import React from 'react';
 import Autocomplete from 'react-autocomplete';
 import { getSiteMatrix } from './../MwApi';
 import sortBy from './../sortBy';
+import { withTranslation } from '../translate';
 
 const MaxItems = 10;
 
-export default class WikiLookup extends React.Component {
+class WikiLookup extends React.Component {
    constructor(props) {
       super(props);
       this.state = {
@@ -41,7 +42,6 @@ export default class WikiLookup extends React.Component {
    }
 
    componentWillReceiveProps(newProps) {
-      console.log(newProps, this.props)
       if (newProps.value != this.value) {
          this.value = newProps.value
          const text = newProps.value || '';
@@ -70,15 +70,16 @@ export default class WikiLookup extends React.Component {
       }
 
       const more = this.state.filteredItems.length > MaxItems;
+      const { translation: { tr } } = this.props
 
       return <div className='popup-container'>
          <div className='popup' style={{ minWidth: style.minWidth }}>
             <table>
                <thead>
                   <tr>
-                     <th>код</th>
-                     <th>название</th>
-                     <th>язык</th>
+                     <th>{tr('code')}</th>
+                     <th>{tr('title')}</th>
+                     <th>{tr('language')}</th>
                   </tr>
                </thead>
                <tbody>{items}</tbody>
@@ -144,3 +145,5 @@ export default class WikiLookup extends React.Component {
          onChange={(event, text) => this.onChange(text)} />;
    }
 }
+
+export default withTranslation(WikiLookup, 'WikiLookup')

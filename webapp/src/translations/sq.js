@@ -38,7 +38,7 @@ export default {
       acticlesCount: 'Artikujt',
       totalScore: 'Pikët',
       acticle: 'Artikulli',
-      addedOn: 'Добавлено',
+      addedOn: 'Shtuar në',
       score: 'Pikët',
       dateAdded: date => formatDate(date, 'D MMM LT'),
    },

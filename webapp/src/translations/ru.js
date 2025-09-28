@@ -64,6 +64,9 @@ export default {
 
    ManageArticles: {
       removeSelected: 'Удалить отмеченные',
+      user: 'Участник',
+      article: 'Статья',
+      addedOn: 'Дата добавления',
    },
 
    Dashboard: {
@@ -304,5 +307,11 @@ export default {
          edit: 'Редактировать',
          delete: 'Удалить',
       },
+   },
+
+   WikiLookup: {
+      code: 'код',
+      title: 'название',
+      language: 'язык',
    },
 };

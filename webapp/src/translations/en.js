@@ -55,6 +55,9 @@ export default {
 
    ManageArticles: {
       removeSelected: 'Remove Selected',
+      user: 'User',
+      article: 'Article',
+      addedOn: 'Added on',
    },
 
    Dashboard: {
@@ -295,5 +298,11 @@ export default {
          edit: 'Edit',
          delete: 'Delete',
       },
+   },
+
+   WikiLookup: {
+      code: 'code',
+      title: 'title',
+      language: 'language',
    },
 };

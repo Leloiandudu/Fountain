@@ -54,9 +54,9 @@ class ManageArticles extends React.Component {
             <thead>
                <tr>
                   <th className='check'></th>
-                  <th className='user'>Участник</th>
-                  <th className='article'>Статья</th>
-                  <th className='date'>Дата добавления</th>
+                  <th className='user'>{tr('user')}</th>
+                  <th className='article'>{tr('article')}</th>
+                  <th className='date'>{tr('addedOn')}</th>
                </tr>
             </thead>
             <tbody>
