@@ -27,7 +27,7 @@ export function getWikiHost(wiki) {
 
 export function getArticleUrl(wiki, to = '') {
    wiki = getWikiHost(wiki);
-   return `https://${wiki}/wiki/${to}`;
+   return `https://${wiki}/wiki/${encodeURIComponent(to)}`;
 }
 
 export default function MwApi(url) {
