@@ -79,23 +79,22 @@ namespace WikiFountain.Server.Controllers
 
         private async Task<UserInfo> QueryInfo(Action<HttpRequestMessage> sign)
         {
-            var msg = new HttpRequestMessage(HttpMethod.Get, "https://meta.wikimedia.org/w/index.php?title=Special:OAuth/identify")
+            using var msg = new HttpRequestMessage(HttpMethod.Get, "https://meta.wikimedia.org/w/index.php?title=Special:OAuth/identify")
             {
                 Headers =
                 {
                     { "User-Agent", MediaWiki.GetUserAgent() },
                 }
             };
-            using (var http = new HttpClient())
-            {
-                sign(msg);
-                var response = await http.SendAsync(msg);
-                var result = await response.Content.ReadAsStringAsync();
-                if (result.Contains("\"message\""))
-                    throw new AuthExpiredException(JObject.Parse(result).Value<string>("message"));
-                var str = JsonWebToken.Decode(result, _oauth.ConsumerToken.Secret);
-                return JsonConvert.DeserializeObject<UserInfo>(str, new JsonSerializerSettings { DateFormatString = "yyyyMMddHHmmss", DateTimeZoneHandling = DateTimeZoneHandling.Utc });
-            }
+
+            using var http = new HttpClient();
+            sign(msg);
+            var response = await http.SendAsync(msg);
+            var result = await response.Content.ReadAsStringAsync();
+            if (result.Contains("\"message\""))
+                throw new AuthExpiredException(JObject.Parse(result).Value<string>("message"));
+            var str = JsonWebToken.Decode(result, _oauth.ConsumerToken.Secret);
+            return JsonConvert.DeserializeObject<UserInfo>(str, new JsonSerializerSettings { DateFormatString = "yyyyMMddHHmmss", DateTimeZoneHandling = DateTimeZoneHandling.Utc });
         }
 
         private OAuthConsumer.Token RequestToken

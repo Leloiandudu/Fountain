@@ -170,12 +170,12 @@ namespace WikiFountain.Server.Core
                 .Where(c => c != null)
                 .ToList();
 
-            if (result["groups"].ToObject<string[]>().Contains("global-sysop"))
+            var groups = result["groups"].ToObject<string[]>();
+            if (groups.Contains("global-sysop") || groups.Contains("steward"))
                 list.Add("*");
 
             return list;
         }
-
 
         public async Task<string> GetTalkPageTitle(string title)
         {
